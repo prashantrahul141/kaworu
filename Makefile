@@ -32,7 +32,7 @@ endif
 export C_FLAGS := -ffreestanding -nostdlib
 export COMMON_FLAGS
 
-OBJS = kernel/boot.o \
+OBJS = kernel/startup.o \
 	   kernel/init.o
 
 $(OUT): kernel

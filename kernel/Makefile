@@ -1,4 +1,4 @@
-ASM_SOURCES = boot.S
+ASM_SOURCES = startup.S
 ASM_OBJS = $(ASM_SOURCES:.S=.o)
 
 C_SOURCES = init.c
