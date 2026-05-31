@@ -26,6 +26,7 @@
             qemu
             pkgsCross.aarch64-multiplatform.buildPackages.binutils
             bear
+            python313Packages.kconfiglib
           ];
 
         };

@@ -1,0 +1,20 @@
+config DEBUG_SYMBOLS
+    bool "Enable debug symbols"
+    default y
+
+choice OPTIMIZATIONS
+    prompt "Optimizations level"
+    default OPTIMIZATIONS_NONE
+
+    config OPTIMIZATIONS_NONE
+        bool "None"
+
+    config OPTIMIZATIONS_LOW
+        bool "Low"
+
+    config OPTIMIZATIONS_MEDIUM
+        bool "Medium"
+
+    config OPTIMIZATIONS_HIGH
+        bool "High"
+endchoice

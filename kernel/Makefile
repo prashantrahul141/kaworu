@@ -8,10 +8,10 @@ all: $(C_OBJS) $(ASM_OBJS)
 	@printf "kernel sources built ----------------\n"
 
 %.o: %.S
-	$(CC) --target=$(TARGET) -c $^ -o $@
+	$(CC) --target=$(TARGET) $(COMMON_FLAGS) -c $^ -o $@
 
 %.o: %.c
-	$(CC) --target=$(TARGET) $(C_FLAGS) -c $^ -o $@
+	$(CC) --target=$(TARGET) $(C_FLAGS) $(COMMON_FLAGS) -c $^ -o $@
 
 clean:
 	rm -f *.o
