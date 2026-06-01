@@ -8,28 +8,30 @@
   outputs =
     { self, nixpkgs }:
     let
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
-
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f (import nixpkgs { inherit system; }));
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
     in
     {
-      devShells = forAllSystems (pkgs: {
-        default = pkgs.mkShell {
-          packages = with pkgs; [
-            llvmPackages.clang-unwrapped
-            llvmPackages.lld
-            llvm
-            gnumake
-            qemu
-            pkgsCross.aarch64-multiplatform.buildPackages.binutils
-            bear
-            python313Packages.kconfiglib
-          ];
+      devShells.${system}.default = pkgs.mkShell {
+        packages = with pkgs; [
+          llvmPackages.clang-unwrapped
+          llvmPackages.lld
+          llvm
 
-        };
-      });
+          qemu
+          gdb
+
+          gnumake
+          bear
+          python313Packages.kconfiglib
+        ];
+
+        shellHook = ''
+          export CC=clang
+          export LD=ld.lld
+          export OBJDUMP=llvm-objdump
+          export READELF=llvm-readelf
+        '';
+      };
     };
 }
