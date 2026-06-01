@@ -23,8 +23,19 @@ SECTIONS
     . = ALIGN(16);
     .bss : {
         __bss_start = .;
-        *(.bss*)
+        *(.bss*);
+        *(COMMON);
+        . += 16384;
+        . = ALIGN(16);
         __bss_end = .;
+    }
+
+    . = ALIGN(16);
+    .stack : {
+        __stack_bottom = .;
+        . += 16384;
+        . = ALIGN(16);
+        __stack_top = .;
     }
 
     __kernel_end = .;
