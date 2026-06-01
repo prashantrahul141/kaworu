@@ -1,55 +1,105 @@
+#include "./exception_table.S"
+
 .section .text.boot
 
 .extern kernel_main
 
-.global _start
-_start:
-    # zero out bss section
-    adr x1, __bss_start
-    adr x0, __bss_end
-    sub x1, x0, x1
-    bl memzero
-
-    # move stack_top to sp
-    ldr x0, =stack_top
-    mov sp, x0
-
-    # c entry point
-    bl kernel_main
-
-    # unreachable
-    b halt
-
-
 /*
  * zero out a memory region
- * start_address should be the higer value.
- * void memzero(char *start_address, char* size);
+ * start_address should be the lower memory address.
+ * macro memzero(char *start_address, char* size);
  */
-memzero:
-    /*  *x0 = 0;
-        x0 += 8;  */
-    str xzr, [x0], #8
-
-    /* x1 -= 8 */
-    subs x1, x1, #8
-
-    /* if x1 > 0: goto memzero */
-    b.gt memzero
-
-    ret
+.macro memzero start, size
+1:
+    str xzr, [\start], #8
+    subs \size, \size, #8
+    b.gt 1b
+.endm
 
 /*
  * sleeps indefinitely.
- * void halt()
+ * macro halt(void);
  */
-halt:
+.macro halt
+1:
     wfe
-    b halt
+    b 1b
+.endm
 
 
-.section .bss
-.align 16
-stack_bottom:
-    .skip 16384
-stack_top:
+.global _start
+_start:
+    /* get current EL level */
+    mrs x0, CurrentEL
+    lsr x0, x0, #2
+    cmp x0, #2
+    beq in_el2
+    cmp x0, #1
+    beq in_el1
+
+in_el3:
+    /* jump from el3 to el2 */
+
+    /* store address of `in_el2` in ELR_EL3 */
+    adr x0, in_el2
+    msr ELR_EL3, x0
+
+
+    /* store el level we want to jump, also sets el2's sp to SP_EL2 */
+    mov x0, #0x3c9
+    msr SPSR_EL3, x0
+    /* copy this el's sp to el2's sp */
+    mov x0, sp
+    msr SP_EL2, x0
+
+    eret
+
+in_el2:
+    /* jump from el2 to el1 */
+    /* store address of `in_el1` in ELR_EL2 */
+    adr x0, in_el1
+    msr ELR_EL2, x0
+
+    /* store el level we want to jump, also sets el1's sp to SP_EL1 */
+    mov x0, #0x3c5
+    msr SPSR_EL2, x0
+
+    /* copy this el's sp to el1's sp */
+    mov x0, sp
+    msr SP_EL1, x0
+
+    eret
+
+in_el1:
+    /* finnaly in el1 */
+    /* disable all interrupts */
+    disable_interrupts
+
+    /* zero out bss section */
+    ldr x0, =__bss_start
+    ldr x1, =__bss_end
+    sub x1, x1, x0
+    memzero x0, x1
+
+    /* move stack_top to sp */
+    ldr x0, =__stack_top
+    mov sp, x0
+
+    /* setup exception vector table */
+    ldr x0, =vector_table_el1
+    msr vbar_el1, x0
+    isb
+
+    /* System control register: enable fpu and simd */
+    mrs x0, cpacr_el1
+    orr x0, x0, #(0x3 << 20)
+    msr cpacr_el1, x0
+
+    /* reenable all interrupts */
+    enable_interrupts
+
+    /* c entry point */
+    bl kernel_main
+
+    /* unreachable */
+    halt
