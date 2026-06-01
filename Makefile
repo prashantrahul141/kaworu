@@ -4,13 +4,14 @@ else
     $(info .config was not found, skipping.)
 endif
 
-export CC := clang
-export LD := ld.lld
+CC := clang
+LD := ld.lld
 
-export LINKER_SCRIPT := linker.ld
-export OUT := kaworu.elf
+LINKER_SCRIPT := linker.ld
 
-export TARGET := aarch64-none-elf
+OUT := kaworu.elf
+
+TARGET := aarch64-none-elf
 
 COMMON_FLAGS =
 # debugging?
@@ -29,40 +30,49 @@ else ifeq ($(CONFIG_OPTIMIZATIONS_NONE),y)
 	COMMON_FLAGS += -O0
 endif
 
-export C_FLAGS := -ffreestanding -nostdlib
-export COMMON_FLAGS
+C_FLAGS := -ffreestanding -nostdlib
 
-OBJS = kernel/startup.o \
-	   kernel/init.o
+ASM_SOURCES = kernel/startup.S \
+			  kernel/exception_table.S
+ASM_OBJS = $(ASM_SOURCES:.S=.o)
 
-$(OUT): kernel
+C_SOURCES = kernel/init.c \
+			kernel/exception.c
+C_OBJS = $(C_SOURCES:.c=.o)
+
+OBJS = $(ASM_OBJS) $(C_OBJS)
+
+$(OUT): $(OBJS)
 	$(LD) -m aarch64elf -T $(LINKER_SCRIPT) $(OBJS) -o $(OUT)
 
-kernel:
-	make -C kernel/
-
 clean:
-	make -C kernel/ clean
+	rm -f $(OBJS)
+	rm -f $(OUT)
 
 cleanconfig:
 	rm -f config.h .config
 
 menuconfig:
 	menuconfig
+	genconfig
 
 defconfig:
 	defconfig configs/debugconfig
-
-genconfig:
 	genconfig
 
-run: kernel
+run: $(OUT)
 	qemu-system-aarch64 -M virt -cpu cortex-a72 -nographic -kernel $(OUT)
 
-rund: kernel
+rund: $(OUT)
 	qemu-system-aarch64 -M virt -cpu cortex-a72 -s -S -nographic -kernel $(OUT)
 
 gdb:
-	gdb -tui $(OUT) -ex "target remote :1234"
+	gdb $(OUT) -ex  "target remote :1234"
 
-.PHONY: $(OUT) kernel clean run
+%.o: %.S
+	$(CC) --target=$(TARGET) $(COMMON_FLAGS) -c $< -o $@
+
+%.o: %.c
+	$(CC) --target=$(TARGET) $(C_FLAGS) $(COMMON_FLAGS) -c $< -o $@
+
+.PHONY: $(OUT) kernel clean run rund gdb menuconfig defconfig genconfig
