@@ -33,16 +33,16 @@ endif
 C_FLAGS := -ffreestanding -nostdlib
 
 ASM_SOURCES = kernel/startup.S \
-			  kernel/exception_table.S
-ASM_OBJS = $(ASM_SOURCES:.S=.o)
+			  kernel/entry.S
+ASM_OBJS = $(ASM_SOURCES:=.o)
 
 C_SOURCES = kernel/init.c \
-			kernel/exception.c
-C_OBJS = $(C_SOURCES:.c=.o)
+			kernel/entry.c
+C_OBJS = $(C_SOURCES:=.o)
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
-$(OUT): $(OBJS)
+$(OUT): $(OBJS) $(LINKER_SCRIPT)
 	$(LD) -m aarch64elf -T $(LINKER_SCRIPT) $(OBJS) -o $(OUT)
 
 clean:
@@ -69,10 +69,10 @@ rund: $(OUT)
 gdb:
 	gdb $(OUT) -ex  "target remote :1234"
 
-%.o: %.S
+%.S.o: %.S
 	$(CC) --target=$(TARGET) $(COMMON_FLAGS) -c $< -o $@
 
-%.o: %.c
+%.c.o: %.c
 	$(CC) --target=$(TARGET) $(C_FLAGS) $(COMMON_FLAGS) -c $< -o $@
 
 .PHONY: $(OUT) kernel clean run rund gdb menuconfig defconfig genconfig

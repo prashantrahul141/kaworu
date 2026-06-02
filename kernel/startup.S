@@ -1,4 +1,4 @@
-#include "./exception_table.S"
+#include "./entry.S"
 
 .section .text.boot
 
