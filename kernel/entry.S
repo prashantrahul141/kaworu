@@ -98,6 +98,10 @@
 .extern irq_handler
 .extern unhandled_exception_vector
 
+.macro vector_entry target
+    b \target
+.endm
+
 /* Exception vector table */
 .section .text
 .balign 0x800
@@ -107,10 +111,7 @@ vector_table_el1:
  * exception from the current EL using SP0.
  */
 curr_el_sp0_sync:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry curr_el_sp0_sync_handler
 
 /*
  * The exception handler for an IRQ exception
@@ -118,10 +119,7 @@ curr_el_sp0_sync:
  */
 .balign 0x80
 curr_el_sp0_irq:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry curr_el_sp0_irq_handler
 
 /*
  *
@@ -130,10 +128,7 @@ curr_el_sp0_irq:
 */
 .balign 0x80
 curr_el_sp0_fiq:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry curr_el_sp0_fiq_handler
 
 /*
  * The exception handler for a System Error
@@ -141,10 +136,7 @@ curr_el_sp0_fiq:
  */
 .balign 0x80
 curr_el_sp0_serror:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry curr_el_sp0_serror_handler
 
 /*
  * The exception handler for a synchrous
@@ -153,10 +145,7 @@ curr_el_sp0_serror:
 
 .balign 0x80
 curr_el_spx_sync:
-    save_registers
-    bl exception_handler
-    restore_registers
-    eret
+    vector_entry curr_el_spx_sync_handler
 
 /*
  * The exception handler for an IRQ exception from
@@ -164,10 +153,7 @@ curr_el_spx_sync:
  */
 .balign 0x80
 curr_el_spx_irq:
-    save_registers
-    bl irq_handler
-    restore_registers
-    eret
+    vector_entry curr_el_spx_irq_handler
 
 /*
  * The exception handler for an FIQ from
@@ -175,10 +161,7 @@ curr_el_spx_irq:
  */
 .balign 0x80
 curr_el_spx_fiq:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry curr_el_spx_fiq_handler
 
 /*
  * The exception handler for a System Error
@@ -186,10 +169,7 @@ curr_el_spx_fiq:
  */
 .balign 0x80
 curr_el_spx_serror:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry curr_el_spx_serror_handler
 
 /*
  * The exception handler for a synchronous
@@ -197,10 +177,7 @@ curr_el_spx_serror:
  */
  .balign 0x80
 lower_el_aarch64_sync:
-    save_registers
-    bl exception_handler
-    restore_registers
-    eret
+    vector_entry lower_el_aarch64_sync_handler
 
 /*
  * The exception handler for an IRQ from a lower EL
@@ -208,10 +185,7 @@ lower_el_aarch64_sync:
  */
 .balign 0x80
 lower_el_aarch64_irq:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry lower_el_aarch64_irq_handler
 
 /*
  * The exception handler for an FIQ from a lower EL
@@ -219,10 +193,7 @@ lower_el_aarch64_irq:
  */
 .balign 0x80
 lower_el_aarch64_fiq:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry lower_el_aarch64_fiq_handler
 
 /*
  * The exception handler for a System Error
@@ -230,10 +201,7 @@ lower_el_aarch64_fiq:
  */
 .balign 0x80
 lower_el_aarch64_serror:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry lower_el_aarch64_serror_handler
 
 /*
  * The exception handler for a synchronous
@@ -241,10 +209,7 @@ lower_el_aarch64_serror:
  */
 .balign 0x80
 lower_el_aarch32_sync:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry lower_el_aarch32_sync_handler
 
 /*
  * The exception handler for an IRQ exception
@@ -252,10 +217,7 @@ lower_el_aarch32_sync:
  */
 .balign 0x80
 lower_el_aarch32_irq:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry lower_el_aarch32_irq_handler
 
 /*
  * The exception handler for an FIQ exception from
@@ -263,10 +225,7 @@ lower_el_aarch32_irq:
  */
 .balign 0x80
 lower_el_aarch32_fiq:
-    save_registers
-    bl unhandled_exception_vector
-    restore_registers
-    eret
+    vector_entry lower_el_aarch32_fiq_handler
 
 /*
  * The exception handler for a System Error
@@ -274,6 +233,104 @@ lower_el_aarch32_fiq:
  */
 .balign 0x80
 lower_el_aarch32_serror:
+    vector_entry lower_el_aarch32_serror_handler
+
+
+/* actual handlers here ------------- */
+curr_el_sp0_sync_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+
+curr_el_sp0_irq_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+curr_el_sp0_fiq_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+curr_el_sp0_serror_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+curr_el_spx_sync_handler:
+    save_registers
+    bl exception_handler
+    restore_registers
+    eret
+
+
+curr_el_spx_irq_handler:
+    save_registers
+    bl irq_handler
+    restore_registers
+    eret
+
+curr_el_spx_fiq_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+
+curr_el_spx_serror_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+lower_el_aarch64_sync_handler:
+    save_registers
+    bl exception_handler
+    restore_registers
+    eret
+
+lower_el_aarch64_irq_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+lower_el_aarch64_fiq_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+lower_el_aarch64_serror_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+lower_el_aarch32_sync_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+lower_el_aarch32_irq_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+lower_el_aarch32_fiq_handler:
+    save_registers
+    bl unhandled_exception_vector
+    restore_registers
+    eret
+
+lower_el_aarch32_serror_handler:
     save_registers
     bl unhandled_exception_vector
     restore_registers
