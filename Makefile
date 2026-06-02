@@ -48,7 +48,8 @@ C_OBJS = $(C_SOURCES:=.o)
 HEADERS = kernel/ktypes.h \
 		  kernel/entry.h \
 		  kernel/aarch64.h \
-		  kernel/memlayout.h
+		  kernel/memlayout.h \
+		  kernel/init.h
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
