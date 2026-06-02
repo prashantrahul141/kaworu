@@ -44,8 +44,7 @@ C_SOURCES = kernel/init.c \
 			kernel/entry.c
 C_OBJS = $(C_SOURCES:=.o)
 
-HEADERS =
-
+HEADERS = kernel/ktypes.h
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
