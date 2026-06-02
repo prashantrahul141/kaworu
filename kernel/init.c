@@ -1,7 +1,14 @@
-#define UART ((volatile unsigned int *)0x09000000)
+#include "init.h"
+#include "uart.h"
+#include "aarch64.h"
 
 void kernel_main(void)
 {
-	for (;;)
-		UART[0] = 'k';
+	uart_init();
+	uart_print((const u8 *)"Hello, World!\n");
+	u8 c = uart_getchar();
+	uart_print((const u8 *)"Typed: ");
+	uart_putchar(c);
+	uart_putchar('\n');
+	brk();
 }

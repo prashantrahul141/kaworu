@@ -42,14 +42,16 @@ ASM_OBJS = $(ASM_SOURCES:=.o)
 
 C_SOURCES =  kernel/init.c \
 			 kernel/entry.c \
-			 kernel/aarch64.c
+			 kernel/aarch64.c \
+			 kernel/uart.c
 C_OBJS = $(C_SOURCES:=.o)
 
 HEADERS = kernel/ktypes.h \
 		  kernel/entry.h \
 		  kernel/aarch64.h \
 		  kernel/memlayout.h \
-		  kernel/init.h
+		  kernel/init.h \
+		  kernel/uart.h
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
