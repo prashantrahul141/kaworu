@@ -1,4 +1,4 @@
-#include "./entry.S"
+#include "entry.S"
 
 .section .text.boot
 
