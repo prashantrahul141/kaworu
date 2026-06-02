@@ -11,6 +11,7 @@
 #   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 #
 ---
+AlignConsecutiveMacros: AcrossComments
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false

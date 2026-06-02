@@ -20,6 +20,7 @@
 
           qemu
           gdb
+          dtc
 
           gnumake
           bear
