@@ -2,7 +2,6 @@
 #define _PRINT_H_
 
 #include "ktypes.h"
-#include "aarch64.h"
 
 typedef void (*fn_write)(u8 c);
 
@@ -19,10 +18,11 @@ void printf_init(fn_write write);
  *   %c -> character
  */
 void printf(const i8 *fmt, ...);
-#define panic(fmt, ...)                               \
-	do {                                          \
-		printf("PANIC: " fmt, ##__VA_ARGS__); \
-		brk();                                \
+#define panic(fmt, ...)                                                \
+	do {                                                           \
+		printf("PANIC:%s:%s:%d: " fmt, __FILE__, __FUNCTION__, \
+		       __LINE__, ##__VA_ARGS__);                       \
+		brk();                                                 \
 	} while (0)
 
 #endif // _PRINT_H_
