@@ -29,6 +29,15 @@
 
 .global _start
 _start:
+    /* spin all cpus except cpu0 */
+    mrs x0, MPIDR_EL1
+    and x0, x0, #0xFF
+    cbz x0, boot
+
+spin:
+    halt
+
+boot:
     /* get current EL level */
     mrs x0, CurrentEL
     lsr x0, x0, #2
