@@ -49,6 +49,10 @@ void printf(const i8 *fmt, ...)
 				print_string(s);
 			} else if ('c' == ch) {
 				write((u8)va_arg(ap, i32));
+			} else if ('b' == ch) {
+				bool v = (bool)va_arg(ap, i32);
+				print_string(
+					(const u8 *)(v ? "true" : "false"));
 			} else if ('%' == ch) {
 				write('%');
 			} else {
