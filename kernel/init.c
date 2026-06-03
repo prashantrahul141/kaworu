@@ -8,8 +8,8 @@
  * Each cpu gets its own stack depending on their cpuid (0,1,2,3)
  * sp = stack0 + ((cpuid + 1) * STACK_SIZE)
  */
-__attribute__((aligned(
-	16))) u8 stack0[CONFIG_KERNEL_PER_CPU_STACK_SIZE * CONFIG_CPU_COUNT];
+__attribute__((
+	aligned(16))) u8 stack0[CONFIG_PER_CPU_STACK_SIZE * CONFIG_CPU_COUNT];
 
 void kernel_main(void)
 {

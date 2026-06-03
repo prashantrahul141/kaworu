@@ -39,7 +39,7 @@ _start:
 
     add  x3, x0, #1
 
-    mov  x2, #CONFIG_KERNEL_PER_CPU_STACK_SIZE
+    mov  x2, #CONFIG_PER_CPU_STACK_SIZE
     mul  x3, x3, x2
 
     add  sp, x1, x3
