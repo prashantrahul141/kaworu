@@ -6,6 +6,10 @@ config CPU_COUNT
     int "Hardware cpu count"
     default 4
 
+config DEBUG_CHECKS
+    bool "Enable Debug checks"
+    default y
+
 config DEBUG_SYMBOLS
     bool "Enable debug symbols"
     default y
