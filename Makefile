@@ -18,7 +18,7 @@ C_FLAGS := -std=gnu11 -ffreestanding -nostdlib
 WARNING_FLAGS = -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wimplicit-int-conversion -Wshorten-64-to-32 -Wpointer-to-int-cast -Wint-to-pointer-cast -Wshadow -Wundef -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wswitch-enum -Wswitch-default -Wcovered-switch-default -Wnull-dereference -Wunreachable-code -Wvla -Walloca -Wwrite-strings -Wformat=2 -Wcast-function-type -Wconditional-uninitialized -Wcomma -Wextra-semi-stmt -Wno-language-extension-token -Wno-gnu-empty-struct
 COMMON_FLAGS = $(WARNING_FLAGS)
 QEMU_MACHINE := virt
-QEMU_FLAGS := -cpu cortex-a72 -nographic -kernel $(OUT)
+QEMU_FLAGS := -cpu cortex-a72 -nographic -smp 4 -kernel $(OUT)
 
 # debugging?
 ifeq ($(CONFIG_DEBUG_SYMBOLS),y)
