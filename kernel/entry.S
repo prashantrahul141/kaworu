@@ -337,12 +337,17 @@ lower_el_aarch32_serror_handler:
     eret
 
 /*
- * Disables all interrupts
+ * Disables all interrupts except D
  * macro disable_interrupts(void);
+ * D -> Debug
+ * A -> SError
+ * I -> IRQ
+ * F -> FIQ
  */
 .macro disable_interrupts
-    /* mask D, A, I, F */
-    msr daifset, #0xf
+    /* mask (NOT D), A, I, F */
+    msr daifclr, #0b1000
+    msr daifset, #0b0111
 .endm
 
 /*
@@ -351,5 +356,5 @@ lower_el_aarch32_serror_handler:
  */
 .macro enable_interrupts
     /* unmask D, A, I, F */
-    msr daifclr, #0xf
+    msr daifclr, #0b1111
 .endm
