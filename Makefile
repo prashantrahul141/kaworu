@@ -15,7 +15,7 @@ OUT := kaworu.elf
 
 TARGET := aarch64-none-elf
 C_FLAGS := -std=gnu11 -ffreestanding -nostdlib
-WARNING_FLAGS = -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wimplicit-int-conversion -Wshorten-64-to-32 -Wpointer-to-int-cast -Wint-to-pointer-cast -Wshadow -Wundef -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wswitch-enum -Wswitch-default -Wcovered-switch-default -Wnull-dereference -Wunreachable-code -Wvla -Walloca -Wwrite-strings -Wformat=2 -Wcast-function-type -Wconditional-uninitialized -Wcomma -Wextra-semi-stmt -Wno-language-extension-token -Wno-gnu-empty-struct
+WARNING_FLAGS = -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wimplicit-int-conversion -Wshorten-64-to-32 -Wpointer-to-int-cast -Wint-to-pointer-cast -Wshadow -Wundef -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wswitch-enum -Wswitch-default -Wcovered-switch-default -Wnull-dereference -Wunreachable-code -Wvla -Walloca -Wwrite-strings -Wformat=2 -Wcast-function-type -Wconditional-uninitialized -Wcomma -Wextra-semi-stmt -Wno-language-extension-token -Wno-gnu-empty-struct -Wno-gnu-zero-variadic-macro-arguments
 COMMON_FLAGS = $(WARNING_FLAGS)
 
 # qemu flags for virt
@@ -36,7 +36,7 @@ ifeq ($(CONFIG_OPTIMIZATIONS_LOW),y)
 else ifeq ($(CONFIG_OPTIMIZATIONS_MEDIUM),y)
 	COMMON_FLAGS += -O2 -flto=thin
 else ifeq ($(CONFIG_OPTIMIZATIONS_HIGH),y)
-	COMMON_FLAGS += -O3 -flto=full
+	COMMON_FLAGS += -O2 -flto=full
 else ifeq ($(CONFIG_OPTIMIZATIONS_NONE),y)
 	COMMON_FLAGS += -O0
 endif
@@ -49,7 +49,8 @@ C_SOURCES =  kernel/init.c \
 			 kernel/entry.c \
 			 kernel/aarch64.c \
 			 kernel/uart.c \
-			 kernel/printf.c
+			 kernel/printf.c \
+			 kernel/cpu.c
 C_OBJS = $(C_SOURCES:=.o)
 
 HEADERS = kernel/ktypes.h \
@@ -58,7 +59,8 @@ HEADERS = kernel/ktypes.h \
 		  kernel/memlayout.h \
 		  kernel/init.h \
 		  kernel/uart.h \
-		  kernel/printf.h
+		  kernel/printf.h \
+		  kernel/cpu.h
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
