@@ -50,7 +50,9 @@ C_SOURCES =  kernel/init.c \
 			 kernel/aarch64.c \
 			 kernel/uart.c \
 			 kernel/printf.c \
-			 kernel/cpu.c
+			 kernel/cpu.c \
+			 kernel/spinlock.c
+
 C_OBJS = $(C_SOURCES:=.o)
 
 HEADERS = kernel/ktypes.h \
@@ -60,7 +62,8 @@ HEADERS = kernel/ktypes.h \
 		  kernel/init.h \
 		  kernel/uart.h \
 		  kernel/printf.h \
-		  kernel/cpu.h
+		  kernel/cpu.h \
+		  kernel/spinlock.h
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
