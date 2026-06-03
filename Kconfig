@@ -1,3 +1,11 @@
+config PER_CPU_STACK_SIZE
+    int "Stack size, should be 16 byte aligned"
+    default 4096
+
+config CPU_COUNT
+    int "Hardware cpu count"
+    default 4
+
 config DEBUG_SYMBOLS
     bool "Enable debug symbols"
     default y

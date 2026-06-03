@@ -1,4 +1,5 @@
 #include "entry.S"
+#include "config.h"
 
 .section .text.boot
 
@@ -29,9 +30,21 @@
 
 .global _start
 _start:
-    /* spin all cpus except cpu0 */
+    /* setup unique stack for each cpu */
     mrs x0, MPIDR_EL1
     and x0, x0, #0xFF
+
+    adrp x1, stack0
+    add  x1, x1, :lo12:stack0
+
+    add  x3, x0, #1
+
+    mov  x2, #CONFIG_KERNEL_PER_CPU_STACK_SIZE
+    mul  x3, x3, x2
+
+    add  sp, x1, x3
+
+    /* spin all cpus except cpu0 */
     cbz x0, boot
 
 spin:
