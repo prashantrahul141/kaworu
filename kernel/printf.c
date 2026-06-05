@@ -1,7 +1,7 @@
 #include "printf.h"
 #include <stdarg.h>
 #include "types.h"
-#include "uart.h"
+#include "drivers/uart/uart.h"
 
 static fn_write write = uart_putchar;
 

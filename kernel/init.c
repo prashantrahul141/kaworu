@@ -1,9 +1,8 @@
 #include "init.h"
-#include "kmem.h"
+#include "memory/kmem.h"
 #include "printf.h"
-#include "uart.h"
+#include "drivers/uart/uart.h"
 #include "config.h"
-#include "aarch64.h"
 
 /*
  * Each cpu gets its own stack depending on their cpuid (0,1,2,3)

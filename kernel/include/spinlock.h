@@ -15,11 +15,11 @@ typedef struct {
 	const i8 *name;
 
 	/* which cpu has acquired this lock*/
-	cpu *cpu;
-} spinlock;
+	Cpu *cpu;
+} SpinLock;
 
-void spinlock_init(spinlock *sp, const i8 *name);
-void spinlock_acquire(spinlock *sp);
-void spinlock_release(spinlock *sp);
+void spinlock_init(SpinLock *sp, const i8 *name);
+void spinlock_acquire(SpinLock *sp);
+void spinlock_release(SpinLock *sp);
 
 #endif // _SPINLOCK_H_

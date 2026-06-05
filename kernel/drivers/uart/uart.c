@@ -2,7 +2,7 @@
  * Uart implementation
  */
 
-#include "uart.h"
+#include "drivers/uart/uart.h"
 #include "types.h"
 
 /* static function declarations */

@@ -1,21 +1,21 @@
 #include "spinlock.h"
-#include "aarch64.h"
+#include "aarch64/aarch64.h"
 #include "config.h"
 #include "cpu.h"
 #include "printf.h"
 
-inline static bool holding(const spinlock *sp);
+inline static bool holding(const SpinLock *sp);
 static void push_intr(void);
 static void pop_intr(void);
 
-void spinlock_init(spinlock *sp, const i8 *name)
+void spinlock_init(SpinLock *sp, const i8 *name)
 {
 	sp->locked = false;
 	sp->name = name;
 	sp->cpu = NULL;
 }
 
-void spinlock_acquire(spinlock *sp)
+void spinlock_acquire(SpinLock *sp)
 {
 	/* push to stack */
 	push_intr();
@@ -48,7 +48,7 @@ void spinlock_acquire(spinlock *sp)
 	sp->cpu = this_cpu();
 }
 
-void spinlock_release(spinlock *sp)
+void spinlock_release(SpinLock *sp)
 {
 #ifdef CONFIG_DEBUG_CHECKS
 	if (false == holding(sp)) {
@@ -79,7 +79,7 @@ void spinlock_release(spinlock *sp)
 /*
  * If the lock is held and by this cpu.
  */
-inline static bool holding(const spinlock *sp)
+inline static bool holding(const SpinLock *sp)
 {
 	return sp->locked && sp->cpu == this_cpu();
 }
@@ -90,7 +90,7 @@ static void push_intr(void)
 	bool enabled_previously = r_intrd_enabled();
 	w_intrd_disable();
 
-	cpu *t_cpu = this_cpu();
+	Cpu *t_cpu = this_cpu();
 
 	/* first push_intr */
 	if (0 == t_cpu->count) {
@@ -102,7 +102,7 @@ static void push_intr(void)
 
 static void pop_intr(void)
 {
-	cpu *t_cpu = this_cpu();
+	Cpu *t_cpu = this_cpu();
 	/* interrupts are already enabled? */
 	if (true == r_intrd_enabled()) {
 		panic("interrupts are already enabled\n\tcpuid = %d\n",

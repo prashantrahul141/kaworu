@@ -42,42 +42,48 @@ else ifeq ($(CONFIG_OPTIMIZATIONS_NONE),y)
 endif
 
 K = kernel
+D = $K/drivers
+M = $K/memory
+KA = $K/arch
 L = lib
 U = user
-ASM_SOURCES = $K/startup.S \
-			  $K/entry.S
+# files are in the order of what `fd` returns
+ASM_SOURCES = $K/entry.S \
+			  $K/startup.S
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
-C_SOURCES =  $K/init.c \
-			 $K/entry.c \
-			 $K/aarch64.c \
-			 $K/uart.c \
-			 $K/printf.c \
-			 $K/cpu.c \
-			 $K/spinlock.c \
-			 $K/kmem.c \
-			 $L/string.c
-
+C_SOURCES = $K/cpu.c \
+			$D/uart/uart.c \
+			$K/entry.c \
+			$K/init.c \
+			$M/kmem.c \
+			$K/printf.c \
+			$K/spinlock.c \
+			$L/string.c
 
 C_OBJS = $(C_SOURCES:=.o)
 
-HEADERS = $K/entry.h \
-		  $K/aarch64.h \
-		  $K/memlayout.h \
-		  $K/init.h \
-		  $K/uart.h \
-		  $K/printf.h \
-		  $K/cpu.h \
-		  $K/spinlock.h \
-		  $K/kmem.h \
-		  $L/types.h \
-		  $L/common_defs.h \
-		  $L/string.h
+KI = $K/include
+KID = $(KI)/drivers
+KIM = $(KI)/memory
+LI = $L/include
 
+HEADERS = $(KA)/aarch64/aarch64.h \
+		  $(KI)/cpu.h \
+		  $(KID)/uart/uart.h \
+		  $(KI)/entry.h \
+		  $(KI)/init.h \
+		  $(KI)/memlayout.h \
+		  $(KIM)/kmem.h \
+		  $(KI)/printf.h \
+		  $(KI)/spinlock.h \
+		  $(LI)/common_defs.h \
+		  $(LI)/string.h \
+		  $(LI)/types.h
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
-INCLUDES_DIR = -I$K/ -I. -I$L/
+INCLUDES_DIR = -I$(KI)/ -I. -I$(LI) -I$(K)/arch/
 
 # default target which runs when none is specified
 all: build
@@ -100,7 +106,7 @@ $(OUT): $(OBJS) $(LINKER_SCRIPT) $(HEADERS)
 %.S.o: %.S
 	$(CC) --target=$(TARGET) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
-%.c.o: %.c %.h
+%.c.o: %.c
 	$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 # running ---------------------

@@ -5,7 +5,7 @@
 #ifndef _KMEM_H_
 #define _KMEM_H_
 
-#include "aarch64.h"
+#include "aarch64/aarch64.h"
 #include "spinlock.h"
 
 typedef struct PhyChunk PhyChunk;
@@ -15,7 +15,7 @@ struct PhyChunk {
 };
 
 typedef struct {
-	spinlock spinlock;
+	SpinLock spinlock;
 	PhyChunk *free_list;
 } Kmem;
 

@@ -1,0 +1,79 @@
+#ifndef _ARCH64_H_
+#define _ARCH64_H_
+
+#include "types.h"
+
+#define DAIF_I (1 << 7)
+#define DAIF_F (1 << 6)
+
+/* mmu enabled */
+#define SCTLR_M (1 << 0)
+/* alignment check for address translation lookup */
+#define SCTLR_A (1 << 1)
+/* cacheability */
+#define SCTLR_C (1 << 2)
+
+/* break */
+#define brk(imm) asm volatile("brk #" #imm)
+
+/* read mpidr_el1 */
+static inline u64 r_mpidr_el1(void)
+{
+	u64 mpidr;
+	asm volatile("mrs %0, MPIDR_EL1" : "=r"(mpidr));
+	return mpidr;
+}
+
+/* read daif */
+static inline u64 r_daif(void)
+{
+	u64 daif;
+	asm volatile("mrs %0, daif" : "=r"(daif));
+	return daif;
+}
+
+/* are device interrupts enabled? */
+static inline bool r_intrd_enabled(void)
+{
+	u64 daif = r_daif();
+	u64 masked = (daif & (DAIF_F | DAIF_I));
+	return masked == 0;
+}
+
+/* disable device interrupts */
+static inline void w_intrd_disable(void)
+{
+	asm volatile("msr daifset, #0b0011");
+}
+
+/* enable device interrupts */
+static inline void w_intrd_enable(void)
+{
+	asm volatile("msr daifclr, #0b0011");
+}
+
+/* halt */
+#define hlt(imm) asm volatile("hlt #", #imm)
+
+/* read sctlr register */
+static inline u64 r_sctlr(void)
+{
+	u64 read;
+	asm volatile("mrs %0, SCTLR_EL1" : "=r"(read));
+	return read;
+}
+
+/* write to sctlr register */
+static inline void w_sctlr(u64 value)
+{
+	asm volatile("msr SCTLR_EL1, %0" : : "r"(value));
+}
+
+/* enable mmu */
+static inline void enable_mmu(void)
+{
+	u64 value = r_sctlr() | SCTLR_M;
+	w_sctlr(value);
+}
+
+#endif // _ARCH64_H_
