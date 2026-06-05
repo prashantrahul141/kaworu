@@ -1,4 +1,4 @@
-CONFIG_FREE_TARGETS := help menuconfig defconfig
+CONFIG_FREE_TARGETS := help menuconfig defconfig clean cleanall cleandebug cleanconfig
 # Require .config for everything else
 ifeq ($(filter $(MAKECMDGOALS),$(CONFIG_FREE_TARGETS)),)
   ifeq ($(wildcard .config),)
@@ -20,7 +20,7 @@ COMMON_FLAGS = $(WARNING_FLAGS)
 
 # qemu flags for virt
 QEMU_MACHINE := virt
-QEMU_FLAGS := -cpu cortex-a72 -nographic -smp $(CONFIG_CPU_COUNT) -kernel $(OUT)
+QEMU_FLAGS := -cpu cortex-a72 -nographic -smp $(CONFIG_CPU_COUNT) -m $(CONFIG_PHYSICAL_MEMORY_MB)M -kernel $(OUT)
 # qemu flags for raspi4b
 # QEMU_MACHINE := raspi4b
 # QEMU_FLAGS := -cpu cortex-a72 -nographic -kernel $(OUT)
@@ -90,7 +90,7 @@ $(OUT): $(OBJS) $(LINKER_SCRIPT) $(HEADERS)
 %.S.o: %.S
 	$(CC) --target=$(TARGET) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
-%.c.o: %.c
+%.c.o: %.c %.h
 	$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 # running ---------------------
@@ -98,7 +98,7 @@ run: $(OUT) ## Run the kernel inside qemu
 	qemu-system-aarch64 -M $(QEMU_MACHINE) $(QEMU_FLAGS)
 
 # cleaning -------------------
-cleanall: clean cleanconfig ## Clean all build and config files
+cleanall: clean cleanconfig cleandebug ## Clean all build, config and debug files
 
 clean: ## Clean only build files
 	rm -f $(OBJS)
@@ -108,8 +108,19 @@ cleanconfig: ## Clean only config files
 	rm -f config.h .config
 
 # hacking ------------------
+cleandebug:
+	rm -rf stripped-$(OUT)
+	rm -rf *.objdump
+
 gdb:
 	gdb $(OUT) -ex "target remote :1234"
+
+stripped-$(OUT): $(OUT)
+	llvm-strip --strip-debug $(OUT) -o stripped-$(OUT)
+
+objdump: $(OUT) stripped-$(OUT)
+	llvm-objdump --disassemble-all --line-numbers --full-contents stripped-$(OUT) > dump.objdump
+
 
 rund: $(OUT)
 	qemu-system-aarch64 -M $(QEMU_MACHINE) $(QEMU_FLAGS) -s -S

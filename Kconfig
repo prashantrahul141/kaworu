@@ -6,6 +6,10 @@ config CPU_COUNT
     int "Hardware cpu count"
     default 4
 
+config PHYSICAL_MEMORY_MB
+    int "Physical memory the system has (in MB)"
+    default 128
+
 config DEBUG_CHECKS
     bool "Enable Debug checks"
     default y
