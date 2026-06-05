@@ -1,12 +1,5 @@
 #include "aarch64.h"
 #include "ktypes.h"
-#include "printf.h"
-
-/* aarch64 break */
-inline void brk(void)
-{
-	asm volatile("brk #0");
-}
 
 /* read mpidr_el1 */
 inline u64 r_mpidr_el1(void)

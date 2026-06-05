@@ -7,7 +7,7 @@
 #define DAIF_F (1 << 6)
 
 /* break */
-void brk(void);
+#define brk(imm) asm volatile("brk #" #imm)
 
 /* read mpidr_el1 */
 u64 r_mpidr_el1(void);
@@ -23,5 +23,8 @@ void w_intrd_disable(void);
 
 /* enable device interrupts */
 void w_intrd_enable(void);
+
+/* halt */
+#define hlt(imm) asm volatile("hlt #", #imm)
 
 #endif // _ARCH64_H_

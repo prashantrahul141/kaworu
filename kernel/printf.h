@@ -22,7 +22,7 @@ void printf(const i8 *fmt, ...);
 	do {                                                           \
 		printf("PANIC:%s:%s:%d: " fmt, __FILE__, __FUNCTION__, \
 		       __LINE__, ##__VA_ARGS__);                       \
-		brk();                                                 \
+		brk(0);                                                \
 	} while (0)
 
 #endif // _PRINT_H_
