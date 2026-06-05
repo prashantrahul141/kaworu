@@ -54,7 +54,9 @@ C_SOURCES =  $K/init.c \
 			 $K/uart.c \
 			 $K/printf.c \
 			 $K/cpu.c \
-			 $K/spinlock.c
+			 $K/spinlock.c \
+			 $L/string.c
+
 
 C_OBJS = $(C_SOURCES:=.o)
 
@@ -66,7 +68,10 @@ HEADERS = $K/entry.h \
 		  $K/printf.h \
 		  $K/cpu.h \
 		  $K/spinlock.h \
-		  $L/types.h
+		  $L/types.h \
+		  $L/common_defs.h \
+		  $L/string.h
+
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
