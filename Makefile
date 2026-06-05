@@ -55,6 +55,7 @@ C_SOURCES =  $K/init.c \
 			 $K/printf.c \
 			 $K/cpu.c \
 			 $K/spinlock.c \
+			 $K/kmem.c \
 			 $L/string.c
 
 
@@ -68,6 +69,7 @@ HEADERS = $K/entry.h \
 		  $K/printf.h \
 		  $K/cpu.h \
 		  $K/spinlock.h \
+		  $K/kmem.h \
 		  $L/types.h \
 		  $L/common_defs.h \
 		  $L/string.h

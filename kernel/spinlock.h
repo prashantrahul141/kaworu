@@ -12,13 +12,13 @@ typedef struct {
 	bool locked;
 
 	/* name of this spinlock, for debugging. */
-	const u8 *name;
+	const i8 *name;
 
 	/* which cpu has acquired this lock*/
 	cpu *cpu;
 } spinlock;
 
-void spinlock_init(spinlock *sp, const u8 *name);
+void spinlock_init(spinlock *sp, const i8 *name);
 void spinlock_acquire(spinlock *sp);
 void spinlock_release(spinlock *sp);
 

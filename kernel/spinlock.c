@@ -8,7 +8,7 @@ inline static bool holding(const spinlock *sp);
 static void push_intr(void);
 static void pop_intr(void);
 
-void spinlock_init(spinlock *sp, const u8 *name)
+void spinlock_init(spinlock *sp, const i8 *name)
 {
 	sp->locked = false;
 	sp->name = name;
@@ -22,24 +22,25 @@ void spinlock_acquire(spinlock *sp)
 
 #ifdef CONFIG_DEBUG_CHECKS
 	if (true == holding(sp)) {
-		panic("failed to acquire lock, already holding it.\n\tcpuid = %d\n",
+		panic("failed to acquire lock, already holding it.\n\tcpuid = "
+		      "%d\n",
 		      get_cpuid());
 	}
 #endif
 
 	/*
-     * force fencing here so that it is safe to acquire lock
-     * uses dmb	ish
-     */
+	 * force fencing here so that it is safe to acquire lock
+	 * uses dmb	ish
+	 */
 	__sync_synchronize();
 
 	/*
-     * lock using atomic operation.
-     *
-     * __atomic_exchange_n is a clang compile builtin, which writes value, to given pointer and
-     * returns old value in a "single" instruction.
-     * For me it seems to be use ldaxrb and stlxrb on debug builds.
-     */
+	 * lock using atomic operation.
+	 *
+	 * __atomic_exchange_n is a clang compile builtin, which writes value,
+	 * to given pointer and returns old value in a "single" instruction. For
+	 * me it seems to be use ldaxrb and stlxrb on debug builds.
+	 */
 	while (0 != __atomic_exchange_n(&sp->locked, true, __ATOMIC_ACQUIRE))
 		;
 
@@ -59,16 +60,16 @@ void spinlock_release(spinlock *sp)
 	sp->cpu = NULL;
 
 	/*
-     * release using atomic operation.
-     * __atomic_store_n writes the value in the given memory atomically.
-     * For me it seems to be using stlrb on debug builds.
-     */
+	 * release using atomic operation.
+	 * __atomic_store_n writes the value in the given memory atomically.
+	 * For me it seems to be using stlrb on debug builds.
+	 */
 	__atomic_store_n(&sp->locked, false, __ATOMIC_RELEASE);
 
 	/*
-     * force fencing here so that it is safe to release the lock
-     * uses dmb	ish
-     */
+	 * force fencing here so that it is safe to release the lock
+	 * uses dmb	ish
+	 */
 	__sync_synchronize();
 
 	/* pop from stack */

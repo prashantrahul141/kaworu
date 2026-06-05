@@ -1,4 +1,5 @@
 #include "init.h"
+#include "kmem.h"
 #include "printf.h"
 #include "uart.h"
 #include "config.h"
@@ -15,6 +16,7 @@ void kernel_main(void)
 {
 	uart_init();
 	printf_init(uart_putchar);
+	kmem_init();
 	for (;;) {
 		printf("\nHello from %s\n", "kaworu");
 		printf("character c = %c\n", 'c');
