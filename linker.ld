@@ -30,13 +30,5 @@ SECTIONS
         __bss_end = .;
     }
 
-    . = ALIGN(16);
-    .stack : {
-        __stack_bottom = .;
-        . += 16384;
-        . = ALIGN(16);
-        __stack_top = .;
-    }
-
     __kernel_end = .;
 }

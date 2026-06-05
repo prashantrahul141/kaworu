@@ -103,10 +103,6 @@ in_el1:
     sub x1, x1, x0
     memzero x0, x1
 
-    /* move stack_top to sp */
-    ldr x0, =__stack_top
-    mov sp, x0
-
     /* setup exception vector table */
     ldr x0, =vector_table_el1
     msr vbar_el1, x0
