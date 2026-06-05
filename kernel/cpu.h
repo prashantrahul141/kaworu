@@ -1,7 +1,7 @@
 #ifndef _CPU_H_
 #define _CPU_H_
 
-#include "ktypes.h"
+#include "types.h"
 #include "config.h"
 
 typedef struct {

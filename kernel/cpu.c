@@ -1,5 +1,5 @@
 #include "cpu.h"
-#include "ktypes.h"
+#include "types.h"
 #include "aarch64.h"
 
 static cpu CPUS[CONFIG_CPU_COUNT];

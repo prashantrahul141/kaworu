@@ -1,6 +1,6 @@
 #include "printf.h"
 #include <stdarg.h>
-#include "ktypes.h"
+#include "types.h"
 #include "uart.h"
 
 static fn_write write = uart_putchar;

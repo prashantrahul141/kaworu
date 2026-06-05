@@ -41,33 +41,36 @@ else ifeq ($(CONFIG_OPTIMIZATIONS_NONE),y)
 	COMMON_FLAGS += -O0
 endif
 
-ASM_SOURCES = kernel/startup.S \
-			  kernel/entry.S
+K = kernel
+L = lib
+U = user
+ASM_SOURCES = $K/startup.S \
+			  $K/entry.S
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
-C_SOURCES =  kernel/init.c \
-			 kernel/entry.c \
-			 kernel/aarch64.c \
-			 kernel/uart.c \
-			 kernel/printf.c \
-			 kernel/cpu.c \
-			 kernel/spinlock.c
+C_SOURCES =  $K/init.c \
+			 $K/entry.c \
+			 $K/aarch64.c \
+			 $K/uart.c \
+			 $K/printf.c \
+			 $K/cpu.c \
+			 $K/spinlock.c
 
 C_OBJS = $(C_SOURCES:=.o)
 
-HEADERS = kernel/ktypes.h \
-		  kernel/entry.h \
-		  kernel/aarch64.h \
-		  kernel/memlayout.h \
-		  kernel/init.h \
-		  kernel/uart.h \
-		  kernel/printf.h \
-		  kernel/cpu.h \
-		  kernel/spinlock.h
+HEADERS = $K/entry.h \
+		  $K/aarch64.h \
+		  $K/memlayout.h \
+		  $K/init.h \
+		  $K/uart.h \
+		  $K/printf.h \
+		  $K/cpu.h \
+		  $K/spinlock.h \
+		  $L/types.h
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
-INCLUDES_DIR = -Ikernel/ -I.
+INCLUDES_DIR = -I$K/ -I. -I$L/
 
 # default target which runs when none is specified
 all: build

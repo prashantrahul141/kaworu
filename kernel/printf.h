@@ -1,7 +1,7 @@
 #ifndef _PRINT_H_
 #define _PRINT_H_
 
-#include "ktypes.h"
+#include "types.h"
 
 typedef void (*fn_write)(u8 c);
 

@@ -1,5 +1,5 @@
 #include "aarch64.h"
-#include "ktypes.h"
+#include "types.h"
 
 /* read mpidr_el1 */
 inline u64 r_mpidr_el1(void)

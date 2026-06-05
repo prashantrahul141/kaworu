@@ -1,5 +1,5 @@
-#ifndef _KTYPES_H_
-#define _KTYPES_H_
+#ifndef _TYPES_H_
+#define _TYPES_H_
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -19,4 +19,4 @@ typedef unsigned long u64;
 typedef float f32;
 typedef double f64;
 
-#endif // _KTYPES_H_
+#endif // _TYPES_H_

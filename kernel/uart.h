@@ -7,7 +7,7 @@
 #ifndef _UART_H_
 #define _UART_H_
 
-#include "ktypes.h"
+#include "types.h"
 #include "memlayout.h"
 
 #define BASE_CLOCK 24000000

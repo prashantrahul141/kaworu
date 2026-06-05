@@ -3,7 +3,7 @@
 
 /* spinlock implementation */
 
-#include "ktypes.h"
+#include "types.h"
 #include "config.h"
 #include "cpu.h"
 

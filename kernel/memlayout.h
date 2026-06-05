@@ -2,7 +2,7 @@
 #define __MEMLAYOUT_H_
 
 #include "config.h"
-#include "ktypes.h"
+#include "types.h"
 
 /*
  * 0x0F0XXXXX   free bottom top

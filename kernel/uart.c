@@ -3,7 +3,7 @@
  */
 
 #include "uart.h"
-#include "ktypes.h"
+#include "types.h"
 
 /* static function declarations */
 static void pl011_init(void);

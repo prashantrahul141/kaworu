@@ -1,7 +1,7 @@
 #ifndef _ARCH64_H_
 #define _ARCH64_H_
 
-#include "ktypes.h"
+#include "types.h"
 
 #define DAIF_I (1 << 7)
 #define DAIF_F (1 << 6)
