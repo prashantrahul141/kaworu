@@ -11,4 +11,7 @@
 
 #define NONNULL(...) __attribute__((nonnull(__VA_ARGS__)))
 
+#define SET_BIT(value, bit_idx)	  (value | ((__typeof__(value))1 << bit_idx))
+#define CLEAR_BIT(value, bit_idx) (value & ~((__typeof__(value))1 << bit_idx))
+
 #endif // _COMMON_DEFS_H_

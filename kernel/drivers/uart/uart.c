@@ -29,7 +29,7 @@ inline void uart_print(const u8 *s)
 		uart_putchar(*s++);
 }
 
-inline void uart_printn(const u8 *s, size_t n)
+inline void uart_printn(const u8 *s, usize n)
 {
 	while (n-- > 0)
 		uart_putchar(*s++);

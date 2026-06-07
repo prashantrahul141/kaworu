@@ -1,6 +1,6 @@
 #include "string.h"
 
-void *memset(void *s, u8 byte, size_t count)
+void *memset(void *s, u8 byte, usize count)
 {
 	u8 *ptr = s;
 	while (count-- > 0)
@@ -8,7 +8,7 @@ void *memset(void *s, u8 byte, size_t count)
 	return s;
 }
 
-void *memcpy(void *dest, const void *src, size_t size)
+void *memcpy(void *dest, const void *src, usize size)
 {
 	u8 *dest_ptr = dest;
 	const u8 *src_ptr = src;
@@ -17,7 +17,7 @@ void *memcpy(void *dest, const void *src, size_t size)
 	return dest;
 }
 
-i32 memcmp(const void *s1, const void *s2, size_t n)
+i32 memcmp(const void *s1, const void *s2, usize n)
 {
 	const i8 *p1 = (const i8 *)s1;
 	const i8 *p2 = (const i8 *)s2;
@@ -27,10 +27,10 @@ i32 memcmp(const void *s1, const void *s2, size_t n)
 	return 0;
 }
 
-size_t strlen(const i8 *s)
+usize strlen(const i8 *s)
 {
 	const i8 *p = s;
 	while (0 != *p++)
 		;
-	return (size_t)(p - s - 1);
+	return (usize)(p - s - 1);
 }

@@ -23,7 +23,7 @@ void printf(const i8 *fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	bool state_format_specifier = false;
-	for (size_t i = 0; fmt[i] != 0; i++) {
+	for (usize i = 0; fmt[i] != 0; i++) {
 		u8 ch = fmt[i] & 0xFF;
 		if (false == state_format_specifier) {
 			/* not in format specifier mode */

@@ -23,11 +23,11 @@
  * 0x00000000   absolute zero
  */
 
-extern u8 __kernel_end[];
-extern u8 __kernel_start[];
+extern symbol __kernel_end;
+extern symbol __kernel_start;
 
-#define __KERNEL_START ((size_t)__kernel_start)
-#define __KERNEL_END   ((size_t)__kernel_end)
+#define __KERNEL_START ((usize)__kernel_start)
+#define __KERNEL_END   ((usize)__kernel_end)
 
 #define MB_TO_BYTES(MB) ((MB) * 1000 * 1000)
 #define KERNEL_BOTTOM	(__KERNEL_START)

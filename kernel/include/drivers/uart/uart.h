@@ -50,7 +50,7 @@ void uart_print(const u8 *s);
 /*
  * Put first n characters of string s
  */
-void uart_printn(const u8 *s, size_t n);
+void uart_printn(const u8 *s, usize n);
 
 /*
  * Get byte from uart

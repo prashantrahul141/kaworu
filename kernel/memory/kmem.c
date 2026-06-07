@@ -7,7 +7,7 @@
 
 Kmem kmem = { .free_list = NULL };
 
-static void kmem_free_range(size_t start, size_t end);
+static void kmem_free_range(usize start, usize end);
 
 void kmem_init(void)
 {
@@ -32,17 +32,17 @@ void *kmem_alloc(void)
 
 void kmem_free(void *py_addr)
 {
-	if (0 != (size_t)py_addr % PAGE_SIZE) {
+	if (0 != (usize)py_addr % PAGE_SIZE) {
 		panic("physical address = %p not aligned with PAGE_SIZE = %d",
 		      py_addr, PAGE_SIZE);
 	}
 
-	if ((size_t)py_addr >= FREE_MEM_TOP) {
+	if ((usize)py_addr >= FREE_MEM_TOP) {
 		panic("phyical address = %p more than FREE_MEM_TOP = %p",
 		      py_addr, FREE_MEM_TOP);
 	}
 
-	if ((size_t)py_addr < FREE_MEM_BOTTOM) {
+	if ((usize)py_addr < FREE_MEM_BOTTOM) {
 		panic("phyical address = %p less than FREE_MEM_BOTTOM = %p",
 		      py_addr, FREE_MEM_BOTTOM);
 	}
@@ -57,7 +57,7 @@ void kmem_free(void *py_addr)
 	spinlock_release(&kmem.spinlock);
 }
 
-static void kmem_free_range(size_t start, size_t end)
+static void kmem_free_range(usize start, usize end)
 {
 	u8 *p = (u8 *)round_up(start, PAGE_SIZE);
 	for (; p + PAGE_SIZE <= (u8 *)end; p += PAGE_SIZE) {
