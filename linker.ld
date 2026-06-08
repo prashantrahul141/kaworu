@@ -12,8 +12,11 @@ SECTIONS
 
     .text : {
         *(.text*)
+        . = ALIGN(0x1000);
+        PROVIDE(__kernel_text_end = .);
     }
 
+    . = ALIGN(16);
     .rodata : {
         . = ALIGN(16);
         *(.srodata .srodata.*)
@@ -21,6 +24,7 @@ SECTIONS
         *(.rodata .rodata.*)
     }
 
+    . = ALIGN(16);
     .data : {
         . = ALIGN(16);
         *(.sdata .sdata.*)
@@ -31,11 +35,17 @@ SECTIONS
     . = ALIGN(16);
     .bss : {
         __bss_start = .;
-        *(.bss*);
-        *(COMMON);
         . = ALIGN(16);
+        *(.sbss .sbss.*)
+        . = ALIGN(16);
+        *(.bss .bss.*)
+        . = ALIGN(16);
+        *(COMMON);
         __bss_end = .;
     }
+
+    # end kernel on a page boundary
+    . = ALIGN(0x1000);
 
     PROVIDE(__kernel_end = .);
 }
