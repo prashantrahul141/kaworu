@@ -14,7 +14,7 @@ LINKER_SCRIPT := kernel.ld
 OUT := kaworu.elf
 
 TARGET := aarch64-none-elf
-C_FLAGS := -std=gnu11 -ffreestanding -nostdlib
+C_FLAGS := -MD -std=gnu11 -ffreestanding -nostdlib
 WARNING_FLAGS = -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wimplicit-int-conversion -Wshorten-64-to-32 -Wpointer-to-int-cast -Wint-to-pointer-cast -Wshadow -Wundef -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wswitch-enum -Wswitch-default -Wcovered-switch-default -Wnull-dereference -Wunreachable-code -Wvla -Walloca -Wwrite-strings -Wformat=2 -Wcast-function-type -Wconditional-uninitialized -Wcomma -Wextra-semi-stmt -Wno-language-extension-token -Wno-gnu-empty-struct -Wno-gnu-zero-variadic-macro-arguments
 COMMON_FLAGS = $(WARNING_FLAGS)
 
@@ -85,6 +85,8 @@ OBJS = $(ASM_OBJS) $(C_OBJS)
 
 INCLUDES_DIR = -I$(KI)/ -I. -I$(LI) -I$(K)/arch/
 
+DEPS := $(C_OBJS:.o=.d)
+
 # default target which runs when none is specified
 all: build
 
@@ -149,3 +151,5 @@ qemu_dump_dts:
 
 help: # Show this help
 	@sed -nE 's/^([[:alnum:]_.-]+):.*##[[:space:]]*(.*)/\1\t\2/p' $(MAKEFILE_LIST) | column -ts $$'\t'
+
+-include $(DEPS)
