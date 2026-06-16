@@ -43,6 +43,79 @@ run under qemu:
 make run
 ```
 
+
+## Todo
+
+- [x] Startup
+    - [x] lower exception level to el1
+    - [x] Exception vectors
+    - [x] Setup system registers
+    - [x] Setup per cpu stack
+    - [x] Enable interrupts
+
+- [x] Spinlock
+
+- [x] Uart driver
+    - [x] init pl011
+    - [x] `uart_putchar`/`uart_getchar`
+
+- [x] Printf implementation
+    - [x] `printf`
+    - [x] `panic`
+
+- [x] Physical page allocator
+    - [x] `kmem_alloc`/`kmem_free`
+
+- [ ] MMU
+    - [ ] page table setup
+    - [ ] map kernel
+    - [ ] map mmio
+
+- [ ] Virtual Memory
+    - [ ] kernel virtual allocator
+    - [ ] `vm_map`/`vm_unmap`
+    - [ ] Guard pages for kernel stacks
+
+- [ ] Kernel heap
+    - [ ] `kalloc`/`kfree`
+
+- [ ] Exception handling
+    - [ ] Decode ESR_EL1, FAR_EL1, ELR_EL1
+    - [ ] Pretty exception dump
+
+- [ ] Interrupts
+    - [ ] GIC distributor init and cpu interface init
+    - [ ] IRQ framework
+
+- [ ] Timer
+    - [ ] Generic timer init
+    - [ ] Periodic timer interrupt
+    - [ ] Tick counter
+
+- [ ] Scheduler
+    - [ ] Concept of task, task states
+    - [ ] Run queue
+    - [ ] Context switch
+
+- [ ] Kernel Threads
+    - [ ] `kthread_create`/`kthread_exit`
+    - [ ] Idle thread
+    - [ ] Scheduler (maybe round robin?)
+
+- [ ] Userspace
+    - [ ] EL0 entry support
+    - [ ] User stack
+    - [ ] User address space
+
+- [ ] Syscalls
+    - [ ] SVC handler
+    - [ ] Syscall table
+    - [ ] Basic ones like: read, write, exit, yield
+
+- [ ] FS
+    - [ ] Decide on a simple filesystem to implement.
+
+
 ## Resources
 
 https://wiki.osdev.org
