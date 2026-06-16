@@ -1,4 +1,5 @@
 #include "memory/kmem.h"
+#include "error.h"
 #include "printf.h"
 #include "spinlock.h"
 #include "memlayout.h"
@@ -20,8 +21,7 @@ void *kmem_alloc(void)
 	spinlock_acquire(&kmem.spinlock);
 	PhyChunk *ret = (PhyChunk *)kmem.free_list;
 	if (NULL == ret) {
-		// TODO: maybe just return null instead of panicking?
-		panic("ran out of memory.");
+		return ERR_TO_PTR(-ENOMEM);
 	}
 	kmem.free_list = ret->next;
 	spinlock_release(&kmem.spinlock);
