@@ -15,7 +15,7 @@
  * ....
  * ....       + .bss
  * ....       + .data
- * ....       + .rodata
+ * ....       + .rodata -> __KERNEL_TEXT_END
  * ....       + .text
  * ....
  * 0x40100000   kernel_bottom (kernel starts here)
@@ -25,9 +25,11 @@
 
 extern symbol __kernel_end;
 extern symbol __kernel_start;
+extern symbol __kernel_text_end;
 
-#define __KERNEL_START ((usize)__kernel_start)
-#define __KERNEL_END   ((usize)__kernel_end)
+#define __KERNEL_START	  ((usize)__kernel_start)
+#define __KERNEL_END	  ((usize)__kernel_end)
+#define __KERNEL_TEXT_END ((usize)__kernel_text_end)
 
 #define MB_TO_BYTES(MB) ((MB) * 1000 * 1000)
 #define KERNEL_BOTTOM	(__KERNEL_START)

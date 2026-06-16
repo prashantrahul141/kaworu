@@ -21,7 +21,7 @@ void spinlock_acquire(SpinLock *sp)
 	push_intr();
 
 #ifdef CONFIG_DEBUG_CHECKS
-	if (true == holding(sp)) {
+	if (holding(sp)) {
 		panic("failed to acquire lock, already holding it.\n\tcpuid = "
 		      "%d\n",
 		      get_cpuid());
@@ -51,7 +51,7 @@ void spinlock_acquire(SpinLock *sp)
 void spinlock_release(SpinLock *sp)
 {
 #ifdef CONFIG_DEBUG_CHECKS
-	if (false == holding(sp)) {
+	if (!holding(sp)) {
 		panic("failed to release lock, not holding it.\n\tcpuid = %d\n",
 		      get_cpuid());
 	}
@@ -104,7 +104,7 @@ static void pop_intr(void)
 {
 	Cpu *t_cpu = this_cpu();
 	/* interrupts are already enabled? */
-	if (true == r_intrd_enabled()) {
+	if (r_intrd_enabled()) {
 		panic("interrupts are already enabled\n\tcpuid = %d\n",
 		      t_cpu->cpuid);
 	}
@@ -115,7 +115,7 @@ static void pop_intr(void)
 
 	t_cpu->count -= 1;
 	/* if we are the last pop_off && interrupts were enabled previously */
-	if (0 == t_cpu->count && true == t_cpu->intrd_was_enabled) {
+	if (0 == t_cpu->count && t_cpu->intrd_was_enabled) {
 		w_intrd_enable();
 	}
 }

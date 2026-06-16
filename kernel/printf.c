@@ -25,7 +25,7 @@ void printf(const i8 *fmt, ...)
 	bool state_format_specifier = false;
 	for (usize i = 0; fmt[i] != 0; i++) {
 		u8 ch = fmt[i] & 0xFF;
-		if (false == state_format_specifier) {
+		if (!state_format_specifier) {
 			/* not in format specifier mode */
 			if ('%' == ch) {
 				state_format_specifier = true;
