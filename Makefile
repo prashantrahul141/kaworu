@@ -55,6 +55,7 @@ ASM_OBJS = $(ASM_SOURCES:=.o)
 C_SOURCES = $K/cpu.c \
 			$D/uart/uart.c \
 			$K/entry.c \
+			$K/error.c \
 			$K/init.c \
 			$M/kmem.c \
 			$K/printf.c \
@@ -72,6 +73,7 @@ HEADERS = $(KA)/aarch64/aarch64.h \
 		  $(KI)/cpu.h \
 		  $(KID)/uart/uart.h \
 		  $(KI)/entry.h \
+		  $(KI)/error.h \
 		  $(KI)/init.h \
 		  $(KI)/memlayout.h \
 		  $(KIM)/kmem.h \
