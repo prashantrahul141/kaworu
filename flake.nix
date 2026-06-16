@@ -14,6 +14,8 @@
     {
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
+          clang-analyzer
+
           llvmPackages.clang-unwrapped
           llvmPackages.lld
           llvm
