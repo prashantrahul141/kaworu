@@ -10,7 +10,7 @@ endif
 CC := clang
 LD := ld.lld
 
-LINKER_SCRIPT := linker.ld
+LINKER_SCRIPT := kernel.ld
 OUT := kaworu.elf
 
 TARGET := aarch64-none-elf
