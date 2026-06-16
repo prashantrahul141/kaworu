@@ -12,6 +12,7 @@
 #define NONNULL(...)   __attribute__((nonnull(__VA_ARGS__)))
 #define ALIGNED(align) __attribute__((aligned(align)))
 #define SECTION(sec)   __attribute__((section(sec)))
+#define MUST_CHECK     __attribute__((warn_unused_result))
 
 #define IS_ALIGNED(value, alignment) ((value) % (alignment) == 0)
 
@@ -21,5 +22,8 @@
 #define UNUSED(value) (void)(value)
 
 #define UNREACHABLE() __builtin_unreachable()
+
+#define likely(x)   __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
 
 #endif // _COMMON_DEFS_H_
