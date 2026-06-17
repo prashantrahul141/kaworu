@@ -127,10 +127,13 @@ clean: ## Clean only build files
 cleanconfig: ## Clean only config files
 	rm -f config.h .config
 
-# hacking ------------------
 cleandebug:
 	rm -rf stripped-$(OUT)
 	rm -rf *.objdump
+
+# hacking ------------------
+clang-tidy: $(OUT)  ## Run clang-tidy on the entire source
+	run-clang-tidy  -source-filter  ".*\.(c|h)" -quiet
 
 gdb:
 	gdb $(OUT) -ex "target remote :1234"

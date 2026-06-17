@@ -1,0 +1,8 @@
+---
+Checks: 'clang-diagnostic-*,clang-analyzer-*,bugprone-*,modernize-*,-bugprone-reserved-identifier,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-bugprone-easily-swappable-parameters,-clang-diagnostic-unused-function,-clang-diagnostic-empty-translation-unit,-clang-analyzer-core.FixedAddressDereference'
+WarningsAsErrors: '*'
+HeaderFileExtensions:
+  - h
+ImplementationFileExtensions:
+  - c
+...
