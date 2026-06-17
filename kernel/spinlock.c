@@ -12,7 +12,7 @@ void spinlock_init(SpinLock *sp, const i8 *name)
 {
 	sp->locked = false;
 	sp->name = name;
-	sp->cpu = NULL;
+	sp->cpu = nullptr;
 }
 
 void spinlock_acquire(SpinLock *sp)
@@ -57,7 +57,7 @@ void spinlock_release(SpinLock *sp)
 	}
 #endif
 
-	sp->cpu = NULL;
+	sp->cpu = nullptr;
 
 	/*
 	 * release using atomic operation.

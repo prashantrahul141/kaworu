@@ -6,7 +6,7 @@
 #include "common_defs.h"
 #include "string.h"
 
-Kmem kmem = { .free_list = NULL };
+Kmem kmem = { .free_list = nullptr };
 
 static void kmem_free_range(usize start, usize end);
 
@@ -20,7 +20,7 @@ void *kmem_alloc(void)
 {
 	spinlock_acquire(&kmem.spinlock);
 	PhyChunk *ret = kmem.free_list;
-	if (NULL == ret) {
+	if (nullptr == ret) {
 		return ERR_TO_PTR(-ENOMEM);
 	}
 	kmem.free_list = ret->next;

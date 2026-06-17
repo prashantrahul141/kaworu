@@ -18,6 +18,8 @@ void printf_init(fn_write _write)
 	write = _write;
 }
 
+// NOLINTBEGIN(clang-analyzer-valist.Uninitialized,
+// clang-analyzer-valist.Uninitialized)
 void printf(const i8 *fmt, ...)
 {
 	va_list ap;
@@ -65,6 +67,8 @@ void printf(const i8 *fmt, ...)
 
 	va_end(ap);
 }
+// NOLINTEND(clang-analyzer-valist.Uninitialized,
+// clang-analyzer-valist.Uninitialized)
 
 static void _print_int(u8 buf[static 16], i32 *size, int x, u8 base, bool sign)
 {

@@ -38,8 +38,8 @@ extern symbol __kernel_text_end;
 #define FREE_MEM_TOP \
 	((KERNEL_BOTTOM) + (MB_TO_BYTES(CONFIG_PHYSICAL_MEMORY_MB)))
 
-#define PAGE_SIZE 4096
+constexpr usize PAGE_SIZE = 4096;
 
-#define UART_BASE 0x09000000
+constexpr usize UART_BASE = 0x09000000;
 
 #endif // __MEMLAYOUT_H_

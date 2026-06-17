@@ -3,17 +3,17 @@
 
 #include "types.h"
 
-#define DAIF_I (1 << 7)
-#define DAIF_F (1 << 6)
+constexpr usize DAIF_I = (1 << 7);
+constexpr usize DAIF_F = (1 << 6);
 
 /* mmu enabled */
-#define SCTLR_M (1 << 0)
+constexpr usize SCTLR_M = (1 << 0);
 /* alignment check for address translation lookup */
-#define SCTLR_A (1 << 1)
+constexpr usize SCTLR_A = (1 << 1);
 /* cacheability */
-#define SCTLR_C (1 << 2)
+constexpr usize SCTLR_C = (1 << 2);
 /* stage 1 instruction cacheability */
-#define SCTLR_I (1 << 12)
+constexpr usize SCTLR_I = (1 << 12);
 
 /* barrier all stores */
 #define BARRIER_ISHST "ISHST"

@@ -10,23 +10,24 @@
 #include "types.h"
 #include "memlayout.h"
 
-#define BASE_CLOCK 24000000
-#define BAUD_RATE  115200
+constexpr usize BAUD_RATE = 115200;
+constexpr usize BASE_CLOCK = 24000000;
 
-#define UARTDR	      0x000 // write register
-#define UARTFR	      0x018 // pooling register
-#define UARTFR_BUSY   (1 << 3) // bit in UARTFR, if transmission is busy
-#define UARTFR_RXFE   (1 << 4) // recieve fifo is empty
-#define UARTIBRD      0x024 // speed 1
-#define UARTFBRD      0x028 // speed 2
-#define UARTLCR_H     0x02C // line control register
-#define UARTLCR_H_FEN (1 << 4) // fifo
-#define UARTCR	      0x030 // control register
-#define UARTCR_UARTEN (1 << 0) // enable/disable uart
-#define UARTCR_TEX    (1 << 8) // recieve enable
-#define UARTCR_REX    (1 << 9) // transmit enable
-#define UARTIMSC      0x038 // control interrupt
-#define UARTDMACR     0x048 // control dma
+constexpr usize UARTDR = 0x000; // write register
+constexpr usize UARTFR = 0x018; // pooling register
+constexpr usize UARTFR_BUSY = (1 << 3); // bit in UARTFR, if transmission is
+					// busy
+constexpr usize UARTFR_RXFE = (1 << 4); // recieve fifo is empty
+constexpr usize UARTIBRD = 0x024; // speed 1
+constexpr usize UARTFBRD = 0x028; // speed 2
+constexpr usize UARTLCR_H = 0x02C; // line control register
+constexpr usize UARTLCR_H_FEN = (1 << 4); // fifo
+constexpr usize UARTCR = 0x030; // control register
+constexpr usize UARTCR_UARTEN = (1 << 0); // enable/disable uart
+constexpr usize UARTCR_TEX = (1 << 8); // recieve enable
+constexpr usize UARTCR_REX = (1 << 9); // transmit enable
+constexpr usize UARTIMSC = 0x038; // control interrupt
+constexpr usize UARTDMACR = 0x048; // control dma
 
 #define reg(_reg)	       (volatile u32 *)((_reg) + UART_BASE)
 #define write_reg(_reg, value) (*(reg((_reg))) = (value))

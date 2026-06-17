@@ -9,10 +9,12 @@
 #define round_up(x, y)	   ((((x) - 1) | __round_mask(x, y)) + 1)
 #define round_down(x, y)   ((x) & ~__round_mask(x, y))
 
+/* compiler attributes */
 #define NONNULL(...)   __attribute__((nonnull(__VA_ARGS__)))
 #define ALIGNED(align) __attribute__((aligned(align)))
 #define SECTION(sec)   __attribute__((section(sec)))
 #define MUST_CHECK     __attribute__((warn_unused_result))
+#define PACKED	       __attribute__((packed))
 
 #define IS_ALIGNED(value, alignment) ((value) % (alignment) == 0)
 
@@ -22,6 +24,7 @@
 
 #define UNUSED(value) (void)(value)
 
+/* compiler intrinsics */
 #define UNREACHABLE() __builtin_unreachable()
 
 #define likely(x)   __builtin_expect(!!(x), 1)
