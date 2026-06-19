@@ -1,6 +1,7 @@
 #include "memory/kmem.h"
 #include "error.h"
 #include "printf.h"
+#include "debug/panic.h"
 #include "spinlock.h"
 #include "memlayout.h"
 #include "common_defs.h"

@@ -18,11 +18,7 @@ void printf_init(fn_write write);
  *   %c -> character
  */
 void printf(const i8 *fmt, ...);
-#define panic(fmt, ...)                                                \
-	do {                                                           \
-		printf("PANIC:%s:%s:%d: " fmt, __FILE__, __FUNCTION__, \
-		       __LINE__, ##__VA_ARGS__);                       \
-		brk(0);                                                \
-	} while (0)
+
+#include "debug/panic.h"
 
 #endif // _PRINT_H_

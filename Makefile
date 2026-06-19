@@ -42,9 +42,6 @@ else ifeq ($(CONFIG_OPTIMIZATIONS_NONE),y)
 endif
 
 K = kernel
-D = $K/drivers
-M = $K/memory
-KA = $K/arch
 L = lib
 U = user
 # files are in the order of what `fd` returns
@@ -53,31 +50,29 @@ ASM_SOURCES = $K/entry.S \
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
 C_SOURCES = $K/cpu.c \
-			$D/uart/uart.c \
+			$K/debug/printf.c \
+			$K/drivers/uart/uart.c \
 			$K/entry.c \
 			$K/error.c \
 			$K/init.c \
-			$M/kmem.c \
-			$K/printf.c \
+			$K/memory/kmem.c \
 			$K/spinlock.c \
 			$L/string.c
 
 C_OBJS = $(C_SOURCES:=.o)
 
 KI = $K/include
-KID = $(KI)/drivers
-KIM = $(KI)/memory
 LI = $L/include
-
-HEADERS = $(KA)/aarch64/aarch64.h \
+HEADERS = $(KI)/arch/aarch64/aarch64.h \
 		  $(KI)/cpu.h \
-		  $(KID)/uart/uart.h \
+		  $(KI)/debug/panic.h \
+		  $(KI)/printf.h \
+		  $(KI)/drivers/uart/uart.h \
 		  $(KI)/entry.h \
 		  $(KI)/error.h \
 		  $(KI)/init.h \
 		  $(KI)/memlayout.h \
-		  $(KIM)/kmem.h \
-		  $(KI)/printf.h \
+		  $(KI)/memory/kmem.h \
 		  $(KI)/spinlock.h \
 		  $(LI)/common_defs.h \
 		  $(LI)/string.h \
@@ -85,7 +80,7 @@ HEADERS = $(KA)/aarch64/aarch64.h \
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
-INCLUDES_DIR = -I$(KI)/ -I. -I$(LI) -I$(K)/arch/
+INCLUDES_DIR = -I$(KI)/ -I. -I$(LI) -I$(KI)/arch
 
 DEPS := $(C_OBJS:.o=.d)
 
@@ -121,6 +116,7 @@ run: $(OUT) ## Run the kernel inside qemu
 cleanall: clean cleanconfig cleandebug ## Clean all build, config and debug files
 
 clean: ## Clean only build files
+	rm -f $(DEPS)
 	rm -f $(OBJS)
 	rm -f $(OUT)
 

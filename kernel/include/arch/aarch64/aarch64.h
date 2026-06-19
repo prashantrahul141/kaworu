@@ -3,6 +3,9 @@
 
 #include "types.h"
 
+/* max virtual address */
+constexpr usize MAX_VA = (1L << 9 << 9 << 9);
+
 constexpr usize DAIF_I = (1 << 7);
 constexpr usize DAIF_F = (1 << 6);
 
