@@ -9,6 +9,12 @@ endif
 
 NAME = kaworu
 
+# Point to the extract directory of limine-binary
+# LIMINE_PATH :=
+
+# Point to the uefi firmware for qemu (not the directory, the firmware file itself)
+# UEFI_FIRMWARE :=
+
 ELF = kernel/$(NAME).elf
 ISO = $(NAME).iso
 
@@ -21,7 +27,7 @@ QEMU_FLAGS := -cpu cortex-a72 \
 			-device qemu-xhci \
 			-device usb-kbd \
 			-device usb-tablet \
-			-drive if=pflash,unit=0,format=raw,file=$(EDK2_OVMF_STABLE_BINS)/ovmf-code-aarch64.fd,readonly=on \
+			-drive if=pflash,unit=0,format=raw,file=$(UEFI_FIRMWARE),readonly=on \
 			-cdrom $(ISO)
 			# TODO:  -smp $(CONFIG_CPU_COUNT) \
 
@@ -142,7 +148,7 @@ release_full: $(ISO)
 	mkdir -p full-release/
 	cp $(ISO) full-release/
 	cp ./meta/releases/full/* full-release/
-	cp $(EDK2_OVMF_STABLE_BINS)/ovmf-code-aarch64.fd full-release/
+	cp $(UEFI_FIRMWARE) full-release/
 	tar -czvf full-release.tar.gz full-release/
 	rm -rf full-release
 
