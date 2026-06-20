@@ -1,3 +1,7 @@
+# Version
+export VERSION_MAJOR = 0
+export VERSION_MINOR = 0
+
 CONFIG_FREE_TARGETS := help menuconfig defconfig clean cleanall cleandebug cleanconfig
 # Require .config for everything else
 ifeq ($(filter $(MAKECMDGOALS),$(CONFIG_FREE_TARGETS)),)
@@ -38,7 +42,7 @@ all: build
 menuconfig: _menuconfig syncconfig ## Configure the kernel using ncurses tui
 _menuconfig:
 	@printf "\tMENU\n"
-	menuconfig > /dev/null
+	@menuconfig
 
 .PHONY: defconfig
 defconfig: _defconfig syncconfig ## Use default kernel config
@@ -54,7 +58,7 @@ syncconfig:
 # building ---------------------
 build: $(ISO) ## Build kernel iso
 
-$(ISO): setup-iso-dir
+$(ISO): setup-iso-dir $(ELF)
 	@printf "\tXORRISO %s\n" $(ISO)
 	@xorriso -as mkisofs -R -r -J \
 		-hfsplus -apm-block-size 2048 \
@@ -84,6 +88,7 @@ endef
 
 $(foreach f,$(ISO_COPIES),$(eval $(call copy-rule,$(f))))
 
+.PHONY: $(ELF)
 $(ELF):
 	@make -C kernel/
 
@@ -97,10 +102,10 @@ run: $(ISO) ## Run the kernel inside qemu
 cleanall: clean cleanconfig cleandebug ## Clean all build, config and debug files
 
 .PHONY: clean
-clean: ## Clean only iso and build files
+clean: cleandebug ## Clean only iso and build files
 	rm -f $(ISO)
 	rm -rf iso
-	@make -C kernel/ clean
+	$(MAKE) -C kernel/ clean
 
 .PHONY: cleanconfig
 cleanconfig: ## Clean only config files
@@ -108,48 +113,58 @@ cleanconfig: ## Clean only config files
 
 .PHONY: cleandebug
 cleandebug:
-	rm -rf stripped-$(ELF)
+	rm -rf stripped.elf
 	rm -rf *.objdump
 
 # hacking ------------------
+.PHONY: clang-tidy
 clang-tidy: $(ELF)  ## Run clang-tidy on the entire source
 	run-clang-tidy -source-filter ".*\.(c|h)" -quiet
 
+.PHONY: gdb
 gdb:
 	gdb $(ELF) -ex "target remote :1234"
 
-stripped-$(ELF): $(ELF)
-	llvm-strip --strip-debug $(ELF) -o stripped-$(ELF)
+.PHONY: stripped
+stripped: $(ELF)
+	llvm-strip --strip-debug $(ELF) -o stripped.elf
 
-objdump: $(ELF) stripped-$(ELF)
-	llvm-objdump --disassemble-all --line-numbers --full-contents stripped-$(ELF) > dump.objdump
+.PHONY: objdump
+objdump: $(ELF) stripped
+	llvm-objdump --disassemble-all --line-numbers --full-contents stripped.elf > dump.objdump
 
+.PHONY: rund
 rund: $(ISO)
 	qemu-system-aarch64 -M $(QEMU_MACHINE) $(QEMU_FLAGS) -s -S
 
+.PHONY: qemu_dump_dts
 qemu_dump_dts:
 	qemu-system-aarch64 -machine $(QEMU_MACHINE),dumpdtb=virt.dtb $(QEMU_FLAGS)
 	dtc -I dtb -O dts -o virt.dts virt.dtb
 
-.PHONY: menuconfig defconfig run cleanall clean cleanconfig gdb rund qemu_dump_dtb help
 
+.PHONY: help
 help: # Show this help
 	@sed -nE 's/^([[:alnum:]_.-]+):.*##[[:space:]]*(.*)/\1\t\2/p' $(MAKEFILE_LIST) | column -ts $$'\t'
 
 # create releases
+.PHONY: release_kernel
+rkf = kaworu-kernel-$(VERSION_MAJOR).$(VERSION_MINOR)
 release_kernel: $(ISO)
-	mkdir -p kernel-release/
-	cp $(ISO) kernel-release/
-	cp ./meta/releases/kernel/* kernel-release/
-	tar -czvf kernel-release.tar.gz kernel-release/
-	rm -rf kernel-release
+	mkdir -p $(rkf)/
+	cp $(ISO) $(rkf)/
+	cp ./meta/releases/kernel/* $(rkf)/
+	tar -czvf $(rkf).tar.gz $(rkf)/
+	rm -rf $(rkf)
 
+.PHONY: release_full
+rff = kaworu-full-$(VERSION_MAJOR).$(VERSION_MINOR)
 release_full: $(ISO)
-	mkdir -p full-release/
-	cp $(ISO) full-release/
-	cp ./meta/releases/full/* full-release/
-	cp $(UEFI_FIRMWARE) full-release/
-	tar -czvf full-release.tar.gz full-release/
-	rm -rf full-release
+	mkdir -p $(rff)/
+	cp $(ISO) $(rff)/
+	cp ./meta/releases/full/* $(rff)/
+	cp $(UEFI_FIRMWARE) $(rff)/
+	tar -czvf $(rff).tar.gz $(rff)/
+	rm -rf $(rff)
 
 -include $(DEPS)

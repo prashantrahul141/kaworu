@@ -63,3 +63,4 @@ config.h
 *.dts
 compile_commands.json
 iso
+*.objdump
