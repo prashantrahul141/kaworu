@@ -32,14 +32,15 @@ endif
 K = .
 L = ../lib
 U = ../user
+D = ../drivers
 # files are in the order of what `fd` returns
 ASM_SOURCES = $K/entry.S \
 			  $K/startup.S
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
-C_SOURCES = $K/cpu.c \
+C_SOURCES = $D/uart/uart.c \
+			$K/cpu.c \
 			$K/debug/printf.c \
-			$K/drivers/uart/uart.c \
 			$K/entry.c \
 			$K/error.c \
 			$K/init.c \
@@ -51,11 +52,11 @@ C_OBJS = $(C_SOURCES:=.o)
 
 KI = $K/include
 LI = $L/include
-HEADERS = $(KI)/arch/aarch64/aarch64.h \
+HEADERS = $(D)/uart/uart.h \
+		  $(KI)/arch/aarch64/aarch64.h \
 		  $(KI)/cpu.h \
 		  $(KI)/debug/panic.h \
 		  $(KI)/printf.h \
-		  $(KI)/drivers/uart/uart.h \
 		  $(KI)/entry.h \
 		  $(KI)/error.h \
 		  $(KI)/init.h \
@@ -85,11 +86,11 @@ $(OUT): $(OBJS) $(LINKER_SCRIPT) $(HEADERS)
 	@$(LD) -m aarch64elf -T $(LINKER_SCRIPT) $(OBJS) -o $(OUT)
 
 %.S.o: %.S
-	@printf "\tCC %s\n" $@
+	@printf "\tCC %s\n" $(shell basename $@)
 	@$(CC) --target=$(TARGET) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 %.c.o: %.c
-	@printf "\tCC %s\n" $@
+	@printf "\tCC %s\n" $(shell basename $@)
 	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 # cleaning -------------------
