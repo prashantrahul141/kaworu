@@ -69,7 +69,11 @@ static inline void w_intrd_enable(void)
 }
 
 /* halt */
-#define hlt(imm) asm volatile("hlt #" #imm)
+#define hlt(imm)                            \
+	do {                                \
+		asm volatile("hlt #" #imm); \
+		UNREACHABLE();              \
+	} while (0)
 
 /* read sctlr register */
 static inline u64 r_sctlr(void)

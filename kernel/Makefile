@@ -67,7 +67,8 @@ HEADERS = $(KI)/arch/aarch64/aarch64.h \
 
 OBJS = $(ASM_OBJS) $(C_OBJS)
 
-INCLUDES_DIR = -I$(KI)/ -I. -I$(LI) -I$(KI)/arch -I ../
+LIMINE_INC := ../thirdparty/limine-protocol/include/
+INCLUDES_DIR = -I$(KI)/ -I. -I$(LI) -I$(KI)/arch -I../  -I$(LIMINE_INC)
 
 DEPS := $(C_OBJS:.o=.d)
 
@@ -78,13 +79,16 @@ all: build
 build: $(OUT) ## Build the kernel
 
 $(OUT): $(OBJS) $(LINKER_SCRIPT) $(HEADERS)
-	$(LD) -m aarch64elf -T $(LINKER_SCRIPT) $(OBJS) -o $(OUT)
+	@printf "\tLD %s\n" $@
+	@$(LD) -m aarch64elf -T $(LINKER_SCRIPT) $(OBJS) -o $(OUT)
 
 %.S.o: %.S
-	$(CC) --target=$(TARGET) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
+	@printf "\tCC %s\n" $@
+	@$(CC) --target=$(TARGET) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 %.c.o: %.c
-	$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
+	@printf "\tCC %s\n" $@
+	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 # cleaning -------------------
 .PHONY: clean
