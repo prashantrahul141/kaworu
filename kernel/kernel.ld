@@ -1,22 +1,40 @@
+OUTPUT_FORMAT(elf64-littleaarch64)
+
 ENTRY(_start)
+
+PHDRS
+{
+    limine_requests PT_LOAD;
+    text PT_LOAD;
+    rodata PT_LOAD;
+    data PT_LOAD;
+}
 
 SECTIONS
 {
 
-    . = 0x40100000;
-    PROVIDE(__kernel_start = .);
+    . = 0xffffffff80000000;
 
+    .limine_requests : {
+        KEEP(*(.limine_requests_start))
+        KEEP(*(.limine_requests))
+        KEEP(*(.limine_requests_end))
+    } :limine_requests
+
+     . = ALIGN(CONSTANT(MAXPAGESIZE));
+    PROVIDE(__kernel_start = .);
     .text.boot : {
         *(.text.boot)
     }
 
+     . = ALIGN(CONSTANT(MAXPAGESIZE));
     .text : {
         *(.text*)
         . = ALIGN(0x1000);
         PROVIDE(__kernel_text_end = .);
     }
 
-    . = ALIGN(16);
+    . = ALIGN(CONSTANT(MAXPAGESIZE));
     .rodata : {
         . = ALIGN(16);
         *(.srodata .srodata.*)
@@ -24,7 +42,7 @@ SECTIONS
         *(.rodata .rodata.*)
     }
 
-    . = ALIGN(16);
+    . = ALIGN(CONSTANT(MAXPAGESIZE));
     .data : {
         . = ALIGN(16);
         *(.sdata .sdata.*)
@@ -32,7 +50,7 @@ SECTIONS
         *(.data .data.*)
     }
 
-    . = ALIGN(16);
+    . = ALIGN(CONSTANT(MAXPAGESIZE));
     .bss : {
         __bss_start = .;
         . = ALIGN(16);
@@ -44,8 +62,13 @@ SECTIONS
         __bss_end = .;
     }
 
-    # end kernel on a page boundary
-    . = ALIGN(0x1000);
+    /* Discard .note.* and .eh_frame* since they may cause issues on some hosts. */
+    /DISCARD/ : {
+        *(.eh_frame*)
+        *(.note .note.*)
+    }
 
+    /* end kernel on a page boundary */
+    . = ALIGN(0x1000);
     PROVIDE(__kernel_end = .);
 }
