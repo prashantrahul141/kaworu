@@ -35,7 +35,7 @@
         ];
 
         shellHook = ''
-          export EDK2_OVMF_STABLE_BINS=${ovmf}/share
+          export UEFI_FIRMWARE=${ovmf}/share/ovmf-code-aarch64.fd
           export LIMINE_PATH=${pkgs.limine-full}/share/limine
           export CC=clang
           export LD=ld.lld
