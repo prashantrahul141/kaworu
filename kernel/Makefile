@@ -11,7 +11,7 @@ OUT := $(NAME).elf
 TARGET := aarch64-none-elf
 C_FLAGS := -MD -std=gnu23 -ffreestanding -nostdlib
 WARNING_FLAGS = -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wimplicit-int-conversion -Wshorten-64-to-32 -Wpointer-to-int-cast -Wint-to-pointer-cast -Wshadow -Wundef -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wswitch-enum -Wswitch-default -Wcovered-switch-default -Wnull-dereference -Wunreachable-code -Wvla -Walloca -Wwrite-strings -Wformat=2 -Wcast-function-type -Wconditional-uninitialized -Wcomma -Wextra-semi-stmt -Wno-language-extension-token -Wno-gnu-empty-struct -Wno-gnu-zero-variadic-macro-arguments
-COMMON_FLAGS = $(WARNING_FLAGS) -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR)
+COMMON_FLAGS = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR)
 
 # debugging?
 ifeq ($(CONFIG_DEBUG_SYMBOLS),y)
@@ -33,6 +33,7 @@ K = .
 L = ../lib
 U = ../user
 D = ../drivers
+TH = ../thirdparty
 # files are in the order of what `fd` returns
 ASM_SOURCES = $K/entry.S \
 			  $K/startup.S
@@ -48,32 +49,29 @@ C_SOURCES = $D/uart/uart.c \
 			$K/spinlock.c \
 			$L/string.c
 
+EXTERNAL_C_SOURCES = $(TH)/Flanterm/src/flanterm.c \
+				$(TH)/Flanterm/src/flanterm_backends/fb.c
+
 C_OBJS = $(C_SOURCES:=.o)
+C_EXTERNAL_OBJS = $(EXTERNAL_C_SOURCES:=.e.o)
+
+OBJS = $(ASM_OBJS) $(C_OBJS) $(C_EXTERNAL_OBJS)
 
 KI = $K/include
+DI = $D/
 LI = $L/include
-HEADERS = $(D)/uart/uart.h \
-		  $(KI)/arch/aarch64/aarch64.h \
-		  $(KI)/cpu.h \
-		  $(KI)/debug/panic.h \
-		  $(KI)/printf.h \
-		  $(KI)/entry.h \
-		  $(KI)/error.h \
-		  $(KI)/init.h \
-		  $(KI)/memlayout.h \
-		  $(KI)/memory/kmem.h \
-		  $(KI)/spinlock.h \
-		  $(LI)/common_defs.h \
-		  $(LI)/string.h \
-		  $(LI)/types.h
+LIM_INC := $(TH)/limine-protocol/include/
+FLAN_INC := $(TH)/Flanterm/src/
+INCLUDES_DIR = 	-I../  \
+                -I$(DI)/ \
+				-I. \
+				-I$(KI)/ \
+				-I$(KI)/arch \
+				-I$(LI)/ \
+				-I$(LIM_INC) \
+				-I$(FLAN_INC)
 
-
-OBJS = $(ASM_OBJS) $(C_OBJS)
-
-LIMINE_INC := ../thirdparty/limine-protocol/include/
-INCLUDES_DIR = -I$(KI)/ -I. -I$(LI) -I$(KI)/arch -I../  -I$(LIMINE_INC)
-
-DEPS := $(C_OBJS:.o=.d)
+DEPS := $(C_OBJS:.o=.d) $(C_EXTERNAL_OBJS:.o=.d)
 
 # default target which runs when none is specified
 all: build
@@ -81,17 +79,22 @@ all: build
 # building ---------------------
 build: $(OUT) ## Build the kernel
 
-$(OUT): $(OBJS) $(LINKER_SCRIPT) $(HEADERS)
+$(OUT): $(OBJS) $(LINKER_SCRIPT)
 	@printf "\tLD %s\n" $@
 	@$(LD) -m aarch64elf -T $(LINKER_SCRIPT) $(OBJS) -o $(OUT)
 
 %.S.o: %.S
 	@printf "\tCC %s\n" $(shell basename $@)
-	@$(CC) --target=$(TARGET) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
+	@$(CC) --target=$(TARGET) $(INCLUDES_DIR) $(COMMON_FLAGS) $(WARNING_FLAGS) -c $< -o $@
 
 %.c.o: %.c
 	@printf "\tCC %s\n" $(shell basename $@)
-	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
+	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) $(WARNING_FLAGS) -c $< -o $@
+
+# external c files compilation
+%.c.e.o: %.c
+	@printf "\tCC %s\n" $(shell basename $@)
+	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) -c $< -o $@
 
 # cleaning -------------------
 .PHONY: clean
@@ -99,5 +102,6 @@ clean: ## Clean only build files
 	rm -f $(DEPS)
 	rm -f $(OBJS)
 	rm -f $(OUT)
+	rm -f $(C_EXTERNAL_OBJS)
 
 -include $(DEPS)

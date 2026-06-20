@@ -148,7 +148,8 @@ make run
 
 ## Thirdparty
 
-[limine](https://github.com/limine-bootloader/limine) - kaworu's bootloader
+[Limine](https://github.com/limine-bootloader/limine) - Modern, secure, portable, multiprotocol bootloader and boot manager.\
+[Flanterm](https://github.com/Mintsuki/Flanterm) - Fast and reasonably complete (framebuffer) terminal emulator.
 
 
 ## Resources
