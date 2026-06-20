@@ -13,6 +13,7 @@ ELF = kernel/$(NAME).elf
 ISO = $(NAME).iso
 
 # qemu flags for virt
+# WARN: dont forget to update in release run scripts
 QEMU_MACHINE := virt
 QEMU_FLAGS := -cpu cortex-a72 \
 			-m $(CONFIG_PHYSICAL_MEMORY_MB)M \
@@ -128,5 +129,21 @@ qemu_dump_dts:
 
 help: # Show this help
 	@sed -nE 's/^([[:alnum:]_.-]+):.*##[[:space:]]*(.*)/\1\t\2/p' $(MAKEFILE_LIST) | column -ts $$'\t'
+
+# create releases
+release_kernel: $(ISO)
+	mkdir -p kernel-release/
+	cp $(ISO) kernel-release/
+	cp ./meta/releases/kernel/* kernel-release/
+	tar -czvf kernel-release.tar.gz kernel-release/
+	rm -rf kernel-release
+
+release_full: $(ISO)
+	mkdir -p full-release/
+	cp $(ISO) full-release/
+	cp ./meta/releases/full/* full-release/
+	cp $(EDK2_OVMF_STABLE_BINS)/ovmf-code-aarch64.fd full-release/
+	tar -czvf full-release.tar.gz full-release/
+	rm -rf full-release
 
 -include $(DEPS)
