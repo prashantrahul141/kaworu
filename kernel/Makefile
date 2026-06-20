@@ -3,8 +3,10 @@ include ../.config
 CC := clang
 LD := ld.lld
 
+NAME = kaworu
+
 LINKER_SCRIPT := kernel.ld
-OUT := kaworu.elf
+OUT := $(NAME).elf
 
 TARGET := aarch64-none-elf
 C_FLAGS := -MD -std=gnu23 -ffreestanding -nostdlib
