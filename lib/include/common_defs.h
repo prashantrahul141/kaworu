@@ -15,6 +15,7 @@
 #define SECTION(sec)   __attribute__((section(sec)))
 #define MUST_CHECK     __attribute__((warn_unused_result))
 #define PACKED	       __attribute__((packed))
+#define USED	       __attribute__((used))
 
 #define IS_ALIGNED(value, alignment) ((value) % (alignment) == 0)
 
