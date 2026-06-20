@@ -10,13 +10,20 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
+      ovmf = import ./nix/edk2-ovmf-stable-bins.nix { inherit pkgs; };
     in
     {
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
+          limine-full
+          glibc_multi
+
           llvmPackages.clang-unwrapped
           llvmPackages.lld
           llvm
+
+          xorriso
+          ovmf
 
           qemu
           gdb
@@ -28,6 +35,8 @@
         ];
 
         shellHook = ''
+          export EDK2_OVMF_STABLE_BINS=${ovmf}/share
+          export LIMINE_PATH=${pkgs.limine-full}/share/limine
           export CC=clang
           export LD=ld.lld
           export OBJDUMP=llvm-objdump
