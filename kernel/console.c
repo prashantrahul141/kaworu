@@ -1,5 +1,6 @@
 #include "console.h"
 #include "common_defs.h"
+#include "debug/panic.h"
 #include "error.h"
 #include "limine.h"
 #include "thirdparty/Flanterm/src/flanterm.h"
@@ -11,39 +12,41 @@ USED SECTION(
 	framebuffer_request = { .id = LIMINE_FRAMEBUFFER_REQUEST_ID,
 				.revision = 0 };
 
-static Console fb_console = { .initialized = false,
-			      .info = {
-				      .is_writable = true,
-				      .is_readable = false,
-			      } };
+static Console console = { .initialized = false };
 
 /* static function declarations */
 static errno_t fb_console_init(void);
 static errno_t fb_console_deinit(void);
 
-MUST_CHECK errno_t console_init(ConsoleDeviceBackendType which_backend)
+void console_init(ConsoleDeviceBackendType which_backend)
 {
 	if (CONSOLE_BACKEND_FRAMEBUFFER == which_backend) {
-		return fb_console_init();
+		if (EOK != fb_console_init()) {
+			panic("Failed to initialize frame buffer console");
+		}
 	}
-
-	return EINVAL;
 }
 
 errno_t console_deinit(void)
 {
-	errno_t ret = fb_console_deinit();
-	if (!ret) {
-		return ret;
+	if (!console.initialized) {
+		return EINVAL;
 	}
 
+	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
+		return fb_console_deinit();
+	}
+
+	console.initialized = false;
 	return EOK;
 }
 
 errno_t console_write(const i8 *data, usize size)
 {
-	if (fb_console.initialized) {
-		flanterm_write(fb_console.backend_ctx, data, size);
+	if (console.initialized) {
+		if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
+			flanterm_write(console.backend_ctx, data, size);
+		}
 	}
 
 	return EOK;
@@ -54,10 +57,37 @@ errno_t console_write_char(i8 data)
 	return console_write(&data, 1);
 }
 
+errno_t console_set_background(ConsoleColor c)
+{
+	if (!console.initialized) {
+		return EINVAL;
+	}
+
+	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
+		flanterm_set_text_bg(console.backend_ctx, c.color, c.bright);
+	}
+
+	return EOK;
+}
+
+errno_t console_set_foreground(ConsoleColor c)
+{
+	if (!console.initialized) {
+		return EINVAL;
+	}
+
+	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
+		flanterm_set_text_fg(console.backend_ctx, c.color, c.bright);
+	}
+
+	return EOK;
+}
+
 static errno_t fb_console_init(void)
 {
 	/* are we already initialized? */
-	if (fb_console.initialized) {
+	if (console.initialized &&
+	    console.backend == CONSOLE_BACKEND_FRAMEBUFFER) {
 		return EOK;
 	}
 
@@ -83,20 +113,17 @@ static errno_t fb_console_init(void)
 		return ENOENT;
 	}
 
-	fb_console.backend_ctx = ft_ctx;
-	fb_console.initialized = true;
+	flanterm_set_text_bg(ft_ctx, 1, true);
 
+	console.backend_ctx = ft_ctx;
+	console.initialized = true;
+	console.backend = CONSOLE_BACKEND_FRAMEBUFFER;
 	return EOK;
 }
 
 static errno_t fb_console_deinit(void)
 {
-	if (!fb_console.initialized) {
-		return EINVAL;
-	}
-
-	flanterm_deinit(fb_console.backend_ctx, nullptr);
-	fb_console.initialized = false;
-	fb_console.backend_ctx = nullptr;
+	flanterm_deinit(console.backend_ctx, nullptr);
+	console.backend_ctx = nullptr;
 	return EOK;
 }

@@ -35,13 +35,7 @@ void kernel_main(void)
 		hlt(0);
 	}
 
-	if (hhdm_request.response == NULL) {
-		hlt(0);
-	}
-
-	if (EOK != console_init(CONSOLE_BACKEND_FRAMEBUFFER)) {
-		hlt(0);
-	}
+	console_init(CONSOLE_BACKEND_FRAMEBUFFER);
 	printf_init();
 
 	for (;;) {
