@@ -19,6 +19,4 @@ void printf(const i8 *fmt, ...);
 
 void printf_deinit(void);
 
-#include "debug/panic.h"
-
 #endif // _PRINT_H_

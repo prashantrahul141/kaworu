@@ -18,6 +18,26 @@ config DEBUG_SYMBOLS
     bool "Enable debug symbols"
     default y
 
+choice LOGGING_LEVEL
+    prompt "Set level of logging"
+    default LOGGING_LEVEL_DEBUG
+
+    config LOGGING_LEVEL_TRACE
+        bool "Trace"
+
+    config LOGGING_LEVEL_DEBUG
+        bool "Debug"
+
+    config LOGGING_LEVEL_INFO
+        bool "Info"
+
+    config LOGGING_LEVEL_WARN
+        bool "Warn"
+
+    config LOGGING_LEVEL_ERROR
+        bool "Error"
+endchoice
+
 choice OPTIMIZATIONS
     prompt "Optimizations level"
     default OPTIMIZATIONS_NONE

@@ -2,7 +2,7 @@
 #include "aarch64/aarch64.h"
 #include "config.h"
 #include "cpu.h"
-#include "printf.h"
+#include "debug/panic.h"
 
 inline static bool holding(const SpinLock *sp);
 static void push_intr(void);

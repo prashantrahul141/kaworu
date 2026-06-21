@@ -3,6 +3,7 @@
 #include "common_defs.h"
 #include "console.h"
 #include "config.h"
+#include "debug/log.h"
 #include "limine.h"
 #include "printf.h"
 
@@ -38,20 +39,18 @@ void kernel_main(void)
 	console_init(CONSOLE_BACKEND_FRAMEBUFFER);
 	printf_init();
 
-	for (;;) {
-		printf("\nHello from %s\n", "kaworu");
-		printf("character c = %c\n", 'c');
-		printf("character A as ascii = %d\n", 'A');
-		printf("10 = %d\n", 10);
-		printf("17 in hex is %x\n", 35);
-		printf("203 in hex is %p\n", 203);
-		printf("1.0 = %f\n", 1.0);
-		printf("-0.0 = %f\n", -0.0);
-		printf("2332323.23232323 = %f\n", 2332323.23232323);
-		printf("1.99999999999 = %f\n", 1.99999999999);
-		printf("-1.99999999999 = %f\n", -1.99999999999);
-		printf("-1.123456 = %f\n", -1.123456);
-	}
+	DEBUG("Hello from %s", "kaworu");
+	INFO("character c = %c", 'c');
+	WARN("character A as ascii = %d", 'A');
+	ERROR("10 = %d", 10);
+	FATAL("17 in hex is %x", 35);
+	DEBUG("203 in hex is %p", 203);
+	INFO("1.0 = %f", 1.0);
+	WARN("-0.0 = %f", -0.0);
+	ERROR("2332323.23232323 = %f", 2332323.23232323);
+	FATAL("1.99999999999 = %f", 1.99999999999);
+	DEBUG("-1.99999999999 = %f", -1.99999999999);
+	INFO("-1.123456 = %f", -1.123456);
 
 	printf_deinit();
 	console_deinit();

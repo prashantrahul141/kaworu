@@ -1,6 +1,6 @@
 # Version
 export VERSION_MAJOR = 0
-export VERSION_MINOR = 0
+export VERSION_MINOR = 1
 
 CONFIG_FREE_TARGETS := help menuconfig defconfig clean cleanall cleandebug cleanconfig
 # Require .config for everything else
