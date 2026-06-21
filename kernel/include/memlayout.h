@@ -25,16 +25,19 @@
 
 extern symbol __kernel_end;
 extern symbol __kernel_start;
+extern symbol __kernel_text_start;
 extern symbol __kernel_text_end;
+extern symbol __kernel_data_start;
+extern symbol __kernel_data_end;
 
-#define __KERNEL_START	  ((usize)__kernel_start)
-#define __KERNEL_END	  ((usize)__kernel_end)
-#define __KERNEL_TEXT_END ((usize)__kernel_text_end)
+#define __KERNEL_START	    ((usize)__kernel_start)
+#define __KERNEL_END	    ((usize)__kernel_end)
+#define __KERNEL_TEXT_START ((usize)__kernel_text_start)
+#define __KERNEL_TEXT_END   ((usize)__kernel_text_end)
+#define __KERNEL_DATA_START ((usize)__kernel_data_start)
+#define __KERNEL_DATA_END   ((usize)__kernel_data_end)
 
 #define MB_TO_BYTES(MB) ((MB) * (usize)1000 * (usize)1000)
-#define KERNEL_BOTTOM	(__KERNEL_START)
-#define KERNEL_TOP	(__KERNEL_END)
-#define FREE_MEM_BOTTOM (KERNEL_TOP)
 
 constexpr usize PAGE_SIZE = 4096;
 

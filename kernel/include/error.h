@@ -58,7 +58,7 @@ static inline MUST_CHECK void *ERR_TO_PTR(isize error)
 }
 
 /*
- * Converts a negative error value to an error pointer
+ * Converts a pointer value to an error
  */
 static inline MUST_CHECK isize PTR_TO_ERR(const void *ptr)
 {

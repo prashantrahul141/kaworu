@@ -14,7 +14,7 @@ SECTIONS
 {
 
     . = 0xffffffff80000000;
-
+    PROVIDE(__kernel_start = .);
     .limine_requests : {
         KEEP(*(.limine_requests_start))
         KEEP(*(.limine_requests))
@@ -22,7 +22,7 @@ SECTIONS
     } :limine_requests
 
      . = ALIGN(CONSTANT(MAXPAGESIZE));
-    PROVIDE(__kernel_start = .);
+    PROVIDE(__kernel_text_start = .);
     .text.boot : {
         *(.text.boot)
     }
@@ -31,10 +31,11 @@ SECTIONS
     .text : {
         *(.text*)
         . = ALIGN(0x1000);
-        PROVIDE(__kernel_text_end = .);
     }
+    PROVIDE(__kernel_text_end = .);
 
     . = ALIGN(CONSTANT(MAXPAGESIZE));
+    PROVIDE(__kernel_data_start = .);
     .rodata : {
         . = ALIGN(16);
         *(.srodata .srodata.*)
@@ -49,6 +50,7 @@ SECTIONS
         . = ALIGN(16);
         *(.data .data.*)
     }
+    PROVIDE(__kernel_data_end = .);
 
     . = ALIGN(CONSTANT(MAXPAGESIZE));
     .bss : {

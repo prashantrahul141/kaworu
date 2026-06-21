@@ -1,12 +1,4 @@
 #include "init.h"
-#include "aarch64/aarch64.h"
-#include "common_defs.h"
-#include "console.h"
-#include "config.h"
-#include "debug/log.h"
-#include "limine.h"
-#include "memory/kmem.h"
-#include "printf.h"
 
 /* limine boot protocol revision */
 USED SECTION(".limine_requests") static volatile u64 limine_base_revision[] =
