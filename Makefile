@@ -48,7 +48,13 @@ _menuconfig:
 defconfig: _defconfig syncconfig ## Use default kernel config
 _defconfig:
 	@printf "\tCOPY configs/debugconfig\n"
-	@defconfig configs/debugconfig > /dev/null
+	@defconfig configs/defaultconfig > /dev/null
+
+.PHONY: debugconfig
+debugconfig: _debugconfig syncconfig ## Use debug kernel config
+_debugconfig:
+	@printf "\tCOPY configs/debugconfig\n"
+	@defconfig configs/debugconfig> /dev/null
 
 .PHONY: syncconfig
 syncconfig:

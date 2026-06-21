@@ -109,7 +109,7 @@ usize virt_to_phys(const void *virt)
 static void kmem_free_range(usize start, usize end)
 {
 	u8 *p = (u8 *)start;
-	usize free_count = 0;
+	UNUSED usize free_count = 0;
 	for (; p + PAGE_SIZE <= (u8 *)end; p += PAGE_SIZE) {
 		u8 *v = phys_to_virt((usize)p);
 		kmem_free(v);

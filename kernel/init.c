@@ -13,6 +13,11 @@ USED SECTION(".limine_requests") static volatile u64 limine_base_revision[] =
 	LIMINE_BASE_REVISION(6);
 
 /* limine requests */
+/* cpu stack size */
+USED SECTION(".limine_requests") static volatile struct limine_stack_size_request
+	stacksize_requst = { .id = LIMINE_STACK_SIZE_REQUEST_ID,
+			     .revision = 0,
+			     .stack_size = CONFIG_PER_CPU_STACK_SIZE };
 
 /* command line arguments */
 USED SECTION(

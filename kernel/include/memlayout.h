@@ -35,8 +35,6 @@ extern symbol __kernel_text_end;
 #define KERNEL_BOTTOM	(__KERNEL_START)
 #define KERNEL_TOP	(__KERNEL_END)
 #define FREE_MEM_BOTTOM (KERNEL_TOP)
-#define FREE_MEM_TOP \
-	((KERNEL_BOTTOM) + (MB_TO_BYTES(CONFIG_PHYSICAL_MEMORY_MB)))
 
 constexpr usize PAGE_SIZE = 4096;
 

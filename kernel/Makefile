@@ -1,4 +1,4 @@
-include ../.config
+-include ../.config
 
 CC := clang
 LD := ld.lld

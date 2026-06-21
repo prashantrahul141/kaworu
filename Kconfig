@@ -1,15 +1,38 @@
+# building
 config PER_CPU_STACK_SIZE
     int "Stack size, should be 16 byte aligned"
     default 4096
 
+choice OPTIMIZATIONS
+    prompt "Optimizations level"
+    default OPTIMIZATIONS_NONE
+
+    config OPTIMIZATIONS_NONE
+        bool "None"
+
+    config OPTIMIZATIONS_LOW
+        bool "Low"
+
+    config OPTIMIZATIONS_MEDIUM
+        bool "Medium"
+
+    config OPTIMIZATIONS_HIGH
+        bool "High"
+endchoice
+
+# running
+menu "Running via qemu"
 config CPU_COUNT
-    int "Hardware cpu count"
+    int "Cpu count"
     default 4
 
 config PHYSICAL_MEMORY_MB
-    int "Physical memory the system has (in MB)"
-    default 128
+    int "Physical memory (in MB)"
+    default 2048
+endmenu
 
+# hacking
+menu "Hacking"
 config DEBUG_CHECKS
     bool "Enable Debug checks"
     default y
@@ -37,20 +60,4 @@ choice LOGGING_LEVEL
     config LOGGING_LEVEL_ERROR
         bool "Error"
 endchoice
-
-choice OPTIMIZATIONS
-    prompt "Optimizations level"
-    default OPTIMIZATIONS_NONE
-
-    config OPTIMIZATIONS_NONE
-        bool "None"
-
-    config OPTIMIZATIONS_LOW
-        bool "Low"
-
-    config OPTIMIZATIONS_MEDIUM
-        bool "Medium"
-
-    config OPTIMIZATIONS_HIGH
-        bool "High"
-endchoice
+endmenu
