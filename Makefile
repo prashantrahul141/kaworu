@@ -119,7 +119,7 @@ cleandebug:
 # hacking ------------------
 .PHONY: clang-tidy
 clang-tidy: $(ELF)  ## Run clang-tidy on the entire source
-	run-clang-tidy -source-filter ".*\.(c|h)" -quiet
+	run-clang-tidy -source-filter ".*\.(c|h)" -quiet -allow-no-checks
 
 .PHONY: gdb
 gdb:
