@@ -5,6 +5,7 @@
 #include "config.h"
 #include "debug/log.h"
 #include "limine.h"
+#include "memory/kmem.h"
 #include "printf.h"
 
 /* limine boot protocol revision */
@@ -18,10 +19,6 @@ USED SECTION(
 	".limine_requests") static volatile struct limine_executable_cmdline_request
 	cmdline_request = { .id = LIMINE_EXECUTABLE_CMDLINE_REQUEST_ID,
 			    .revision = 0 };
-
-/* hhdm */
-USED SECTION(".limine_requests") static volatile struct limine_hhdm_request
-	hhdm_request = { .id = LIMINE_HHDM_REQUEST_ID, .revision = 0 };
 
 /* limine requests start and end markers */
 USED SECTION(".limine_requests_start") static volatile uint64_t
@@ -38,6 +35,7 @@ void kernel_main(void)
 
 	console_init(CONSOLE_BACKEND_FRAMEBUFFER);
 	printf_init();
+	kmem_init();
 
 	DEBUG("Hello from %s", "kaworu");
 	INFO("character c = %c", 'c');

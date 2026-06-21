@@ -33,4 +33,14 @@ void *kmem_alloc(void);
  */
 void kmem_free(void *ph_addr);
 
+/*
+ * converts physical address to virtual address
+ */
+void *phys_to_virt(usize phy);
+
+/*
+ * converts virtual address to physical address
+ */
+usize virt_to_phys(const void *virt);
+
 #endif // _KMEM_H_
