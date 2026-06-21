@@ -1,9 +1,7 @@
 #include "printf.h"
+#include "console.h"
 #include <stdarg.h>
 #include "types.h"
-#include "drivers/uart/uart.h"
-
-static fn_write write = uart_putchar;
 
 static u8 digits[] = "0123456789ABCDEF";
 
@@ -13,9 +11,12 @@ static void print_int(i32 x, u8 base, bool sign);
 static void print_double(f64 f, i32 precision);
 static void print_string(const u8 *s);
 
-void printf_init(fn_write _write)
+void printf_init()
 {
-	write = _write;
+}
+
+void printf_deinit(void)
+{
 }
 
 // NOLINTBEGIN(clang-analyzer-valist.Uninitialized,
@@ -32,7 +33,10 @@ void printf(const i8 *fmt, ...)
 			if ('%' == ch) {
 				state_format_specifier = true;
 			} else {
-				write(ch);
+				console_write_char(ch);
+				if (ch == '\n') {
+					console_write_char('\r');
+				}
 			}
 		} else {
 			/* in format specifier mode */
@@ -43,23 +47,23 @@ void printf(const i8 *fmt, ...)
 			} else if ('f' == ch) {
 				print_double(va_arg(ap, f64), 12);
 			} else if ('p' == ch) {
-				write('0');
-				write('x');
+				console_write_char('0');
+				console_write_char('x');
 				print_int(va_arg(ap, i32), 16, false);
 			} else if ('s' == ch) {
 				u8 *s = va_arg(ap, u8 *);
 				print_string(s);
 			} else if ('c' == ch) {
-				write((u8)va_arg(ap, i32));
+				console_write_char((u8)va_arg(ap, i32));
 			} else if ('b' == ch) {
 				bool v = (bool)va_arg(ap, i32);
 				print_string(
 					(const u8 *)(v ? "true" : "false"));
 			} else if ('%' == ch) {
-				write('%');
+				console_write_char('%');
 			} else {
-				write('%');
-				write(ch);
+				console_write_char('%');
+				console_write_char(ch);
 			}
 			state_format_specifier = false;
 		}
@@ -98,7 +102,7 @@ static void print_int(i32 x, u8 base, bool sign)
 	i32 i;
 	_print_int(buf, &i, x, base, sign);
 	while (--i >= 0)
-		write(buf[i]);
+		console_write_char(buf[i]);
 }
 
 static void print_double(f64 f, i32 precision)
@@ -125,20 +129,25 @@ static void print_double(f64 f, i32 precision)
 	}
 
 	if (is_negative)
-		write('-');
+		console_write_char('-');
 
 	while (--integer_buf_size >= 0)
-		write(buf_integer[integer_buf_size]);
+		console_write_char(buf_integer[integer_buf_size]);
 
-	write('.');
+	console_write_char('.');
 
 	i32 i = 0;
 	while (i < float_buf_size)
-		write(buf_float[i++]);
+		console_write_char(buf_float[i++]);
 }
 
 static void print_string(const u8 *s)
 {
-	while (*s != 0)
-		write(*s++);
+	while (*s != 0) {
+		console_write_char(*s);
+		if (*s == '\n') {
+			console_write_char('\r');
+		}
+		s++;
+	}
 }

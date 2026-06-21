@@ -59,6 +59,7 @@ void kernel_main(void)
 		printf("-1.123456 = %f\n", -1.123456);
 	}
 
+	printf_deinit();
 	console_deinit();
 	hlt(0);
 }

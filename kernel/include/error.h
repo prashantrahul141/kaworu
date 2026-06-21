@@ -4,16 +4,16 @@
 #include "common_defs.h"
 #include "types.h"
 
-#define ERR_LIST  \
-	X(EOK)    \
-	X(ENOMEM) \
-	X(EINVAL) \
-	X(ENOENT) \
-	X(EBUSY)  \
-	X(EPERM)  \
-	X(ENOSYS) \
-	X(EFAULT) \
-	X(EMAXERR)
+#define ERR_LIST                         \
+	X(EOK) /* ok! */                 \
+	X(ENOMEM) /* no memory */        \
+	X(EINVAL) /* invalid argument */ \
+	X(ENOENT) /* no such entity */   \
+	X(EBUSY) /* in use */            \
+	X(EPERM) /* no perms*/           \
+	X(ENOSYS) /* not implemented */  \
+	X(EFAULT) /* bad address? */     \
+	X(EMAXERR) /* max count for errors */
 
 #define X(i) i,
 typedef enum { ERR_LIST } errno_t;
@@ -45,6 +45,7 @@ const i8 *str_err_raw(errno_t err);
  */
 static inline MUST_CHECK bool IS_ERR(const void *value)
 {
+	// NOLINTNEXTLINE
 	return IS_ERR_VALUE((u64)value);
 }
 

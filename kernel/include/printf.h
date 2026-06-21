@@ -3,9 +3,7 @@
 
 #include "types.h"
 
-typedef void (*fn_write)(u8 c);
-
-void printf_init(fn_write write);
+void printf_init(void);
 /*
  * very dump printf implementation.
  * Supports:
@@ -18,6 +16,8 @@ void printf_init(fn_write write);
  *   %c -> character
  */
 void printf(const i8 *fmt, ...);
+
+void printf_deinit(void);
 
 #include "debug/panic.h"
 
