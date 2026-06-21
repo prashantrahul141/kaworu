@@ -20,6 +20,7 @@ static void kmem_free_range(usize start, usize end);
 
 void kmem_init(void)
 {
+	INFO("Initializing physical page memory allocator");
 	if (nullptr == memory_map_request.response) {
 		panic("memory was not mapped by limine");
 	}

@@ -113,7 +113,8 @@ static errno_t fb_console_init(void)
 		return ENOENT;
 	}
 
-	flanterm_set_text_bg(ft_ctx, 1, true);
+	flanterm_reset_text_bg(ft_ctx);
+	flanterm_reset_text_fg(ft_ctx);
 
 	console.backend_ctx = ft_ctx;
 	console.initialized = true;
