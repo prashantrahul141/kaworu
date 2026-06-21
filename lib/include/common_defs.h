@@ -16,6 +16,7 @@
 #define MUST_CHECK     __attribute__((warn_unused_result))
 #define PACKED	       __attribute__((packed))
 #define USED	       __attribute__((used))
+#define UNUSED	       __attribute__((unused))
 
 #define IS_ALIGNED(value, alignment) ((value) % (alignment) == 0)
 
@@ -23,7 +24,7 @@
 #define CLEAR_BIT(value, bit_idx) \
 	((value) & ~((__typeof__(value))1 << (bit_idx)))
 
-#define UNUSED(value) (void)(value)
+#define UNUSED_ARG(value) (void)(value)
 
 /* compiler intrinsics */
 #define UNREACHABLE() __builtin_unreachable()
