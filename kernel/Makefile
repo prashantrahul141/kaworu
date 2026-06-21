@@ -40,6 +40,7 @@ ASM_SOURCES = $K/entry.S \
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
 C_SOURCES = $D/uart/uart.c \
+			$K/console.c \
 			$K/cpu.c \
 			$K/debug/printf.c \
 			$K/entry.c \
