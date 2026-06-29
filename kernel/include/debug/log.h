@@ -36,6 +36,30 @@
 		console_set_foreground(CONSOLE_COLOR_WHITE);           \
 	} while (0)
 
+#define USER_LOG_OK(fmt, ...)                                       \
+	do {                                                        \
+		console_set_background(CONSOLE_COLOR_GREEN_BRIGHT); \
+		console_set_foreground(CONSOLE_COLOR_BLACK);        \
+		printf("[ OK ]");                                   \
+		console_set_foreground(CONSOLE_COLOR_GREEN_BRIGHT); \
+		console_set_background(CONSOLE_COLOR_BLACK);        \
+		printf(" " fmt "\n", ##__VA_ARGS__);                \
+		console_set_background(CONSOLE_COLOR_BLACK);        \
+		console_set_foreground(CONSOLE_COLOR_WHITE);        \
+	} while (0)
+
+#define USER_LOG_WARN(fmt, ...)                                      \
+	do {                                                         \
+		console_set_background(CONSOLE_COLOR_YELLOW_BRIGHT); \
+		console_set_foreground(CONSOLE_COLOR_BLACK);         \
+		printf("[ WARN ]");                                  \
+		console_set_foreground(CONSOLE_COLOR_YELLOW_BRIGHT); \
+		console_set_background(CONSOLE_COLOR_BLACK);         \
+		printf(" " fmt "\n", ##__VA_ARGS__);                 \
+		console_set_background(CONSOLE_COLOR_BLACK);         \
+		console_set_foreground(CONSOLE_COLOR_WHITE);         \
+	} while (0)
+
 #if LEVEL > LEVEL_TRACE
 	#define TRACE(fmt, ...)
 #else
@@ -51,14 +75,14 @@
 #endif
 
 #if LEVEL > LEVEL_INFO
-	#define INFO(fmt, ...)
+	#define INFO(fmt, ...) USER_LOG_OK(fmt, ##__VA_ARGS__)
 #else
 	#define INFO(fmt, ...) \
 		LOG(INFO, CONSOLE_COLOR_GREEN_BRIGHT, fmt, ##__VA_ARGS__)
 #endif
 
 #if LEVEL > LEVEL_WARN
-	#define WARN(fmt, ...)
+	#define WARN(fmt, ...) USER_LOG_WARN(fmt, ##__VA_ARGS__)
 #else
 	#define WARN(fmt, ...) \
 		LOG(WARN, CONSOLE_COLOR_YELLOW_BRIGHT, fmt, ##__VA_ARGS__)
