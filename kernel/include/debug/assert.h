@@ -3,8 +3,9 @@
 
 #include "panic.h"
 
-#define ASSERT(exp, msg) \
-	if (exp)         \
-	panic("assertion failed: %s : %s", #exp, msg)
+/* exp - should be something we need to make sure is true */
+#define ASSERT(exp, fmt, ...) \
+	if (!(exp))           \
+	panic("assertion failed: %s : " fmt, #exp, ##__VA_ARGS__)
 
 #endif // _ASSERT_H_
