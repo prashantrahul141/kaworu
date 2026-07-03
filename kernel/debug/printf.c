@@ -25,6 +25,12 @@ void printf(const i8 *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
+	vprintf(fmt, ap);
+	va_end(ap);
+}
+
+void vprintf(const i8 *fmt, va_list ap)
+{
 	bool state_format_specifier = false;
 	for (usize i = 0; fmt[i] != 0; i++) {
 		u8 ch = fmt[i] & 0xFF;
@@ -68,9 +74,8 @@ void printf(const i8 *fmt, ...)
 			state_format_specifier = false;
 		}
 	}
-
-	va_end(ap);
 }
+
 // NOLINTEND(clang-analyzer-valist.Uninitialized,
 // clang-analyzer-valist.Uninitialized)
 

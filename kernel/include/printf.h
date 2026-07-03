@@ -2,6 +2,7 @@
 #define _PRINT_H_
 
 #include "types.h"
+#include <stdarg.h>
 
 void printf_init(void);
 /*
@@ -16,6 +17,8 @@ void printf_init(void);
  *   %c -> character
  */
 void printf(const i8 *fmt, ...);
+
+void vprintf(const i8 *fmt, va_list arg);
 
 void printf_deinit(void);
 
