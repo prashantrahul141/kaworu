@@ -23,18 +23,28 @@
 	#define LEVEL LEVEL_ERROR
 #endif
 
-#define LOG(level_str, color, fmt, ...)                                \
-	do {                                                           \
-		console_set_background((color));                       \
-		console_set_foreground(CONSOLE_COLOR_BLACK);           \
-		printf("[ " #level_str " ]");                          \
-		console_set_foreground((color));                       \
-		console_set_background(CONSOLE_COLOR_BLACK);           \
-		printf(" %s:%s:%d: " fmt "\n", __FILE__, __FUNCTION__, \
-		       __LINE__, ##__VA_ARGS__);                       \
-		console_set_background(CONSOLE_COLOR_BLACK);           \
-		console_set_foreground(CONSOLE_COLOR_WHITE);           \
-	} while (0)
+static inline void __log(const i8 *level_str, const ConsoleColor color,
+			 const i8 *file, const i8 *func, usize line,
+			 const i8 *fmt, ...)
+{
+	console_set_background(color);
+	console_set_foreground(CONSOLE_COLOR_BLACK);
+	printf("[ ");
+	printf(level_str);
+	printf(" ]");
+	console_set_foreground(color);
+	console_set_background(CONSOLE_COLOR_BLACK);
+	printf(" %s:%s:%d: ", file, func, line);
+	va_list args;
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	console_set_background(CONSOLE_COLOR_BLACK);
+	console_set_foreground(CONSOLE_COLOR_WHITE);
+}
+
+#define LOG(level_str, color, fmt, ...)                                      \
+	__log(#level_str, color, __FILE__, __FUNCTION__, __LINE__, fmt "\n", \
+	      ##__VA_ARGS__)
 
 #define USER_LOG_OK(fmt, ...)                                       \
 	do {                                                        \
