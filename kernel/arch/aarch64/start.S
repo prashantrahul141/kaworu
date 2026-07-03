@@ -1,12 +1,12 @@
-#include "entry.S"
+#include "arch/aarch64/exception.S"
 #include "config.h"
 
 .section .text.boot
 
 .extern kernel_main
 
-.global _start
-_start:
+.global start
+start:
     /* disable all interrupts */
     disable_interrupts
 

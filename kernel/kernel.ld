@@ -1,6 +1,6 @@
 OUTPUT_FORMAT(elf64-littleaarch64)
 
-ENTRY(_start)
+ENTRY(start)
 
 PHDRS
 {

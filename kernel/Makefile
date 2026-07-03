@@ -35,15 +35,15 @@ U = ../user
 D = ../drivers
 TH = ../thirdparty
 # files are in the order of what `fd` returns
-ASM_SOURCES = $K/entry.S \
-			  $K/startup.S
+ASM_SOURCES = $K/arch/aarch64/exception.S \
+			  $K/arch/aarch64/start.S
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
 C_SOURCES = $D/uart/uart.c \
+			$K/arch/aarch64/exception.c \
 			$K/console.c \
 			$K/cpu.c \
 			$K/debug/printf.c \
-			$K/entry.c \
 			$K/error.c \
 			$K/init.c \
 			$K/limine_responses.c \
