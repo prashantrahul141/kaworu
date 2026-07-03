@@ -10,7 +10,7 @@
 	X(EINVAL) /* invalid argument */ \
 	X(ENOENT) /* no such entity */   \
 	X(EBUSY) /* in use */            \
-	X(EPERM) /* no perms*/           \
+	X(EPERM) /* no perms */          \
 	X(ENOSYS) /* not implemented */  \
 	X(EFAULT) /* bad address? */     \
 	X(EMAXERR) /* max count for errors */
@@ -73,7 +73,7 @@ static inline MUST_CHECK isize PTR_TO_ERR(const void *ptr)
  *          return EOK;
  *
  */
-static inline isize MUST_CHECK PTR_ERR_OR_ZERO(const void *ptr)
+static inline isize MUST_CHECK PTR_ERR_OR_OK(const void *ptr)
 {
 	if (IS_ERR(ptr))
 		return PTR_TO_ERR(ptr);

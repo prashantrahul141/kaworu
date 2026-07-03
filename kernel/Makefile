@@ -15,7 +15,7 @@ COMMON_FLAGS = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR)
 
 # debugging?
 ifeq ($(CONFIG_DEBUG_SYMBOLS),y)
-	COMMON_FLAGS += -ggdb
+	COMMON_FLAGS += -ggdb3
 endif
 
 # optimize?

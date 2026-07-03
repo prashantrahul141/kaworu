@@ -105,6 +105,11 @@ usize virt_to_phys(const void *virt)
 	return v - limine_hhdm()->offset;
 }
 
+/* converts virtual to physical for kernel symbols */
+usize kernel_virt_to_phys(usize va)
+{
+	return limine_kernel_address()->physical_base +
+	       (va - limine_kernel_address()->virtual_base);
 }
 
 static void kmem_free_range(usize start, usize end)

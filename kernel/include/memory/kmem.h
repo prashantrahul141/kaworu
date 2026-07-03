@@ -43,4 +43,7 @@ void *phys_to_virt(usize phy);
  */
 usize virt_to_phys(const void *virt);
 
+/* converts virtual to physical for kernel symbols */
+usize kernel_virt_to_phys(usize va);
+
 #endif // _KMEM_H_
