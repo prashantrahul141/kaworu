@@ -1,37 +1,17 @@
 #include "init.h"
-
-/* limine boot protocol revision */
-USED SECTION(".limine_requests") static volatile u64 limine_base_revision[] =
-	LIMINE_BASE_REVISION(6);
-
-/* limine requests */
-/* cpu stack size */
-USED SECTION(".limine_requests") static volatile struct limine_stack_size_request
-	stacksize_requst = { .id = LIMINE_STACK_SIZE_REQUEST_ID,
-			     .revision = 0,
-			     .stack_size = CONFIG_PER_CPU_STACK_SIZE };
-
-/* command line arguments */
-USED SECTION(
-	".limine_requests") static volatile struct limine_executable_cmdline_request
-	cmdline_request = { .id = LIMINE_EXECUTABLE_CMDLINE_REQUEST_ID,
-			    .revision = 0 };
-
-/* limine requests start and end markers */
-USED SECTION(".limine_requests_start") static volatile uint64_t
-	limine_requests_start_marker[] = LIMINE_REQUESTS_START_MARKER;
-
-USED SECTION(".limine_requests_end") static volatile uint64_t
-	limine_requests_end_marker[] = LIMINE_REQUESTS_END_MARKER;
+#include "memlayout.h"
+#include "memory/kmem.h"
 
 void kernel_main(void)
 {
-	if (false == LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision)) {
+	if (false == LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision())) {
 		hlt(0);
 	}
+	limine_responses_save();
 
 	console_init(CONSOLE_BACKEND_FRAMEBUFFER);
 	printf_init();
+	printf("booting...\n");
 	kmem_init();
 
 	DEBUG("Hello from %s", "kaworu");
