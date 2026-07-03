@@ -8,6 +8,6 @@ void irq_handler(void)
 {
 }
 
-void unhandled_exception_vector(void)
+void unhandled_exception_handler(ExceptionFrame *frame)
 {
 }

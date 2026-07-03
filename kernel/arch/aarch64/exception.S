@@ -21,9 +21,12 @@
  *  240    |  x30  ELR_EL1
  *  256    |  SPSR_EL1  ESR_EL1
  *  272    |  FAR_EL1
+ *  280    |  SP_EL0
  *
- * total size = 288
+ * total size = 296
  */
+
+.equ TF_SIZE, 296
 
 /*
  * Save register state on stack
@@ -32,7 +35,7 @@
  *       x0 => sp
  */
 .macro save_registers
-    sub sp, sp, #288
+    sub sp, sp, #TF_SIZE
 
     stp x0,  x1,  [sp, #0]
     stp x2,  x3,  [sp, #16]
@@ -60,6 +63,9 @@
     mrs x0, FAR_EL1
     str x0, [sp, #272]
 
+    mrs x0, SP_EL0
+    str x0, [sp, #280]
+
     mov x0, sp
 .endm
 
@@ -69,6 +75,9 @@
  * macro restore_registers();
  */
 .macro restore_registers
+    ldr x2, [sp, #280]
+    msr SP_EL0, x2
+
     ldp x30, x2, [sp, #240]
     msr ELR_EL1, x2
 
@@ -91,12 +100,12 @@
     ldp x2,  x3,  [sp, #16]
     ldp x0,  x1,  [sp, #0]
 
-    add sp, sp, #288
+    add sp, sp, #TF_SIZE
 .endm
 
 .extern exception_handler
 .extern irq_handler
-.extern unhandled_exception_vector
+.extern unhandled_exception_handler
 
 .macro vector_entry target
     b \target
@@ -239,26 +248,26 @@ lower_el_aarch32_serror:
 /* actual handlers here ------------- */
 curr_el_sp0_sync_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 
 curr_el_sp0_irq_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 curr_el_sp0_fiq_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 curr_el_sp0_serror_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
@@ -277,14 +286,14 @@ curr_el_spx_irq_handler:
 
 curr_el_spx_fiq_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 
 curr_el_spx_serror_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
@@ -296,43 +305,43 @@ lower_el_aarch64_sync_handler:
 
 lower_el_aarch64_irq_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 lower_el_aarch64_fiq_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 lower_el_aarch64_serror_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 lower_el_aarch32_sync_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 lower_el_aarch32_irq_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 lower_el_aarch32_fiq_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 
 lower_el_aarch32_serror_handler:
     save_registers
-    bl unhandled_exception_vector
+    bl unhandled_exception_handler
     restore_registers
     eret
 

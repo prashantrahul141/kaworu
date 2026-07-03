@@ -1,7 +1,17 @@
 # building
+menu "General Setup"
 config PER_CPU_STACK_SIZE
-    int "Stack size, should be 16 byte aligned"
-    default 4096
+    int "Per Cpu Stack size (should be 16 byte aligned)"
+    default 16384
+    help
+        - Stack size that will be allocated after memory management subsystem is up and running (should be 16 byte aligned)
+
+
+config BOOT_STACK_SIZE
+    int "Boot stack size (should be 16 byte aligned)"
+    default 16384
+    help
+        - Stack size that will be allocated before memory management subsystem is ready (should be 16 byte aligned)
 
 choice OPTIMIZATIONS
     prompt "Optimizations level"
@@ -19,6 +29,7 @@ choice OPTIMIZATIONS
     config OPTIMIZATIONS_HIGH
         bool "High"
 endchoice
+endmenu
 
 # running
 menu "Running via qemu"

@@ -2,7 +2,7 @@
 export VERSION_MAJOR = 0
 export VERSION_MINOR = 1
 
-CONFIG_FREE_TARGETS := help menuconfig defconfig clean cleanall cleandebug cleanconfig
+CONFIG_FREE_TARGETS := help menuconfig defconfig debugconfig clean cleanall cleandebug cleanconfig
 # Require .config for everything else
 ifeq ($(filter $(MAKECMDGOALS),$(CONFIG_FREE_TARGETS)),)
   ifeq ($(wildcard .config),)
@@ -47,7 +47,7 @@ _menuconfig:
 .PHONY: defconfig
 defconfig: _defconfig syncconfig ## Use default kernel config
 _defconfig:
-	@printf "\tCOPY configs/debugconfig\n"
+	@printf "\tCOPY configs/defaultconfig\n"
 	@defconfig configs/defaultconfig > /dev/null
 
 .PHONY: debugconfig
