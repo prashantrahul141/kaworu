@@ -43,16 +43,13 @@ SECTIONS
         *(.rodata .rodata.*)
     }
 
-    . = ALIGN(CONSTANT(MAXPAGESIZE));
     .data : {
         . = ALIGN(16);
         *(.sdata .sdata.*)
         . = ALIGN(16);
         *(.data .data.*)
     }
-    PROVIDE(__kernel_data_end = .);
 
-    . = ALIGN(CONSTANT(MAXPAGESIZE));
     .bss : {
         __bss_start = .;
         . = ALIGN(16);
@@ -63,6 +60,9 @@ SECTIONS
         *(COMMON);
         __bss_end = .;
     }
+
+    . = ALIGN(CONSTANT(MAXPAGESIZE));
+    PROVIDE(__kernel_data_end = .);
 
     /* Discard .note.* and .eh_frame* since they may cause issues on some hosts. */
     /DISCARD/ : {
