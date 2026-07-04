@@ -23,7 +23,7 @@ start:
     isb
 
     /* setup boot stack */
-    ldr x0, =boot_stack
+    ldr x0, =boot_stack_top
     mov sp, x0
     isb
 
