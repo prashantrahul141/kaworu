@@ -28,6 +28,9 @@ constexpr usize SCTLR_I = (1 << 12);
 /* break */
 #define brk(imm) asm volatile("brk #" #imm)
 
+/* udf */
+#define udf(imm) asm volatile("udf #" #imm)
+
 /* Data sync barrier */
 #define dsb(_type) asm volatile("dsb " _type)
 #define isb()	   asm volatile("isb")
@@ -73,6 +76,13 @@ static inline void w_intrd_enable(void)
 	do {                                \
 		asm volatile("hlt #" #imm); \
 		UNREACHABLE();              \
+	} while (0)
+
+/* wfe */
+#define wfe()                        \
+	do {                         \
+		asm volatile("wfe"); \
+		UNREACHABLE();       \
 	} while (0)
 
 /* read sctlr register */
