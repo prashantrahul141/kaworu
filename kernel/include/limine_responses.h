@@ -11,5 +11,6 @@ volatile u64 *limine_base_revision(void);
 volatile struct limine_memmap_response *limine_memmap(void);
 volatile struct limine_hhdm_response *limine_hhdm(void);
 volatile struct limine_executable_address_response *limine_kernel_address(void);
+volatile struct limine_framebuffer_response *limine_framebuffer(void);
 
 #endif

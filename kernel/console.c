@@ -3,14 +3,11 @@
 #include "debug/panic.h"
 #include "error.h"
 #include "limine.h"
+#include "limine_responses.h"
 #include "thirdparty/Flanterm/src/flanterm.h"
 #include "thirdparty/Flanterm/src/flanterm_backends/fb.h"
 
 /* limine request */
-USED SECTION(
-	".limine_requests") static volatile struct limine_framebuffer_request
-	framebuffer_request = { .id = LIMINE_FRAMEBUFFER_REQUEST_ID,
-				.revision = 0 };
 
 static Console console = { .initialized = false };
 
@@ -43,10 +40,12 @@ errno_t console_deinit(void)
 
 errno_t console_write(const i8 *data, usize size)
 {
-	if (console.initialized) {
-		if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
-			flanterm_write(console.backend_ctx, data, size);
-		}
+	if (!console.initialized) {
+		return EINVAL;
+	}
+
+	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
+		flanterm_write(console.backend_ctx, data, size);
 	}
 
 	return EOK;
@@ -91,15 +90,16 @@ static errno_t fb_console_init(void)
 		return EOK;
 	}
 
+	volatile struct limine_framebuffer_response *fb_response =
+		limine_framebuffer();
+
 	/* ensure we got a framebuffer */
-	if (nullptr == framebuffer_request.response ||
-	    framebuffer_request.response->framebuffer_count < 1) {
+	if (nullptr == fb_response || fb_response->framebuffer_count < 1) {
 		return ENOENT;
 	}
 
 	/* Fetch the first framebuffer */
-	struct limine_framebuffer *fb =
-		framebuffer_request.response->framebuffers[0];
+	struct limine_framebuffer *fb = fb_response->framebuffers[0];
 
 	/* create fb context */
 	struct flanterm_context *ft_ctx = flanterm_fb_init(

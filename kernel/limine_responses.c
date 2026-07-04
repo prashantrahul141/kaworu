@@ -53,6 +53,17 @@ volatile struct limine_executable_address_response *limine_kernel_address(void)
 	return _limine_kernel_address.response;
 }
 
+/* framebuffer */
+USED SECTION(
+	".limine_requests") static volatile struct limine_framebuffer_request
+	_limine_framebuffer = { .id = LIMINE_FRAMEBUFFER_REQUEST_ID,
+				.revision = 0 };
+
+volatile struct limine_framebuffer_response *limine_framebuffer(void)
+{
+	return _limine_framebuffer.response;
+}
+
 /* limine requests start and end markers */
 USED SECTION(".limine_requests_start") static volatile uint64_t
 	limine_requests_start_marker[] = LIMINE_REQUESTS_START_MARKER;
