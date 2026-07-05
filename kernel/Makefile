@@ -48,6 +48,7 @@ C_SOURCES = $D/uart/uart.c \
 			$K/init.c \
 			$K/limine_responses.c \
 			$K/memory/kmem.c \
+			$K/memory/vm_mem.c \
 			$K/spinlock.c \
 			$L/string.c
 

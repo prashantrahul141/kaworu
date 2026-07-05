@@ -1,18 +1,18 @@
 #include "init.h"
-#include "memlayout.h"
-#include "memory/kmem.h"
 
 void kernel_main(void)
 {
 	if (false == LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision())) {
 		hlt(0);
 	}
+
 	limine_responses_save();
 
 	console_init(CONSOLE_BACKEND_FRAMEBUFFER);
 	printf_init();
 	printf("booting...\n");
 	kmem_init();
+	vm_mem_init();
 
 	DEBUG("Hello from %s", "kaworu");
 	INFO("character c = %c", 'c');
@@ -29,5 +29,4 @@ void kernel_main(void)
 
 	printf_deinit();
 	console_deinit();
-	hlt(0);
 }
