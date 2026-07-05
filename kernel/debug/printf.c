@@ -6,8 +6,8 @@
 static u8 digits[] = "0123456789ABCDEF";
 
 /* static function declarations */
-static void _print_int(u8 buf[static 16], i32 *size, int x, u8 base, bool sign);
-static void print_int(i32 x, u8 base, bool sign);
+static void _print_int(u8 buf[static 32], i32 *size, i64 x, u8 base, bool sign);
+static void print_int(i64 x, u8 base, bool sign);
 static void print_double(f64 f, i32 precision);
 static void print_string(const u8 *s);
 
@@ -47,15 +47,15 @@ void vprintf(const i8 *fmt, va_list ap)
 		} else {
 			/* in format specifier mode */
 			if ('d' == ch) {
-				print_int(va_arg(ap, i32), 10, true);
+				print_int(va_arg(ap, i64), 10, true);
 			} else if ('x' == ch) {
-				print_int(va_arg(ap, i32), 16, false);
+				print_int(va_arg(ap, i64), 16, false);
 			} else if ('f' == ch) {
 				print_double(va_arg(ap, f64), 12);
 			} else if ('p' == ch) {
 				console_write_char('0');
 				console_write_char('x');
-				print_int(va_arg(ap, i32), 16, false);
+				print_int(va_arg(ap, i64), 16, false);
 			} else if ('s' == ch) {
 				u8 *s = va_arg(ap, u8 *);
 				print_string(s);
@@ -79,15 +79,15 @@ void vprintf(const i8 *fmt, va_list ap)
 // NOLINTEND(clang-analyzer-valist.Uninitialized,
 // clang-analyzer-valist.Uninitialized)
 
-static void _print_int(u8 buf[static 16], i32 *size, int x, u8 base, bool sign)
+static void _print_int(u8 buf[static 32], i32 *size, i64 x, u8 base, bool sign)
 {
-	u32 xx = 0;
+	u64 xx = 0;
 	bool is_negative = false;
 	if (sign && x < 0) {
 		is_negative = true;
-		xx = (u32)-x;
+		xx = (u64)-x;
 	} else {
-		xx = (u32)x;
+		xx = (u64)x;
 	}
 
 	i32 i = 0;
@@ -101,9 +101,9 @@ static void _print_int(u8 buf[static 16], i32 *size, int x, u8 base, bool sign)
 	*size = i;
 }
 
-static void print_int(i32 x, u8 base, bool sign)
+static void print_int(i64 x, u8 base, bool sign)
 {
-	u8 buf[16] = { 0 };
+	u8 buf[32] = { 0 };
 	i32 i;
 	_print_int(buf, &i, x, base, sign);
 	while (--i >= 0)
@@ -120,7 +120,7 @@ static void print_double(f64 f, i32 precision)
 
 	u64 integer = (u64)f;
 	double fraction = f - (f64)integer;
-	u8 buf_integer[16] = { 0 };
+	u8 buf_integer[32] = { 0 };
 	i32 integer_buf_size;
 	_print_int(buf_integer, &integer_buf_size, (i32)integer, 10, false);
 
