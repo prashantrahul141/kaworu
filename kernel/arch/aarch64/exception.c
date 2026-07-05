@@ -68,175 +68,193 @@ static inline void print_regs(ExceptionFrame *frame)
 #undef P
 }
 
-static inline const i8 *esr_ec_decode(u64 ec, u64 iss)
+typedef struct {
+	const i8 *description;
+	bool skip_instr;
+} EcDecoded;
+
+static inline EcDecoded esr_ec_decode(u64 ec, u64 iss)
 {
 	// TODO: parse iss value depending on the type of exception class.
-
 	UNUSED_ARG(iss);
 
-	const i8 *description = nullptr;
+	EcDecoded ret = { .description = nullptr, .skip_instr = false };
+
 	switch (ec) {
 	case 0b000000:
 	default: {
-		description = "Unknown reason";
+		ret.description = "Unknown reason";
 		break;
 	}
 	case 0b000001:
-		description = "Wrapped WF* instruction execution";
+		ret.description = "Wrapped WF* instruction execution";
 		break;
 
 	case 0b000011:
-		description = "Trapped MCR or MRC access with coproc=0b1111";
+		ret.description = "Trapped MCR or MRC access with "
+				  "coproc=0b1111";
 		break;
 
 	case 0b000100:
-		description = "Trapped MCRR or MRRC access with coproc=0b1111";
+		ret.description = "Trapped MCRR or MRRC access with "
+				  "coproc=0b1111";
 		break;
 
 	case 0b000101:
-		description = "Trapped MCR or MRC access with coproc=0b1110";
+		ret.description = "Trapped MCR or MRC access with "
+				  "coproc=0b1110";
 		break;
 
 	case 0b000110:
-		description = "Trapped LDC or STC access";
+		ret.description = "Trapped LDC or STC access";
 		break;
 
 	case 0b000111:
-		description = "Trapped access to SVE, Advanced SIMD or "
-			      "floating point";
+		ret.description = "Trapped access to SVE, Advanced SIMD or "
+				  "floating point";
 		break;
 
 	case 0b001010:
-		description = "Trapped execution of an LD64B, ST64B, ST64BV, "
-			      "or ST64BV0 instruction";
+		ret.description = "Trapped execution of an LD64B, ST64B, "
+				  "ST64BV, "
+				  "or ST64BV0 instruction";
 		break;
 
 	case 0b001100:
-		description = "Trapped MRRC access with (coproc==0b1110)";
+		ret.description = "Trapped MRRC access with (coproc==0b1110)";
 		break;
 
 	case 0b001101:
-		description = "Branch Target Exception";
+		ret.description = "Branch Target Exception";
 		break;
 
 	case 0b001110:
-		description = "Illegal Execution state";
+		ret.description = "Illegal Execution state";
 		break;
 
 	case 0b010001:
-		description = "SVC instruction execution in AArch32 state";
+		ret.description = "SVC instruction execution in AArch32 state";
 		break;
 
 	case 0b010101:
-		description = "SVC instruction execution in AArch64 state";
+		ret.description = "SVC instruction execution in AArch64 state";
 		break;
 
 	case 0b010110:
-		description = "HVC instruction execution in AArch64 state";
+		ret.description = "HVC instruction execution in AArch64 state";
 		break;
 
 	case 0b010111:
-		description = "SMC instruction execution in AArch64 state";
+		ret.description = "SMC instruction execution in AArch64 state";
 		break;
 
 	case 0b011000:
-		description = "Trapped MSR, MRS or System instruction "
-			      "execution in AArch64 state";
+		ret.description = "Trapped MSR, MRS or System instruction "
+				  "execution in AArch64 state";
 		break;
 
 	case 0b011001:
-		description = "Access to SVE functionality trapped as a result "
-			      "of CPACR_EL1.ZEN, CPTR_EL2.ZEN, CPTR_EL2.TZ, or "
-			      "CPTR_EL3.EZ";
+		ret.description = "Access to SVE functionality trapped as a "
+				  "result "
+				  "of CPACR_EL1.ZEN, CPTR_EL2.ZEN, "
+				  "CPTR_EL2.TZ, or "
+				  "CPTR_EL3.EZ";
 		break;
 
 	case 0b011100:
-		description = "Exception from a Pointer Authentication "
-			      "instruction authentication failure";
+		ret.description = "Exception from a Pointer Authentication "
+				  "instruction authentication failure";
 		break;
 
 	case 0b100000:
-		description = "Instruction Abort from a lower Exception level";
+		ret.description = "Instruction Abort from a lower Exception "
+				  "level";
 		break;
 
 	case 0b100001:
-		description = "Instruction Abort taken without a change in "
-			      "Exception level";
+		ret.description = "Instruction Abort taken without a change in "
+				  "Exception level";
 		break;
 
 	case 0b100010:
-		description = "PC alignment fault exception";
+		ret.description = "PC alignment fault exception";
 		break;
 
 	case 0b100100:
-		description = "Data Abort from a lower Exception level";
+		ret.description = "Data Abort from a lower Exception level";
 		break;
 
 	case 0b100101:
-		description = "Data Abort taken without a change in Exception "
-			      "level";
+		ret.description = "Data Abort taken without a change in "
+				  "Exception "
+				  "level";
 		break;
 
 	case 0b100110:
-		description = "SP alignment fault exception";
+		ret.description = "SP alignment fault exception";
 		break;
 
 	case 0b101000:
-		description = "Trapped floating-point exception taken from "
-			      "AArch32 state";
+		ret.description = "Trapped floating-point exception taken from "
+				  "AArch32 state";
 		break;
 
 	case 0b101100:
-		description = "Trapped floating-point exception taken from "
-			      "AArch64 state";
+		ret.description = "Trapped floating-point exception taken from "
+				  "AArch64 state";
 		break;
 
 	case 0b101111:
-		description = "SError interrupt";
+		ret.description = "SError interrupt";
 		break;
 
 	case 0b110000:
-		description = "Breakpoint exception from a lower Exception "
-			      "level";
+		ret.description = "Breakpoint exception from a lower Exception "
+				  "level";
 		break;
 
 	case 0b110001:
-		description = "Breakpoint exception taken without a change in "
-			      "Exception level";
+		ret.description = "Breakpoint exception taken without a change "
+				  "in "
+				  "Exception level";
 		break;
 
 	case 0b110010:
-		description = "Software Step exception from a lower Exception "
-			      "level";
+		ret.description = "Software Step exception from a lower "
+				  "Exception "
+				  "level";
 		break;
 
 	case 0b110011:
-		description = "Software Step exception taken without a change "
-			      "in Exception level";
+		ret.description = "Software Step exception taken without a "
+				  "change "
+				  "in Exception level";
 		break;
 
 	case 0b110100:
-		description = "Watchpoint exception from a lower Exception "
-			      "level";
+		ret.description = "Watchpoint exception from a lower Exception "
+				  "level";
 		break;
 
 	case 0b110101:
-		description = "Watchpoint exception taken without a change in "
-			      "Exception level";
+		ret.description = "Watchpoint exception taken without a change "
+				  "in "
+				  "Exception level";
 		break;
 
 	case 0b111000:
-		description = "BKPT instruction execution in AArch32 state";
+		ret.description = "BKPT instruction execution in AArch32 state";
 		break;
 
 	case 0b111100:
-		description = "BRK instruction execution in AArch64 state";
+		ret.description = "BRK instruction execution in AArch64 state";
+		ret.skip_instr = true;
 		break;
 	}
-	return description;
+	return ret;
 }
 
-static inline const i8 *decode_esr(u64 esr)
+static inline EcDecoded decode_esr(u64 esr)
 {
 	u64 ec = EXTRACT_BITS(esr, 31, 26);
 	u64 iss = EXTRACT_BITS(esr, 24, 0);
@@ -245,6 +263,9 @@ static inline const i8 *decode_esr(u64 esr)
 
 static void print_exception_class_info(ExceptionFrame *frame)
 {
-	const i8 *ec = decode_esr(frame->ESR_EL1);
-	printf("\tException class: %s\n", ec);
+	EcDecoded ec = decode_esr(frame->ESR_EL1);
+	if (ec.skip_instr) {
+		frame->ELR_EL1 += 4;
+	}
+	printf("\tException class: %s\n", ec.description);
 }
