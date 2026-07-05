@@ -2,10 +2,11 @@ ISO_PATH=kaworu.iso
 EFI_FIRMWARE=. # Point to efi firmware for qemu
 
 qemu-system-aarch64 -M virt -cpu cortex-a72 \
-			-m 2G \
+			-m 128M \
 			-device ramfb \
 			-device qemu-xhci \
 			-device usb-kbd \
 			-device usb-tablet \
+			-serial stdio \
 			-drive if=pflash,unit=0,format=raw,file="$EFI_FIRMWARE",readonly=on \
 			-cdrom "$ISO_PATH"
