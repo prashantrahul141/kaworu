@@ -92,7 +92,8 @@ make run
     - [x] Set up Flanterm
 
 - [x] Console
-    - [x] initialization and usage with backend
+    - [x] initialization and use framebuffer backend
+    - [x] initialization and use uart backend
 
 - [x] Printf implementation
     - [x] `printf`, `vprintf`
