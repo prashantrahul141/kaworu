@@ -13,6 +13,7 @@ void kernel_main(void)
 	printf("booting...\n");
 	kmem_init();
 	vm_mem_init();
+	uart_init();
 
 	DEBUG("Hello from %s", "kaworu");
 	INFO("character c = %c", 'c');

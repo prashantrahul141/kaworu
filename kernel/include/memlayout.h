@@ -41,6 +41,8 @@ extern symbol __kernel_data_end;
 
 constexpr usize PAGE_SIZE = 4096;
 
-constexpr usize UART_BASE = 0x09000000;
+constexpr usize UART_BASE_VIRT = 0xffffffff90000000ULL;
+constexpr usize UART_BASE = UART_BASE_VIRT;
+constexpr usize UART_BASE_PHY = 0x09000000ULL;
 
 #endif // __MEMLAYOUT_H_

@@ -111,7 +111,15 @@ void vm_mem_init(void)
 		}
 	}
 
+	/* mapping mmios */
+	map_device(kernel_page_table, UART_BASE_VIRT, UART_BASE_PHY, PAGE_SIZE);
+
 	DEBUG("mapping complete");
+
+	/* make sure all writes are complete at this point. */
+	dsb(BARRIER_ALL);
+	isb();
+
 	switch_table();
 }
 

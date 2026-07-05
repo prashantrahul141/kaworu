@@ -31,6 +31,7 @@ QEMU_FLAGS := -cpu cortex-a72 \
 			-device qemu-xhci \
 			-device usb-kbd \
 			-device usb-tablet \
+			-serial stdio \
 			-drive if=pflash,unit=0,format=raw,file=$(UEFI_FIRMWARE),readonly=on \
 			-cdrom $(ISO)
 			# TODO:  -smp $(CONFIG_CPU_COUNT) \

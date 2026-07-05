@@ -11,6 +11,7 @@
 #include "memory/vm_mem.h"
 #include "printf.h"
 #include "limine_responses.h"
+#include "uart/uart.h"
 
 /*
  * Kernel's entry point in C.
