@@ -96,7 +96,7 @@ $(OUT): $(OBJS) $(LINKER_SCRIPT)
 # external c files compilation
 %.c.e.o: %.c
 	@printf "\tCC %s\n" $(shell basename $@)
-	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) -c $< -o $@
+	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 # cleaning -------------------
 .PHONY: clean
