@@ -130,7 +130,7 @@ clang-tidy: $(ELF)  ## Run clang-tidy on the entire source
 
 .PHONY: gdb
 gdb:
-	gdb $(ELF) -ex "target remote :1234"
+	gdb $(ELF) -ex "target remote :1234" -ex "b start" -ex "c"
 
 .PHONY: stripped
 stripped: $(ELF)
