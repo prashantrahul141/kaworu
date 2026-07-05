@@ -9,6 +9,7 @@
 	do {                               \
 		FATAL(fmt, ##__VA_ARGS__); \
 		brk(0);                    \
+		wfi();                     \
 		UNREACHABLE();             \
 	} while (0)
 
