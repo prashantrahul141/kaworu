@@ -6,46 +6,69 @@
 #include "limine_responses.h"
 #include "thirdparty/Flanterm/src/flanterm.h"
 #include "thirdparty/Flanterm/src/flanterm_backends/fb.h"
+#include "uart/uart.h"
 
-/* limine request */
-
-static Console console = { .initialized = false };
+static Console fb_console = {
+	.initialized = false,
+	.is_writable = true,
+	.is_readable = false,
+};
+static Console uart_console = { .initialized = false,
+				.is_writable = true,
+				.is_readable = true };
 
 /* static function declarations */
 static errno_t fb_console_init(void);
 static errno_t fb_console_deinit(void);
+static errno_t uart_console_init(void);
+static errno_t uart_console_deinit(void);
 
 void console_init(ConsoleDeviceBackendType which_backend)
 {
-	if (CONSOLE_BACKEND_FRAMEBUFFER == which_backend) {
+	switch (which_backend) {
+	case CONSOLE_BACKEND_FRAMEBUFFER: {
 		if (EOK != fb_console_init()) {
 			panic("Failed to initialize frame buffer console");
 		}
+		break;
+	}
+
+	case CONSOLE_BACKEND_UART: {
+		if (EOK != uart_console_init()) {
+			panic("Failed to initialize uart console");
+		}
+		break;
+	}
+
+	default: {
+		panic("unknown console backend");
+	}
 	}
 }
 
 errno_t console_deinit(void)
 {
-	if (!console.initialized) {
-		return EINVAL;
+	if (fb_console.initialized) {
+		fb_console_deinit();
+		fb_console.initialized = false;
 	}
 
-	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
-		return fb_console_deinit();
+	if (uart_console.initialized) {
+		uart_console_deinit();
+		uart_console.initialized = false;
 	}
 
-	console.initialized = false;
 	return EOK;
 }
 
 errno_t console_write(const i8 *data, usize size)
 {
-	if (!console.initialized) {
-		return EINVAL;
+	if (fb_console.initialized) {
+		flanterm_write(fb_console.backend_ctx, data, size);
 	}
 
-	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
-		flanterm_write(console.backend_ctx, data, size);
+	if (uart_console.initialized) {
+		uart_printn(data, size);
 	}
 
 	return EOK;
@@ -58,12 +81,8 @@ errno_t console_write_char(i8 data)
 
 errno_t console_set_background(ConsoleColor c)
 {
-	if (!console.initialized) {
-		return EINVAL;
-	}
-
-	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
-		flanterm_set_text_bg(console.backend_ctx, c.color, c.bright);
+	if (fb_console.initialized) {
+		flanterm_set_text_bg(fb_console.backend_ctx, c.color, c.bright);
 	}
 
 	return EOK;
@@ -71,12 +90,8 @@ errno_t console_set_background(ConsoleColor c)
 
 errno_t console_set_foreground(ConsoleColor c)
 {
-	if (!console.initialized) {
-		return EINVAL;
-	}
-
-	if (CONSOLE_BACKEND_FRAMEBUFFER == console.backend) {
-		flanterm_set_text_fg(console.backend_ctx, c.color, c.bright);
+	if (fb_console.initialized) {
+		flanterm_set_text_fg(fb_console.backend_ctx, c.color, c.bright);
 	}
 
 	return EOK;
@@ -85,8 +100,7 @@ errno_t console_set_foreground(ConsoleColor c)
 static errno_t fb_console_init(void)
 {
 	/* are we already initialized? */
-	if (console.initialized &&
-	    console.backend == CONSOLE_BACKEND_FRAMEBUFFER) {
+	if (fb_console.initialized) {
 		return EOK;
 	}
 
@@ -116,15 +130,26 @@ static errno_t fb_console_init(void)
 	flanterm_reset_text_bg(ft_ctx);
 	flanterm_reset_text_fg(ft_ctx);
 
-	console.backend_ctx = ft_ctx;
-	console.initialized = true;
-	console.backend = CONSOLE_BACKEND_FRAMEBUFFER;
+	fb_console.backend_ctx = ft_ctx;
+	fb_console.initialized = true;
 	return EOK;
 }
 
 static errno_t fb_console_deinit(void)
 {
-	flanterm_deinit(console.backend_ctx, nullptr);
-	console.backend_ctx = nullptr;
+	flanterm_deinit(fb_console.backend_ctx, nullptr);
+	fb_console.backend_ctx = nullptr;
+	return EOK;
+}
+
+static errno_t uart_console_init(void)
+{
+	uart_init();
+	uart_console.initialized = true;
+	return EOK;
+}
+
+static errno_t uart_console_deinit(void)
+{
 	return EOK;
 }

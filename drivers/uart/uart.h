@@ -41,17 +41,17 @@ void uart_init(void);
 /*
  * Put a single byte to uart
  */
-void uart_putchar(u8 c);
+void uart_putchar(i8 c);
 
 /*
  * Put a c string to uart until null is encountered
  */
-void uart_print(const u8 *s);
+void uart_print(const i8 *s);
 
 /*
  * Put first n characters of string s
  */
-void uart_printn(const u8 *s, usize n);
+void uart_printn(const i8 *s, usize n);
 
 /*
  * Get byte from uart

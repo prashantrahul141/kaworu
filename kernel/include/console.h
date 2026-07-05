@@ -79,15 +79,13 @@ typedef void (*fn_write)(u8 *c, usize len);
 
 typedef enum {
 	CONSOLE_BACKEND_FRAMEBUFFER,
+	CONSOLE_BACKEND_UART
 } ConsoleDeviceBackendType;
 
 typedef struct {
 	bool initialized;
 	bool is_writable;
 	bool is_readable;
-	ConsoleDeviceBackendType backend;
-	/* write function */
-	fn_write write;
 	/* data stored by the backend */
 	void *backend_ctx;
 } Console;

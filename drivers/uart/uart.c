@@ -17,19 +17,19 @@ void uart_init(void)
 	pl011_init();
 }
 
-void uart_putchar(u8 c)
+void uart_putchar(i8 c)
 {
 	wait_tx_complete();
 	write_reg(UARTDR, c);
 }
 
-inline void uart_print(const u8 *s)
+inline void uart_print(const i8 *s)
 {
 	while (*s != 0)
 		uart_putchar(*s++);
 }
 
-inline void uart_printn(const u8 *s, usize n)
+inline void uart_printn(const i8 *s, usize n)
 {
 	while (n-- > 0)
 		uart_putchar(*s++);
