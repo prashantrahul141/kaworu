@@ -77,10 +77,9 @@ make run
 ## Todo
 
 - [x] Startup
-    - [x] lower exception level to el1
     - [x] Exception vectors
     - [x] Setup system registers
-    - [x] Setup per cpu stack
+    - [x] Setup boot cpu stack
     - [x] Enable interrupts
 
 - [x] Spinlock
@@ -89,17 +88,30 @@ make run
     - [x] init pl011
     - [x] `uart_putchar`/`uart_getchar`
 
+- [x] Framebuffer
+    - [x] Set up Flanterm
+
+- [x] Console
+    - [x] initialization and usage with backend
+
 - [x] Printf implementation
-    - [x] `printf`
+    - [x] `printf`, `vprintf`
     - [x] `panic`
+
+- [x] Logging
+    - [x] `DEBUG`, `INFO`, `WARN`, `ERROR`, `FATAL` conditional logging macros
+
+- [ ] Exception handling
+    - [x] Pretty exception dump
+    - [ ] Decode ESR_EL1, FAR_EL1, ELR_EL1
 
 - [x] Physical page allocator
     - [x] `kmem_alloc`/`kmem_free`
 
 - [ ] MMU
-    - [ ] page table setup
-    - [ ] map kernel
-    - [ ] map mmio
+    - [x] page table setup
+    - [x] map kernel
+    - [ ] map MMIO
 
 - [ ] Virtual Memory
     - [ ] kernel virtual allocator
@@ -108,10 +120,6 @@ make run
 
 - [ ] Kernel heap
     - [ ] `kalloc`/`kfree`
-
-- [ ] Exception handling
-    - [ ] Decode ESR_EL1, FAR_EL1, ELR_EL1
-    - [ ] Pretty exception dump
 
 - [ ] Interrupts
     - [ ] GIC distributor init and cpu interface init
