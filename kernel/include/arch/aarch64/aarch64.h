@@ -85,6 +85,13 @@ static inline void w_intrd_enable(void)
 		UNREACHABLE();       \
 	} while (0)
 
+/* wfi */
+#define wfi()                        \
+	do {                         \
+		asm volatile("wfi"); \
+		UNREACHABLE();       \
+	} while (0)
+
 /* read sctlr register */
 static inline u64 r_sctlr(void)
 {
