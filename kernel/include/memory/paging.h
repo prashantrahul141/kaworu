@@ -4,8 +4,6 @@
 #include "types.h"
 #include "common_defs.h"
 
-constexpr usize ENTRIES_PER_PAGE_TABLE = 512;
-
 typedef u64 pagetable_entry_t;
 typedef pagetable_entry_t *pagetable_t;
 
@@ -87,9 +85,9 @@ typedef union {
 static_assert(sizeof(PageDescriptor) == 8, "PageDescriptor is not 8 bytes?");
 
 /*
- * Init virtual memory for kernel
+ * Init pages for kernel
  * sets up page table entries AND switches page table.
  */
-void vm_mem_init(void);
+void kpages_init(void);
 
 #endif // _VM_MEM_H_

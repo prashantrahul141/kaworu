@@ -8,7 +8,7 @@
 #include "debug/log.h"
 #include "limine.h"
 #include "memory/kmem.h"
-#include "memory/vm_mem.h"
+#include "memory/paging.h"
 #include "printf.h"
 #include "limine_responses.h"
 #include "uart/uart.h"

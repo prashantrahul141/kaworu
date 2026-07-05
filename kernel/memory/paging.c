@@ -1,4 +1,4 @@
-#include "memory/vm_mem.h"
+#include "memory/paging.h"
 #include "aarch64/aarch64.h"
 #include "common_defs.h"
 #include "debug/log.h"
@@ -61,7 +61,7 @@ static MUST_CHECK TableDescriptor *table_next_table(TableDescriptor *td,
 
 static inline void switch_table();
 
-void vm_mem_init(void)
+void kpages_init(void)
 {
 	INFO("Initializing virtual memory manager");
 
