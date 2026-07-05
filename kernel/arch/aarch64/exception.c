@@ -2,14 +2,23 @@
 #include "aarch64/aarch64.h"
 #include "common_defs.h"
 
+typedef struct {
+	const i8 *description;
+	bool skip_instr;
+	bool halt;
+} EcDecoded;
+
 static inline void print_regs(ExceptionFrame *frame);
-static inline void print_exception_class_info(ExceptionFrame *frame);
+static inline EcDecoded print_exception_class_info(ExceptionFrame *frame);
 
 void exception_handler(ExceptionFrame *frame)
 {
 	printf("Caught exception:\n");
-	print_exception_class_info(frame);
+	EcDecoded ec = print_exception_class_info(frame);
 	print_regs(frame);
+	if (ec.halt) {
+		wfi();
+	}
 }
 
 void irq_handler(void)
@@ -68,17 +77,16 @@ static inline void print_regs(ExceptionFrame *frame)
 #undef P
 }
 
-typedef struct {
-	const i8 *description;
-	bool skip_instr;
-} EcDecoded;
-
 static inline EcDecoded esr_ec_decode(u64 ec, u64 iss)
 {
 	// TODO: parse iss value depending on the type of exception class.
 	UNUSED_ARG(iss);
 
-	EcDecoded ret = { .description = nullptr, .skip_instr = false };
+	EcDecoded ret = { .description = nullptr,
+			  // TODO: only skip for certain exceptions not all.
+			  .skip_instr = false,
+			  // TODO: only halt for certain exceptions not all.
+			  .halt = true };
 
 	switch (ec) {
 	case 0b000000:
@@ -261,11 +269,12 @@ static inline EcDecoded decode_esr(u64 esr)
 	return esr_ec_decode(ec, iss);
 }
 
-static void print_exception_class_info(ExceptionFrame *frame)
+static EcDecoded print_exception_class_info(ExceptionFrame *frame)
 {
 	EcDecoded ec = decode_esr(frame->ESR_EL1);
 	if (ec.skip_instr) {
 		frame->ELR_EL1 += 4;
 	}
 	printf("\tException class: %s\n", ec.description);
+	return ec;
 }
