@@ -19,6 +19,9 @@ typedef struct {
 	PhyChunk *free_list;
 } Kmem;
 
+/* is value page aligned */
+#define IS_PAGE_ALIGNED(value) IS_ALIGNED((value), PAGE_SIZE)
+
 /*
  * Init kernel physical memory allocator.
  */
