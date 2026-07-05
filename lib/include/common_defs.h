@@ -23,6 +23,10 @@
 #define SET_BIT(value, bit_idx) ((value) | ((__typeof__(value))1 << (bit_idx)))
 #define CLEAR_BIT(value, bit_idx) \
 	((value) & ~((__typeof__(value))1 << (bit_idx)))
+#define GET_BIT(value, bit_idx) (((value) >> (bit_idx)) & 1)
+#define EXTRACT_BITS(value, high, low) \
+	(((value) >> (low)) &          \
+	 (((__typeof__(value))1 << ((high) - (low) + 1)) - 1))
 
 #define UNUSED_ARG(value) (void)(value)
 
