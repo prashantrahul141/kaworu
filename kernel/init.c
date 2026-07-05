@@ -12,7 +12,7 @@ void kernel_main(void)
 	printf_init();
 	printf("booting...\n");
 	kmem_init();
-	kpages_init();
+	paging_init();
 	console_init(CONSOLE_BACKEND_UART);
 
 	printf("\nHello from kaworu\n\n");

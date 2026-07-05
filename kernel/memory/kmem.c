@@ -15,7 +15,7 @@ static void kmem_free_range(usize start, usize end);
 
 void kmem_init(void)
 {
-	INFO("Initializing physical page memory allocator");
+	INFO("Initializing physical page allocator");
 	if (nullptr == limine_memmap()) {
 		panic("memory was not mapped by limine");
 	}

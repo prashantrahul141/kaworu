@@ -1,6 +1,7 @@
 #ifndef _VM_MEM_H_
 #define _VM_MEM_H_
 
+#include "error.h"
 #include "types.h"
 #include "common_defs.h"
 
@@ -88,6 +89,24 @@ static_assert(sizeof(PageDescriptor) == 8, "PageDescriptor is not 8 bytes?");
  * Init pages for kernel
  * sets up page table entries AND switches page table.
  */
-void kpages_init(void);
+void paging_init(void);
+
+/*
+ * switch page table to our own page table
+ */
+void switch_table(void);
+
+/*
+ * maps given virtual address range to given physical address
+ */
+errno_t paging_map(TableDescriptor *page, usize va, usize pa, usize size,
+		   PagePerms perms, AttrIndex attr_index,
+		   PageShareability shareability, ExecPerms privilege_execution,
+		   ExecPerms underprivilege_execution);
+
+/*
+ * unmaps given virtual address range
+ */
+void paging_unmap(TableDescriptor *page, usize va, usize size);
 
 #endif // _VM_MEM_H_

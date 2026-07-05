@@ -39,7 +39,6 @@ constexpr usize PT_INDEX_MASK = 0x1FF;
 TableDescriptor *kernel_page_table;
 
 /* static declarations */
-
 static PageDescriptor *walk_pagetable(TableDescriptor *page, u64 va,
 				      bool allocate);
 
@@ -47,23 +46,14 @@ static inline errno_t map_device(TableDescriptor *table, usize va, usize pa,
 				 usize size);
 static inline errno_t map_text(TableDescriptor *table, usize va, usize pa,
 			       usize size);
-
 static inline errno_t map_data(TableDescriptor *table, usize va, usize pa,
 			       usize size);
-static errno_t map_va_to_pa(TableDescriptor *page, usize va, usize pa,
-			    usize size, PagePerms perms, AttrIndex attr_index,
-			    PageShareability shareability,
-			    ExecPerms privilege_execution,
-			    ExecPerms underprivilege_execution);
-
 static MUST_CHECK TableDescriptor *table_next_table(TableDescriptor *td,
 						    bool allocate);
 
-static inline void switch_table();
-
-void kpages_init(void)
+void paging_init(void)
 {
-	INFO("Initializing virtual memory manager");
+	INFO("Initializing paging and mapping kernel pages");
 
 	/* this is the root of address translation tree for kernel */
 	kernel_page_table = (TableDescriptor *)kmem_alloc();
@@ -92,6 +82,8 @@ void kpages_init(void)
 		struct limine_memmap_entry *entry =
 			limine_memmap()->entries[index];
 		switch (entry->type) {
+			// TODO: research about other types of entries and map
+			// them too.
 		case LIMINE_MEMMAP_FRAMEBUFFER: {
 			map_device(kernel_page_table,
 				   (usize)phys_to_virt(entry->base),
@@ -114,16 +106,14 @@ void kpages_init(void)
 	/* mapping mmios */
 	map_device(kernel_page_table, UART_BASE_VIRT, UART_BASE_PHY, PAGE_SIZE);
 
-	DEBUG("mapping complete");
-
 	/* make sure all writes are complete at this point. */
 	dsb(BARRIER_ALL);
 	isb();
 
-	switch_table();
+	DEBUG("mapping complete");
 }
 
-static inline void switch_table()
+void switch_table(void)
 {
 	DEBUG("swapping page table");
 
@@ -140,39 +130,11 @@ static inline void switch_table()
 	isb();
 }
 
-static inline errno_t map_device(TableDescriptor *page, usize va, usize pa,
-				 usize size)
-{
-	DEBUG("mapping device");
-	return map_va_to_pa(page, va, pa, size, EL1_READ_WRITE_EL0_NONE,
-			    ATTR_INDEX_DEVICE, SHAREABLE_NON_SHAREABLE,
-			    NOT_EXECUTABLE, NOT_EXECUTABLE);
-}
-
-static inline errno_t map_text(TableDescriptor *page, usize va, usize pa,
-			       usize size)
-{
-	DEBUG("mapping text");
-	return map_va_to_pa(page, va, pa, size, EL1_READ_ONLY_EL0_NONE,
-			    ATTR_INDEX_NORMAL, SHAREABLE_INNER_SHAREABLE,
-			    EXECUTABLE, NOT_EXECUTABLE);
-}
-
-static inline errno_t map_data(TableDescriptor *page, usize va, usize pa,
-			       usize size)
-{
-	DEBUG("mapping data");
-	return map_va_to_pa(page, va, pa, size, EL1_READ_WRITE_EL0_NONE,
-			    ATTR_INDEX_NORMAL, SHAREABLE_INNER_SHAREABLE,
-			    NOT_EXECUTABLE, NOT_EXECUTABLE);
-}
-
 /* maps given virtual address to physical address to */
-static errno_t map_va_to_pa(TableDescriptor *page, usize va, usize pa,
-			    usize size, PagePerms perms, AttrIndex attr_index,
-			    PageShareability shareability,
-			    ExecPerms privilege_execution,
-			    ExecPerms underprivilege_execution)
+errno_t paging_map(TableDescriptor *page, usize va, usize pa, usize size,
+		   PagePerms perms, AttrIndex attr_index,
+		   PageShareability shareability, ExecPerms privilege_execution,
+		   ExecPerms underprivilege_execution)
 {
 	DEBUG("Map va = %p, pa = %p, size = %p", va, pa, size);
 
@@ -205,7 +167,34 @@ static errno_t map_va_to_pa(TableDescriptor *page, usize va, usize pa,
 		pde->field.uxn_xn = underprivilege_execution;
 	}
 
+	tlb_flush();
 	return EOK;
+}
+
+void paging_unmap(TableDescriptor *page, usize va, usize size)
+{
+	DEBUG("Unmap va = %p, size = %p", va, size);
+
+	if (!IS_PAGE_ALIGNED(va)) {
+		panic("va = %p is not page aligned (%p)", va, PAGE_SIZE);
+	}
+
+	if (!IS_PAGE_ALIGNED(size)) {
+		panic("size = %p is not page aligned (%p)", size, PAGE_SIZE);
+	}
+
+	for (usize end = va + size; va < end; va += PAGE_SIZE) {
+		/* this contains a leaf node */
+		PageDescriptor *pde = walk_pagetable(page, va, false);
+		if (!pde->field.is_valid) {
+			panic("trying to unmap %p which is not a mapped page",
+			      va);
+		}
+
+		pde->raw = 0;
+	}
+
+	tlb_flush();
 }
 
 /* walks the given page table and return leaf descriptor */
@@ -216,8 +205,7 @@ static PageDescriptor *walk_pagetable(TableDescriptor *table, u64 va,
 	      allocate);
 
 	usize l0_index = L0_INDEX(va);
-	TableDescriptor *l1 =
-		table_next_table((TableDescriptor *)&table[l0_index], allocate);
+	TableDescriptor *l1 = table_next_table(&table[l0_index], allocate);
 
 	TRACE("\tl0_index =  %d, l1_table = %p", l0_index, l1);
 	if (IS_ERR(l1)) {
@@ -227,8 +215,7 @@ static PageDescriptor *walk_pagetable(TableDescriptor *table, u64 va,
 	}
 
 	usize l1_index = L1_INDEX(va);
-	TableDescriptor *l2 =
-		table_next_table((TableDescriptor *)&l1[l1_index], allocate);
+	TableDescriptor *l2 = table_next_table(&l1[l1_index], allocate);
 
 	TRACE("\tl1_index =  %d, l2_table = %p", l1_index, l2);
 	if (IS_ERR(l2)) {
@@ -238,8 +225,7 @@ static PageDescriptor *walk_pagetable(TableDescriptor *table, u64 va,
 	}
 
 	usize l2_index = L2_INDEX(va);
-	TableDescriptor *l3 =
-		table_next_table((TableDescriptor *)&l2[l2_index], allocate);
+	TableDescriptor *l3 = table_next_table(&l2[l2_index], allocate);
 
 	TRACE("\tl2_index =  %d, l3_table = %p", l2_index, l3);
 	if (IS_ERR(l3)) {
@@ -271,4 +257,31 @@ static MUST_CHECK TableDescriptor *table_next_table(TableDescriptor *td,
 	td->field.is_table = true;
 	td->field.next_level_address = PA_TO_PAGE_DESC(virt_to_phys(page));
 	return page;
+}
+
+static inline errno_t map_device(TableDescriptor *page, usize va, usize pa,
+				 usize size)
+{
+	DEBUG("mapping device");
+	return paging_map(page, va, pa, size, EL1_READ_WRITE_EL0_NONE,
+			  ATTR_INDEX_DEVICE, SHAREABLE_NON_SHAREABLE,
+			  NOT_EXECUTABLE, NOT_EXECUTABLE);
+}
+
+static inline errno_t map_text(TableDescriptor *page, usize va, usize pa,
+			       usize size)
+{
+	DEBUG("mapping text");
+	return paging_map(page, va, pa, size, EL1_READ_ONLY_EL0_NONE,
+			  ATTR_INDEX_NORMAL, SHAREABLE_INNER_SHAREABLE,
+			  EXECUTABLE, NOT_EXECUTABLE);
+}
+
+static inline errno_t map_data(TableDescriptor *page, usize va, usize pa,
+			       usize size)
+{
+	DEBUG("mapping data");
+	return paging_map(page, va, pa, size, EL1_READ_WRITE_EL0_NONE,
+			  ATTR_INDEX_NORMAL, SHAREABLE_INNER_SHAREABLE,
+			  NOT_EXECUTABLE, NOT_EXECUTABLE);
 }
