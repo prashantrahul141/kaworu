@@ -129,8 +129,12 @@ clang-tidy: $(ELF)  ## Run clang-tidy on the entire source
 	run-clang-tidy -source-filter ".*\.(c|h)" -quiet -allow-no-checks
 
 .PHONY: gdb
-gdb:
+gdb: ## Run gdb debugger
 	gdb $(ELF) -ex "target remote :1234" -ex "b start" -ex "c"
+
+.PHONY: pwndbg
+pwndbg: ## Run pwndbg debugger
+	pwndbg $(ELF) -ex "target remote :1234" -ex "b start" -ex "c"
 
 .PHONY: stripped
 stripped: $(ELF)
@@ -148,7 +152,6 @@ rund: $(ISO)
 qemu_dump_dts:
 	qemu-system-aarch64 -machine $(QEMU_MACHINE),dumpdtb=virt.dtb $(QEMU_FLAGS)
 	dtc -I dtb -O dts -o virt.dts virt.dtb
-
 
 .PHONY: help
 help: # Show this help
