@@ -1,5 +1,5 @@
-#ifndef __LIMINE_RESPONSES_H__
-#define __LIMINE_RESPONSES_H__
+#ifndef _LIMINE_RESPONSES_H_
+#define _LIMINE_RESPONSES_H_
 
 #include "types.h"
 
@@ -13,4 +13,4 @@ volatile struct limine_hhdm_response *limine_hhdm(void);
 volatile struct limine_executable_address_response *limine_kernel_address(void);
 volatile struct limine_framebuffer_response *limine_framebuffer(void);
 
-#endif
+#endif // _LIMINE_RESPONSES_H_

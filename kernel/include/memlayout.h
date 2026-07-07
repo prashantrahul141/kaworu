@@ -1,8 +1,9 @@
-#ifndef __MEMLAYOUT_H_
-#define __MEMLAYOUT_H_
+#ifndef _MEMLAYOUT_H_
+#define _MEMLAYOUT_H_
 
 #include "config.h"
 #include "types.h"
+#include "common_defs.h"
 
 /*
  * 0x0F0XXXXX   free mem top
@@ -41,8 +42,11 @@ extern symbol __kernel_data_end;
 
 constexpr usize PAGE_SIZE = 4096;
 
+/* is value page aligned */
+#define IS_PAGE_ALIGNED(value) IS_ALIGNED((value), PAGE_SIZE)
+
 constexpr usize UART_BASE_VIRT = 0xffffffff90000000ULL;
 constexpr usize UART_BASE = UART_BASE_VIRT;
 constexpr usize UART_BASE_PHY = 0x09000000ULL;
 
-#endif // __MEMLAYOUT_H_
+#endif // _MEMLAYOUT_H_

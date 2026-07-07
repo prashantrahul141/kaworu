@@ -53,7 +53,7 @@ static MUST_CHECK TableDescriptor *table_next_table(TableDescriptor *td,
 
 void paging_init(void)
 {
-	INFO("Initializing paging and mapping kernel pages");
+	DEBUG("Initializing paging and mapping kernel pages");
 
 	/* this is the root of address translation tree for kernel */
 	kernel_page_table = (TableDescriptor *)kmem_alloc();
