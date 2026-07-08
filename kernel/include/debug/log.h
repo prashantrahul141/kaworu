@@ -40,6 +40,7 @@ static inline void __log(const i8 *level_str, const ConsoleColor color,
 	vprintf(fmt, args);
 	console_set_background(CONSOLE_COLOR_BLACK);
 	console_set_foreground(CONSOLE_COLOR_WHITE);
+	printf_flush();
 }
 
 #define LOG(level_str, color, fmt, ...)                                      \

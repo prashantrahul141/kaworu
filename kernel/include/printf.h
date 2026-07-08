@@ -20,6 +20,8 @@ void printf(const i8 *fmt, ...);
 
 void vprintf(const i8 *fmt, va_list arg);
 
+void printf_flush(void);
+
 void printf_deinit(void);
 
 #endif // _PRINT_H_
