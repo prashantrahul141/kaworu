@@ -50,6 +50,7 @@ C_SOURCES = $D/uart/uart.c \
 			$K/memory/kmem.c \
 			$K/memory/paging.c \
 			$K/spinlock.c \
+			$L/allocator/bitmap.c \
 			$L/string.c
 
 EXTERNAL_C_SOURCES = $(TH)/Flanterm/src/flanterm.c \
