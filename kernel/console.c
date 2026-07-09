@@ -46,18 +46,34 @@ void console_init(ConsoleDeviceBackendType which_backend)
 	}
 }
 
-errno_t console_deinit(void)
+errno_t console_deinit(ConsoleDeviceBackendType which_backend)
 {
-	if (fb_console.initialized) {
-		fb_console_deinit();
-		fb_console.initialized = false;
+	switch (which_backend) {
+	case CONSOLE_BACKEND_FRAMEBUFFER: {
+		if (fb_console.initialized) {
+			fb_console_deinit();
+			fb_console.initialized = false;
+		}
+		break;
+	}
+	case CONSOLE_BACKEND_UART: {
+		if (uart_console.initialized) {
+			uart_console_deinit();
+			uart_console.initialized = false;
+		}
+	} break;
+	default: {
+		panic("corrupted backend");
+	}
 	}
 
-	if (uart_console.initialized) {
-		uart_console_deinit();
-		uart_console.initialized = false;
-	}
+	return EOK;
+}
 
+errno_t console_deinit_all(void)
+{
+	console_deinit(CONSOLE_BACKEND_FRAMEBUFFER);
+	console_deinit(CONSOLE_BACKEND_UART);
 	return EOK;
 }
 
@@ -151,5 +167,6 @@ static errno_t uart_console_init(void)
 
 static errno_t uart_console_deinit(void)
 {
+	uart_deinit();
 	return EOK;
 }

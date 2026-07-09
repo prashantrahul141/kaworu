@@ -18,5 +18,5 @@ void kernel_main(void)
 	printf("\nHello from kaworu\n\n");
 
 	printf_deinit();
-	console_deinit();
+	console_deinit_all();
 }

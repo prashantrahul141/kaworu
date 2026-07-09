@@ -96,9 +96,14 @@ typedef struct {
 void console_init(ConsoleDeviceBackendType which_backend);
 
 /*
- * deinitialize console device
+ * deinitialize a console device
  */
-errno_t console_deinit(void);
+errno_t console_deinit(ConsoleDeviceBackendType which_backend);
+
+/*
+ * deinitialize all console devices
+ */
+errno_t console_deinit_all();
 
 /*
  * set foreground color if the underlying backend supports it.
