@@ -16,7 +16,8 @@
 	X(EMAXERR) /* max count for errors */
 
 #define X(i) i,
-typedef enum : i32 { ERR_LIST } errno_t;
+typedef i32 errno_t;
+enum : i32 { ERR_LIST } ;
 #undef X
 
 /*
