@@ -89,17 +89,17 @@ static_assert(sizeof(PageDescriptor) == 8, "PageDescriptor is not 8 bytes?");
  * Init pages for kernel
  * sets up page table entries AND switches page table.
  */
-void paging_init(void);
+void paging_kernel_init(TableDescriptor *kernel_page_table);
 
 /*
  * switch page table to our own page table
  */
-void switch_table(void);
+void paging_switch_kernel_table(TableDescriptor *kernel_page_table);
 
 /*
  * maps given virtual address range to given physical address
  */
-errno_t paging_map(TableDescriptor *page, usize va, usize pa, usize size,
+errno_t paging_map(TableDescriptor *table, usize va, usize pa, usize size,
 		   PagePerms perms, AttrIndex attr_index,
 		   PageShareability shareability, ExecPerms privilege_execution,
 		   ExecPerms underprivilege_execution);
@@ -108,5 +108,8 @@ errno_t paging_map(TableDescriptor *page, usize va, usize pa, usize size,
  * unmaps given virtual address range
  */
 void paging_unmap(TableDescriptor *page, usize va, usize size);
+
+/* loops up physical address for the given va. */
+usize paging_lookup(TableDescriptor *table, u64 va);
 
 #endif // _VM_MEM_H_
