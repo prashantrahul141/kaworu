@@ -49,6 +49,7 @@ C_SOURCES = $D/uart/uart.c \
 			$K/limine_responses.c \
 			$K/memory/kmem.c \
 			$K/memory/paging.c \
+			$K/memory/vmm.c \
 			$K/memory/vmm_region.c \
 			$K/spinlock.c \
 			$L/allocator/bitmap.c \
