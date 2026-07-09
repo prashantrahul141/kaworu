@@ -4,7 +4,7 @@
 
 #include "drivers/uart/uart.h"
 #include "debug/panic.h"
-#include "memory/vmm.h"
+#include "mm/vmm.h"
 #include "types.h"
 
 static usize UART_BASE = 0;

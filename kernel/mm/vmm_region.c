@@ -1,10 +1,9 @@
-#include "memory/vmm_region.h"
-
+#include "mm/vmm_region.h"
 #include "debug/assert.h"
 #include "debug/panic.h"
 #include "error.h"
 #include "memlayout.h"
-#include "spinlock.h"
+#include "sync/spinlock.h"
 #include "string.h"
 
 void region_init(VMRegion *region, const i8 *msg)

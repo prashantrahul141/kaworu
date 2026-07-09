@@ -1,8 +1,8 @@
 #ifndef _VM_H_
 #define _VM_H_
 
-#include "memory/paging.h"
-#include "memory/vmm_region.h"
+#include "mm/paging.h"
+#include "mm/vmm_region.h"
 #include "types.h"
 
 /* initialize virtual memory manager */

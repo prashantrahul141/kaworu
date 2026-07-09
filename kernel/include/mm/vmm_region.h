@@ -8,7 +8,7 @@
 
 #include "allocator/bitmap.h"
 #include "memlayout.h"
-#include "spinlock.h"
+#include "sync/spinlock.h"
 
 typedef struct {
 	void *va;

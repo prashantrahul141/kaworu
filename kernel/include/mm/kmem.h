@@ -6,7 +6,7 @@
 #define _KMEM_H_
 
 #include "aarch64/aarch64.h"
-#include "spinlock.h"
+#include "sync/spinlock.h"
 
 typedef struct PhyChunk PhyChunk;
 

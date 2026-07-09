@@ -3,7 +3,7 @@
 
 #include "config.h"
 #include "printf.h"
-#include "console.h"
+#include "io/console.h"
 
 #define LEVEL_TRACE 0
 #define LEVEL_DEBUG 1

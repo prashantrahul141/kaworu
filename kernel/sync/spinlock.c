@@ -1,7 +1,7 @@
-#include "spinlock.h"
+#include "sync/spinlock.h"
 #include "aarch64/aarch64.h"
 #include "config.h"
-#include "cpu.h"
+#include "core/cpu.h"
 #include "debug/panic.h"
 
 inline static bool holding(const SpinLock *sp);

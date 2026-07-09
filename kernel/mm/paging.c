@@ -1,18 +1,18 @@
-#include "memory/paging.h"
+#include "mm/paging.h"
 #include "aarch64/aarch64.h"
 #include "common_defs.h"
 #include "debug/log.h"
 #include "error.h"
 #include "limine.h"
-#include "limine_responses.h"
+#include "boot/limine_responses.h"
 #include "memlayout.h"
-#include "memory/kmem.h"
+#include "mm/kmem.h"
 #include "common_defs.h"
 #include "memlayout.h"
 #include "string.h"
 #include "types.h"
 #include "debug/panic.h"
-#include "memory/kmem.h"
+#include "mm/kmem.h"
 
 constexpr usize PAGE_SHIFT = 12;
 constexpr usize PT_INDEX_MASK = 0x1FF;

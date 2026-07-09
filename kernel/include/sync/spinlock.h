@@ -5,7 +5,7 @@
 
 #include "types.h"
 #include "config.h"
-#include "cpu.h"
+#include "core/cpu.h"
 
 typedef struct {
 	/* is spinlock locked */

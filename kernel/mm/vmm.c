@@ -1,12 +1,12 @@
-#include "memory/vmm.h"
+#include "mm/vmm.h"
 #include "aarch64/aarch64.h"
 #include "debug/log.h"
 #include "debug/panic.h"
 #include "error.h"
 #include "memlayout.h"
-#include "memory/kmem.h"
-#include "memory/paging.h"
-#include "memory/vmm_region.h"
+#include "mm/kmem.h"
+#include "mm/paging.h"
+#include "mm/vmm_region.h"
 #include "error.h"
 #include <string.h>
 

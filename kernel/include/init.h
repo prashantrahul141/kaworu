@@ -3,14 +3,14 @@
 
 #include "aarch64/aarch64.h"
 #include "common_defs.h"
-#include "console.h"
+#include "io/console.h"
 #include "config.h"
 #include "debug/log.h"
 #include "limine.h"
-#include "memory/kmem.h"
-#include "memory/vmm.h"
-#include "printf.h"
-#include "limine_responses.h"
+#include "mm/kmem.h"
+#include "mm/vmm.h"
+#include "debug/printf.h"
+#include "boot/limine_responses.h"
 #include "uart/uart.h"
 
 /*

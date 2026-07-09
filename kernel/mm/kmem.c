@@ -1,13 +1,13 @@
-#include "memory/kmem.h"
+#include "mm/kmem.h"
 #include "debug/assert.h"
 #include "error.h"
 #include "limine.h"
 #include "debug/panic.h"
-#include "spinlock.h"
+#include "sync/spinlock.h"
 #include "memlayout.h"
 #include "common_defs.h"
 #include "string.h"
-#include "limine_responses.h"
+#include "boot/limine_responses.h"
 
 Kmem kmem = { .free_list = nullptr };
 

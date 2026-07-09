@@ -41,18 +41,18 @@ ASM_OBJS = $(ASM_SOURCES:=.o)
 
 C_SOURCES = $D/uart/uart.c \
 			$K/arch/aarch64/exception.c \
-			$K/console.c \
-			$K/cpu.c \
+			$K/boot/limine_responses.c \
+			$K/core/cpu.c \
 			$K/debug/printf.c \
-			$K/error.c \
 			$K/init.c \
-			$K/limine_responses.c \
-			$K/memory/kmem.c \
-			$K/memory/paging.c \
-			$K/memory/vmm.c \
-			$K/memory/vmm_region.c \
-			$K/spinlock.c \
+			$K/io/console.c \
+			$K/mm/kmem.c \
+			$K/mm/paging.c \
+			$K/mm/vmm.c \
+			$K/mm/vmm_region.c \
+			$K/sync/spinlock.c \
 			$L/allocator/bitmap.c \
+			$L/error.c \
 			$L/string.c
 
 EXTERNAL_C_SOURCES = $(TH)/Flanterm/src/flanterm.c \

@@ -1,5 +1,5 @@
-#include "printf.h"
-#include "console.h"
+#include "debug/printf.h"
+#include "io/console.h"
 #include <stdarg.h>
 #include "types.h"
 
