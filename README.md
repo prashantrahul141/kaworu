@@ -109,14 +109,16 @@ make run
 - [x] Physical page allocator
     - [x] `kmem_alloc`/`kmem_free`
 
-- [ ] MMU
+- [x] MMU
     - [x] page table setup
     - [x] map kernel
-    - [ ] map MMIO
+    - [x] map MMIO
+
+- [x] Ranged bitmap allocator
 
 - [ ] Virtual Memory
-    - [ ] kernel virtual allocator
-    - [ ] `vm_map`/`vm_unmap`
+    - [x] kernel virtual memory manager
+    - [x] `vm_alloc`/`vm_free` and `vm_map`/`vm_unmap`
     - [ ] Guard pages for kernel stacks
 
 - [ ] Kernel heap
