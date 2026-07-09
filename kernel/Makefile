@@ -53,10 +53,16 @@ C_SOURCES = $D/uart/uart.c \
 			$K/sync/spinlock.c \
 			$L/allocator/bitmap.c \
 			$L/error.c \
+			$L/stdlib.c \
 			$L/string.c
 
+
+_LIBFDT_SRCS = fdt.c fdt_ro.c fdt_wip.c fdt_sw.c fdt_rw.c fdt_strerror.c fdt_empty_tree.c \
+	fdt_addresses.c fdt_overlay.c fdt_check.c
+LIBFDT_SRCS := $(addprefix $(TH)/libfdt/, $(_LIBFDT_SRCS))
 EXTERNAL_C_SOURCES = $(TH)/Flanterm/src/flanterm.c \
-				$(TH)/Flanterm/src/flanterm_backends/fb.c
+				$(TH)/Flanterm/src/flanterm_backends/fb.c \
+				$(LIBFDT_SRCS)
 
 C_OBJS = $(C_SOURCES:=.o)
 C_EXTERNAL_OBJS = $(EXTERNAL_C_SOURCES:=.e.o)
@@ -68,6 +74,7 @@ DI = $D/
 LI = $L/include
 LIM_INC := $(TH)/limine-protocol/include/
 FLAN_INC := $(TH)/Flanterm/src/
+LIBFDT_INC := $(TH)/libfdt/
 INCLUDES_DIR = 	-I../  \
                 -I$(DI)/ \
 				-I. \
@@ -75,7 +82,8 @@ INCLUDES_DIR = 	-I../  \
 				-I$(KI)/arch \
 				-I$(LI)/ \
 				-I$(LIM_INC) \
-				-I$(FLAN_INC)
+				-I$(FLAN_INC) \
+				-I$(LIBFDT_INC)
 
 DEPS := $(C_OBJS:.o=.d) $(C_EXTERNAL_OBJS:.o=.d)
 
@@ -99,7 +107,7 @@ $(OUT): $(OBJS) $(LINKER_SCRIPT)
 
 # external c files compilation
 %.c.e.o: %.c
-	@printf "\tCC %s\n" $(shell basename $@)
+	@printf "\tCC thirdparty/%s\n" $(shell basename $@)
 	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) -c $< -o $@
 
 # cleaning -------------------
