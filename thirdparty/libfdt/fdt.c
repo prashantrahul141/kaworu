@@ -5,8 +5,8 @@
  */
 #include "libfdt_env.h"
 
-#include <fdt.h>
-#include <libfdt.h>
+#include "fdt.h"
+#include "libfdt.h"
 
 #include "libfdt_internal.h"
 
@@ -32,7 +32,7 @@ int32_t fdt_ro_probe_(const void *fdt)
 			if (fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
 				return -FDT_ERR_BADVERSION;
 			if (fdt_last_comp_version(fdt) >
-					FDT_LAST_SUPPORTED_VERSION)
+			    FDT_LAST_SUPPORTED_VERSION)
 				return -FDT_ERR_BADVERSION;
 		}
 	} else if (fdt_magic(fdt) == FDT_SW_MAGIC) {
@@ -54,8 +54,8 @@ static int check_off_(uint32_t hdrsize, uint32_t totalsize, uint32_t off)
 	return (off >= hdrsize) && (off <= totalsize);
 }
 
-static int check_block_(uint32_t hdrsize, uint32_t totalsize,
-			uint32_t base, uint32_t size)
+static int check_block_(uint32_t hdrsize, uint32_t totalsize, uint32_t base,
+			uint32_t size)
 {
 	if (!check_off_(hdrsize, totalsize, base))
 		return 0; /* block start out of bounds */
@@ -83,7 +83,7 @@ size_t fdt_header_size_(uint32_t version)
 size_t fdt_header_size(const void *fdt)
 {
 	return can_assume(LATEST) ? FDT_V17_SIZE :
-		fdt_header_size_(fdt_version(fdt));
+				    fdt_header_size_(fdt_version(fdt));
 }
 
 int fdt_check_header(const void *fdt)
@@ -97,17 +97,16 @@ int fdt_check_header(const void *fdt)
 	if (fdt_magic(fdt) != FDT_MAGIC)
 		return -FDT_ERR_BADMAGIC;
 	if (!can_assume(LATEST)) {
-		if ((fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
-		    || (fdt_last_comp_version(fdt) >
-			FDT_LAST_SUPPORTED_VERSION))
+		if ((fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION) ||
+		    (fdt_last_comp_version(fdt) > FDT_LAST_SUPPORTED_VERSION))
 			return -FDT_ERR_BADVERSION;
 		if (fdt_version(fdt) < fdt_last_comp_version(fdt))
 			return -FDT_ERR_BADVERSION;
 	}
 	hdrsize = fdt_header_size(fdt);
 	if (!can_assume(VALID_DTB)) {
-		if ((fdt_totalsize(fdt) < hdrsize)
-		    || (fdt_totalsize(fdt) > INT_MAX))
+		if ((fdt_totalsize(fdt) < hdrsize) ||
+		    (fdt_totalsize(fdt) > INT_MAX))
 			return -FDT_ERR_TRUNCATED;
 
 		/* Bounds check memrsv block */
@@ -146,14 +145,13 @@ const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int len)
 		return NULL;
 
 	if (!can_assume(VALID_INPUT))
-		if ((absoffset < uoffset)
-		    || ((absoffset + len) < absoffset)
-		    || (absoffset + len) > fdt_totalsize(fdt))
+		if ((absoffset < uoffset) || ((absoffset + len) < absoffset) ||
+		    (absoffset + len) > fdt_totalsize(fdt))
 			return NULL;
 
 	if (can_assume(LATEST) || fdt_version(fdt) >= 0x11)
-		if (((uoffset + len) < uoffset)
-		    || ((offset + len) > fdt_size_dt_struct(fdt)))
+		if (((uoffset + len) < uoffset) ||
+		    ((offset + len) > fdt_size_dt_struct(fdt)))
 			return NULL;
 
 	return fdt_offset_ptr_(fdt, offset);
@@ -192,15 +190,14 @@ uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 		len = fdt32_to_cpu(*lenp);
 		sum = len + offset;
 		if (!can_assume(VALID_DTB) &&
-		    (INT_MAX <= sum || sum < (uint32_t) offset))
+		    (INT_MAX <= sum || sum < (uint32_t)offset))
 			return FDT_END; /* premature end */
 
 		/* skip-name offset, length and value */
 		offset += sizeof(struct fdt_property) - FDT_TAGSIZE + len;
 
-		if (!can_assume(LATEST) &&
-		    fdt_version(fdt) < 0x10 && len >= 8 &&
-		    ((offset - len) % 8) != 0)
+		if (!can_assume(LATEST) && fdt_version(fdt) < 0x10 &&
+		    len >= 8 && ((offset - len) % 8) != 0)
 			offset += 4;
 		break;
 
@@ -222,8 +219,8 @@ uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 
 int fdt_check_node_offset_(const void *fdt, int offset)
 {
-	if (!can_assume(VALID_INPUT)
-	    && ((offset < 0) || (offset % FDT_TAGSIZE)))
+	if (!can_assume(VALID_INPUT) &&
+	    ((offset < 0) || (offset % FDT_TAGSIZE)))
 		return -FDT_ERR_BADOFFSET;
 
 	if (fdt_next_tag(fdt, offset, &offset) != FDT_BEGIN_NODE)
@@ -234,8 +231,8 @@ int fdt_check_node_offset_(const void *fdt, int offset)
 
 int fdt_check_prop_offset_(const void *fdt, int offset)
 {
-	if (!can_assume(VALID_INPUT)
-	    && ((offset < 0) || (offset % FDT_TAGSIZE)))
+	if (!can_assume(VALID_INPUT) &&
+	    ((offset < 0) || (offset % FDT_TAGSIZE)))
 		return -FDT_ERR_BADOFFSET;
 
 	if (fdt_next_tag(fdt, offset, &offset) != FDT_PROP)
@@ -273,8 +270,8 @@ int fdt_next_node(const void *fdt, int offset, int *depth)
 			break;
 
 		case FDT_END:
-			if ((nextoffset >= 0)
-			    || ((nextoffset == -FDT_ERR_TRUNCATED) && !depth))
+			if ((nextoffset >= 0) ||
+			    ((nextoffset == -FDT_ERR_TRUNCATED) && !depth))
 				return -FDT_ERR_NOTFOUND;
 			else
 				return nextoffset;
