@@ -159,8 +159,9 @@ make run
 
 ## Thirdparty
 
-[Limine](https://github.com/limine-bootloader/limine) - Modern, secure, portable, multiprotocol bootloader and boot manager.\
-[Flanterm](https://github.com/Mintsuki/Flanterm) - Fast and reasonably complete (framebuffer) terminal emulator.
+[Limine](https://github.com/limine-bootloader/limine) - Modern, secure, portable, multi protocol bootloader and boot manager.\
+[Flanterm](https://github.com/Mintsuki/Flanterm) - Fast and reasonably complete (frame buffer) terminal emulator.\
+[libfdt](https://elixir.bootlin.com/u-boot/v2026.07/source/lib/libfdt) - The device tree library
 
 
 ## Resources
