@@ -17,6 +17,12 @@ void uart_init(void)
 	pl011_init();
 }
 
+void uart_deinit(void)
+{
+	DEBUG("removing uart");
+	wait_tx_complete();
+}
+
 void uart_putchar(i8 c)
 {
 	wait_tx_complete();

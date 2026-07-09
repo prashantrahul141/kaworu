@@ -39,6 +39,11 @@ constexpr usize UARTDMACR = 0x048; // control dma
 void uart_init(void);
 
 /*
+ * Deinitialize uart
+ */
+void uart_deinit(void);
+
+/*
  * Put a single byte to uart
  */
 void uart_putchar(i8 c);
