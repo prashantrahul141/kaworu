@@ -27,17 +27,6 @@ constexpr usize PT_INDEX_MASK = 0x1FF;
 #define PA_TO_PAGE_DESC(pa)	   (((u64)(pa)) >> PAGE_SHIFT)
 #define PAGE_DESC_TO_PA(desc_addr) (((u64)(desc_addr)) << PAGE_SHIFT)
 
-/*
- * Kernel root page table, start of address translation tree for kernel.
- * On aarch64, the virtual address space is divided into user space (each
- * process has its own) and kernel space.
- * The kernel virtual address space's root translation table is stored in
- * TTB1_EL1
- * And user space address space's root translation table is stored in
- * TTB0_EL1
- */
-TableDescriptor *kernel_page_table;
-
 /* static declarations */
 static PageDescriptor *walk_pagetable(TableDescriptor *page, u64 va,
 				      bool allocate);
@@ -51,19 +40,9 @@ static inline errno_t map_data(TableDescriptor *table, usize va, usize pa,
 static MUST_CHECK TableDescriptor *table_next_table(TableDescriptor *td,
 						    bool allocate);
 
-void paging_init(void)
+void paging_kernel_init(TableDescriptor *kernel_page_table)
 {
 	DEBUG("Initializing paging and mapping kernel pages");
-
-	/* this is the root of address translation tree for kernel */
-	kernel_page_table = (TableDescriptor *)kmem_alloc();
-	if (IS_ERR(kernel_page_table)) {
-		panic("could not allocate for kernel page table, returned = %s",
-		      str_err(PTR_TO_ERR(kernel_page_table)));
-	}
-
-	memset(kernel_page_table, 0, PAGE_SIZE);
-
 	/* map kernel's text section */
 	DEBUG("mapping kernel text section");
 	map_text(kernel_page_table, __KERNEL_START,
@@ -91,6 +70,7 @@ void paging_init(void)
 			break;
 		}
 
+		case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
 		case LIMINE_MEMMAP_EXECUTABLE_AND_MODULES:
 		case LIMINE_MEMMAP_USABLE: {
 			map_data(kernel_page_table,
@@ -103,9 +83,6 @@ void paging_init(void)
 		}
 	}
 
-	/* mapping mmios */
-	map_device(kernel_page_table, UART_BASE_VIRT, UART_BASE_PHY, PAGE_SIZE);
-
 	/* make sure all writes are complete at this point. */
 	dsb(BARRIER_ALL);
 	isb();
@@ -113,7 +90,7 @@ void paging_init(void)
 	DEBUG("mapping complete");
 }
 
-void switch_table(void)
+void paging_switch_kernel_table(TableDescriptor *kernel_page_table)
 {
 	DEBUG("swapping page table");
 
@@ -131,7 +108,7 @@ void switch_table(void)
 }
 
 /* maps given virtual address to physical address to */
-errno_t paging_map(TableDescriptor *page, usize va, usize pa, usize size,
+errno_t paging_map(TableDescriptor *table, usize va, usize pa, usize size,
 		   PagePerms perms, AttrIndex attr_index,
 		   PageShareability shareability, ExecPerms privilege_execution,
 		   ExecPerms underprivilege_execution)
@@ -149,7 +126,7 @@ errno_t paging_map(TableDescriptor *page, usize va, usize pa, usize size,
 	for (usize end = va + size; va < end;
 	     va += PAGE_SIZE, pa += PAGE_SIZE) {
 		/* this contains a leaf node which we can map */
-		PageDescriptor *pde = walk_pagetable(page, va, true);
+		PageDescriptor *pde = walk_pagetable(table, va, true);
 		if (pde->field.is_valid) {
 			panic("remaping an already existing page va = %p, pde "
 			      "= %p",
@@ -195,6 +172,17 @@ void paging_unmap(TableDescriptor *page, usize va, usize size)
 	}
 
 	tlb_flush();
+}
+
+usize paging_lookup(TableDescriptor *table, u64 va)
+{
+	PageDescriptor *pde = walk_pagetable(table, va, false);
+	if (IS_ERR(pde)) {
+		return 0;
+	}
+
+	return PAGE_DESC_TO_PA(pde->field.output_address) |
+	       (va & (PAGE_SIZE - 1));
 }
 
 /* walks the given page table and return leaf descriptor */
@@ -243,8 +231,8 @@ static MUST_CHECK TableDescriptor *table_next_table(TableDescriptor *td,
 {
 	/* table already exists */
 	if (td->field.is_valid) {
-		return phys_to_virt(
-			PAGE_DESC_TO_PA(td->field.next_level_address));
+		usize pa = PAGE_DESC_TO_PA(td->field.next_level_address);
+		return phys_to_virt(pa);
 	}
 
 	if (!allocate) {
