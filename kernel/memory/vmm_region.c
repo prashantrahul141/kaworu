@@ -1,0 +1,69 @@
+#include "memory/vmm_region.h"
+
+#include "debug/assert.h"
+#include "debug/panic.h"
+#include "error.h"
+#include "memlayout.h"
+#include "spinlock.h"
+#include "string.h"
+
+void region_init(VMRegion *region, const i8 *msg)
+{
+	spinlock_init(&region->lock, msg);
+	memset(region->allocator.bitmap, 0,
+	       SIZE_TO_BITMAP_BYTES(region->allocator.page_count * PAGE_SIZE));
+	memset(region->allocations, 0,
+	       sizeof(*region->allocations) * MAX_VM_ALLOCATION);
+}
+
+VMAllocation *region_find(VMRegion *region, void *addr)
+{
+	for (size_t i = 0; i < MAX_VM_ALLOCATION; i++) {
+		if (addr == region->allocations[i].va) {
+			return &region->allocations[i];
+		}
+	}
+	return ERR_TO_PTR(-ENOENT);
+}
+
+void *region_alloc(VMRegion *region, usize page_count)
+{
+	ASSERT(page_count > 0, "Page count is zero?");
+	spinlock_acquire(&region->lock);
+	VMAllocation *vm_allocation = region_find(region, nullptr);
+	if (IS_ERR(vm_allocation)) {
+		spinlock_release(&region->lock);
+		return ERR_TO_PTR(-ENOMEM);
+	}
+
+	void *va = bitmap_alloc(&region->allocator, page_count);
+	if (IS_ERR(va)) {
+		spinlock_release(&region->lock);
+		return va;
+	}
+
+	*vm_allocation = (VMAllocation){ .va = va, .page_count = page_count };
+	spinlock_release(&region->lock);
+	return va;
+}
+
+usize region_free(VMRegion *region, void *addr)
+{
+	spinlock_acquire(&region->lock);
+
+	VMAllocation *vm_allocation = region_find(region, addr);
+	if (IS_ERR(vm_allocation)) {
+		spinlock_release(&region->lock);
+		panic("tried freeing non existent allocation addr = %p", addr);
+		return 0;
+	}
+
+	usize page_count = vm_allocation->page_count;
+
+	bitmap_free(&region->allocator, addr, vm_allocation->page_count);
+	vm_allocation->va = nullptr;
+	vm_allocation->page_count = 0;
+	spinlock_release(&region->lock);
+
+	return page_count;
+}
