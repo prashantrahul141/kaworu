@@ -23,8 +23,8 @@ void spinlock_acquire(SpinLock *sp)
 #ifdef CONFIG_DEBUG_CHECKS
 	if (holding(sp)) {
 		panic("failed to acquire lock, already holding it.\n\tcpuid = "
-		      "%d\n",
-		      get_cpuid());
+		      "%d\n\tname = %s\n",
+		      get_cpuid(), sp->name);
 	}
 #endif
 
@@ -52,8 +52,9 @@ void spinlock_release(SpinLock *sp)
 {
 #ifdef CONFIG_DEBUG_CHECKS
 	if (!holding(sp)) {
-		panic("failed to release lock, not holding it.\n\tcpuid = %d\n",
-		      get_cpuid());
+		panic("failed to release lock, not holding it.\n\tcpuid = "
+		      "%d\n\tname = %s\n",
+		      get_cpuid(), sp->name);
 	}
 #endif
 
