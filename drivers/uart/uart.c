@@ -3,7 +3,11 @@
  */
 
 #include "drivers/uart/uart.h"
+#include "debug/panic.h"
+#include "memory/vmm.h"
 #include "types.h"
+
+static usize UART_BASE = 0;
 
 /* static function declarations */
 static void pl011_init(void);
@@ -14,6 +18,11 @@ static void calculate_divisor(u64 base_clock, u32 baud_rate, u32 *ibrd,
 
 void uart_init(void)
 {
+	DEBUG("setting up uart");
+	UART_BASE = (usize)vm_mmio_map(UART_BASE_PHY, PAGE_SIZE);
+	if (IS_ERR((void *)UART_BASE)) {
+		panic("failed to init uart because mapping failed");
+	}
 	pl011_init();
 }
 
@@ -21,6 +30,8 @@ void uart_deinit(void)
 {
 	DEBUG("removing uart");
 	wait_tx_complete();
+	vm_mmio_unmap((void *)UART_BASE, PAGE_SIZE);
+	UART_BASE = 0;
 }
 
 void uart_putchar(i8 c)
