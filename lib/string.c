@@ -1,4 +1,57 @@
 #include "string.h"
+#include <limits.h>
+
+void *memmove(void *dest, const void *src, size_t len)
+{
+	char *d = dest;
+	const char *s = src;
+	if (d < s) {
+		while (len--) {
+			*d++ = *s++;
+		}
+	} else {
+		const i8 *lasts = s + (len - 1);
+		char *lastd = d + (len - 1);
+		while (len--) {
+			*lastd-- = *lasts--;
+		}
+	}
+	return dest;
+}
+void *memchr(const void *src, i32 c, size_t n)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-qual"
+	// NOLINTNEXTLINE
+	u8 *s = (u8 *)src;
+#pragma clang diagnostic pop
+
+	c = (u8)c;
+	for (; n && *s != c; s++, n--)
+		;
+	return n ? s : nullptr;
+}
+
+void *memrchr(const void *m, int c, size_t n)
+{
+	const unsigned char *s = m;
+	c = (unsigned char)c;
+	while (n--) {
+		if (s[n] == c) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-qual"
+			// NOLINTNEXTLINE
+			return (void *)(s + n);
+#pragma clang diagnostic pop
+		}
+	}
+	return nullptr;
+}
+
+i8 *strrchr(const i8 *s, i32 c)
+{
+	return memrchr(s, c, strlen(s) + 1);
+}
 
 void *memset(void *s, u8 byte, usize count)
 {
@@ -33,4 +86,38 @@ usize strlen(const i8 *s)
 	while (0 != *p++)
 		;
 	return (usize)(p - s - 1);
+}
+
+usize strnlen(const i8 *s, size_t n)
+{
+	const i8 *p = memchr(s, 0, n);
+	return p ? (usize)(p - s) : n;
+}
+
+i8 *strchrnul(const i8 *s, i32 c)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-qual"
+	// NOLINTNEXTLINE
+	i8 *_s = (i8 *)s;
+#pragma clang diagnostic pop
+	c = (u8)c;
+	if (!c) {
+		return (i8 *)_s + strlen(_s);
+	}
+
+	for (; *s && *(u8 *)_s != c; _s++)
+		;
+	return (i8 *)_s;
+}
+
+i8 *strchr(const i8 *s, i32 c)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-qual"
+	// NOLINTNEXTLINE
+	i8 *s_ = (i8 *)s;
+#pragma clang diagnostic pop
+	char *r = strchrnul(s_, c);
+	return *(u8 *)r == (u8)c ? r : nullptr;
 }
