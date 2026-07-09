@@ -14,7 +14,7 @@ const i8 *str_err(isize err)
 {
 	/* we could get negative error code */
 	if (err < 0) {
-		err *= -1;
+        err = -err;
 	}
 
 	/* make sure we are in the range */
