@@ -8,6 +8,7 @@
 void limine_responses_save(void);
 
 volatile u64 *limine_base_revision(void);
+struct limine_dtb_response *limine_device_tree(void);
 volatile struct limine_memmap_response *limine_memmap(void);
 volatile struct limine_hhdm_response *limine_hhdm(void);
 volatile struct limine_executable_address_response *limine_kernel_address(void);
