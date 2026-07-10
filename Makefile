@@ -65,38 +65,37 @@ syncconfig:
 # building ---------------------
 build: $(ISO) ## Build kernel iso
 
-$(ISO): setup-iso-dir $(ELF)
+$(ISO): kernel | setup-iso-dir
 	@printf "\tXORRISO %s\n" $(ISO)
 	@xorriso -as mkisofs -R -r -J \
 		-hfsplus -apm-block-size 2048 \
 		--efi-boot boot/limine/limine-uefi-cd.bin \
 		-efi-boot-part --efi-boot-image --protective-msdos-label \
 		iso -o $(ISO) > /dev/null 2>&1
-	@printf "iso file: %s\n" $(ISO)
+	@printf "\niso file: %s\n" $(ISO)
 
-ISO_COPIES := \
-	iso/boot/$(NAME):$(ELF) \
-	iso/boot/limine/limine.conf:limine.conf \
-	iso/boot/limine/limine-uefi-cd.bin:$(LIMINE_PATH)/limine-uefi-cd.bin \
-	iso/EFI/BOOT/BOOTAA64.EFI:$(LIMINE_PATH)/BOOTAA64.EFI
+setup-iso-dir: iso/boot/$(NAME) iso/boot/limine/limine.conf iso/boot/limine/limine-uefi-cd.bin iso/EFI/BOOT/BOOTAA64.EFI
 
-ISO_FILES := $(foreach f,$(ISO_COPIES),$(word 1,$(subst :, ,$(f))))
-
-setup-iso-dir: create-iso-dir $(ISO_FILES)
-create-iso-dir:
+# copy files
+iso/.dirs:
 	@printf "\tMKDIR iso\n"
-	@mkdir -p iso/{boot/limine,EFI/BOOT}
+	@mkdir -p iso/boot/limine iso/EFI/BOOT
+	@touch $@
+iso/boot/$(NAME): $(ELF) | iso/.dirs
+	@printf "\tCOPY %s\n" $@
+	@cp $< $@
+iso/boot/limine/limine.conf: limine.conf | iso/.dirs
+	@printf "\tCOPY %s\n" $@
+	@cp $< $@
+iso/boot/limine/limine-uefi-cd.bin: $(LIMINE_PATH)/limine-uefi-cd.bin | iso/.dirs
+	@printf "\tCOPY %s\n" $@
+	@cp $< $@
+iso/EFI/BOOT/BOOTAA64.EFI: $(LIMINE_PATH)/BOOTAA64.EFI | iso/.dirs
+	@printf "\tCOPY %s\n" $@
+	@cp $< $@
 
-define copy-rule
-$(word 1,$(subst :, ,$1)): $(word 2,$(subst :, ,$1))
-	@printf "\tCOPY %s\n" $$@
-	@cp $$< $$@
-endef
-
-$(foreach f,$(ISO_COPIES),$(eval $(call copy-rule,$(f))))
-
-.PHONY: $(ELF)
-$(ELF):
+.PHONY: kernel
+kernel:
 	@make -C kernel/
 
 # running ---------------------
