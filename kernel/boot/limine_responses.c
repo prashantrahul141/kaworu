@@ -18,6 +18,15 @@ volatile u64 *limine_base_revision(void)
 
 /* limine requests */
 
+/* dtb */
+USED SECTION(".limine_requests") static struct limine_dtb_request
+	_limine_device_tree = { .id = LIMINE_DTB_REQUEST_ID, .revision = 0 };
+
+struct limine_dtb_response *limine_device_tree(void)
+{
+	return _limine_device_tree.response;
+}
+
 /* memmap */
 USED SECTION(".limine_requests") static volatile struct limine_memmap_request
 	_limine_memmap = { .id = LIMINE_MEMMAP_REQUEST_ID, .revision = 0 };
