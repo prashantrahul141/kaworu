@@ -136,25 +136,36 @@ void *vm_alloc(usize size, VMRegion *region, PagePerms perms,
 	       ExecPerms underprivilege_execution)
 {
 	usize page_count = size / PAGE_SIZE;
-	void *va = region_alloc(region, page_count);
-	if (IS_ERR(va)) {
+	u8 *start = region_alloc(region, page_count);
+	if (IS_ERR(start)) {
 		WARN("failed to allocate vm size = %d, region name = %s", size,
 		     region->lock.name);
 		return ERR_TO_PTR(-ENOMEM);
 	}
 
-	for (usize page = 0; page < page_count; page++) {
+	u8 *va = start;
+	for (usize page = 0; page < page_count; page++, va += PAGE_SIZE) {
 		void *pa_as_virt = kmem_alloc();
 		if (IS_ERR(pa_as_virt)) {
 			panic("ran out of physical memory");
 		}
 
 		usize pa = virt_to_phys(pa_as_virt);
-		vm_map(pa, size, region, perms, attr_index, shareability,
-		       privilege_execution, underprivilege_execution);
+
+		errno_t err = paging_map(kernel_page_table, (usize)va, pa,
+					 PAGE_SIZE, perms, attr_index,
+					 shareability, privilege_execution,
+					 underprivilege_execution);
+
+		if (EOK != err) {
+			WARN("failed mapping va = %p, pa = %p, size = %p",
+			     (usize)va, pa, size);
+			return ERR_TO_PTR(err);
+		}
 	}
 
-	return va;
+	tlb_flush();
+	return start;
 }
 
 /*
