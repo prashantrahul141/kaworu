@@ -2,6 +2,7 @@
 
 CC := clang
 LD := ld.lld
+RUSTC := rustc
 
 NAME = kaworu
 
@@ -9,6 +10,7 @@ LINKER_SCRIPT := kernel.ld
 OUT := $(NAME).elf
 
 TARGET := aarch64-none-elf
+TARGET_RS := aarch64-unknown-none
 C_FLAGS := -MD -std=gnu23 -ffreestanding -nostdlib
 WARNING_FLAGS = -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wimplicit-int-conversion -Wshorten-64-to-32 -Wpointer-to-int-cast -Wint-to-pointer-cast -Wshadow -Wundef -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wswitch-enum -Wswitch-default -Wnull-dereference -Wunreachable-code -Wvla -Walloca -Wwrite-strings -Wformat=2 -Wcast-function-type -Wconditional-uninitialized -Wcomma -Wextra-semi-stmt -Wno-language-extension-token -Wno-gnu-empty-struct -Wno-gnu-zero-variadic-macro-arguments
 COMMON_FLAGS = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR)
@@ -57,6 +59,8 @@ C_SOURCES = $D/uart/uart.c \
 			$L/string.c
 
 
+RUST_SOURCES =
+
 _LIBFDT_SRCS = fdt.c fdt_ro.c fdt_wip.c fdt_sw.c fdt_rw.c fdt_strerror.c fdt_empty_tree.c \
 	fdt_addresses.c fdt_overlay.c fdt_check.c
 LIBFDT_SRCS := $(addprefix $(TH)/libfdt/, $(_LIBFDT_SRCS))
@@ -65,9 +69,10 @@ EXTERNAL_C_SOURCES = $(TH)/Flanterm/src/flanterm.c \
 				$(LIBFDT_SRCS)
 
 C_OBJS = $(C_SOURCES:=.o)
+R_OBJS = $(RUST_SOURCES:=.o)
 C_EXTERNAL_OBJS = $(EXTERNAL_C_SOURCES:=.e.o)
 
-OBJS = $(ASM_OBJS) $(C_OBJS) $(C_EXTERNAL_OBJS)
+OBJS = $(ASM_OBJS) $(C_OBJS) $(R_OBJS) $(C_EXTERNAL_OBJS)
 
 KI = $K/include
 DI = $D/
@@ -93,7 +98,7 @@ all: build
 # building ---------------------
 build: $(OUT) ## Build the kernel
 
-$(OUT): $(OBJS) $(LINKER_SCRIPT)
+$(OUT): $(OBJS) $(R_OBJS) $(LINKER_SCRIPT)
 	@printf "\tLD %s\n" $@
 	@$(LD) -m aarch64elf -T $(LINKER_SCRIPT) $(OBJS) -o $(OUT)
 
@@ -105,6 +110,10 @@ $(OUT): $(OBJS) $(LINKER_SCRIPT)
 	@printf "\tCC %s\n" $(shell basename $@)
 	@$(CC) --target=$(TARGET) $(C_FLAGS) $(INCLUDES_DIR) $(COMMON_FLAGS) $(WARNING_FLAGS) -c $< -o $@
 
+%.rs.o: %.rs
+	@printf "\tRUSTC %s\n" $(shell basename $@)
+	@$(RUSTC) --crate-type staticlib --target=$(TARGET_RS) --emit=obj -o $@ $<
+
 # external c files compilation
 %.c.e.o: %.c
 	@printf "\tCC thirdparty/%s\n" $(shell basename $@)
@@ -113,8 +122,8 @@ $(OUT): $(OBJS) $(LINKER_SCRIPT)
 # cleaning -------------------
 .PHONY: clean
 clean: ## Clean only build files
-	rm -f $(DEPS)
 	rm -f $(OBJS)
+	rm -f $(DEPS)
 	rm -f $(OUT)
 	rm -f $(C_EXTERNAL_OBJS)
 
