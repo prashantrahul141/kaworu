@@ -16,21 +16,24 @@ typedef struct {
 } VMAllocation;
 static_assert(sizeof(VMAllocation) == 16, "VMAllocation is not 16 bytes?");
 
-#define MAX_VM_ALLOCATION (PAGE_SIZE / sizeof(VMAllocation))
-
 typedef struct {
 	SpinLock lock;
 	AllocBitMap allocator;
-	VMAllocation allocations[MAX_VM_ALLOCATION];
+	VMAllocation *allocations;
+	usize allocations_size;
 } VMRegion;
 
 #define STATIC_ALLOC_VM_REGION(name, addr, size)                                \
 	static u8 _bitmap_storage_##name[SIZE_TO_BITMAP_BYTES((size))] = { 0 }; \
+	static VMAllocation _allocations_storage_##name[(size) / PAGE_SIZE] = { \
+		0                                                               \
+	};                                                                      \
 	static VMRegion name = {                                                \
 		.allocator = { .bitmap = _bitmap_storage_##name,                \
 			       .page_count = (size) / (PAGE_SIZE),              \
 			       .pool = (u8 *)(addr) },                          \
-		.allocations = { 0 }                                            \
+		.allocations = _allocations_storage_##name,                     \
+		.allocations_size = SIZE_TO_BITMAP_BYTES((size))                \
 	};
 
 void region_init(VMRegion *region, const i8 *msg);

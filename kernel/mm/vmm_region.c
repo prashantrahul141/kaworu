@@ -9,15 +9,16 @@
 void region_init(VMRegion *region, const i8 *msg)
 {
 	spinlock_init(&region->lock, msg);
+	DEBUG("region init name = %s, allocations_count = %p", msg, 1);
 	memset(region->allocator.bitmap, 0,
 	       SIZE_TO_BITMAP_BYTES(region->allocator.page_count * PAGE_SIZE));
 	memset(region->allocations, 0,
-	       sizeof(*region->allocations) * MAX_VM_ALLOCATION);
+	       sizeof(*region->allocations) * region->allocations_size);
 }
 
 VMAllocation *region_find(VMRegion *region, void *addr)
 {
-	for (size_t i = 0; i < MAX_VM_ALLOCATION; i++) {
+	for (size_t i = 0; i < region->allocations_size; i++) {
 		if (addr == region->allocations[i].va) {
 			return &region->allocations[i];
 		}
