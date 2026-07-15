@@ -39,7 +39,8 @@ ASM_SOURCES = $K/arch/aarch64/exception.S \
 			  $K/arch/aarch64/start.S
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
-C_SOURCES = $D/uart/uart.c \
+C_SOURCES = $D/framebuffer/framebuffer.c \
+			$D/uart/uart.c \
 			$K/arch/aarch64/exception.c \
 			$K/boot/limine_responses.c \
 			$K/core/cpu.c \
