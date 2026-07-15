@@ -27,7 +27,7 @@ void printf_flush(void)
 
 // NOLINTBEGIN(clang-analyzer-valist.Uninitialized,
 // clang-analyzer-valist.Uninitialized)
-void printf(const i8 *fmt, ...)
+void __attribute__((format(printf, 1, 2))) printf(const i8 *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
