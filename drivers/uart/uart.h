@@ -7,6 +7,7 @@
 #ifndef _UART_H_
 #define _UART_H_
 
+#include "io/console.h"
 #include "types.h"
 #include "memlayout.h"
 
@@ -29,10 +30,6 @@ constexpr usize UARTCR_REX = (1 << 9); // transmit enable
 constexpr usize UARTIMSC = 0x038; // control interrupt
 constexpr usize UARTDMACR = 0x048; // control dma
 
-#define reg(_reg)	       (volatile u32 *)((_reg) + UART_BASE)
-#define write_reg(_reg, value) (*(reg((_reg))) = (value))
-#define read_reg(_reg)	       (*(reg((_reg))))
-
 /*
  * Initialize uart
  */
@@ -44,6 +41,11 @@ void uart_init(void);
 void uart_deinit(void);
 
 /*
+ * write console event
+ */
+void uart_write_event(ConsoleBackend *backend, const ConsoleEvent *event);
+
+/*
  * Put a single byte to uart
  */
 void uart_putchar(i8 c);
@@ -51,12 +53,17 @@ void uart_putchar(i8 c);
 /*
  * Put a c string to uart until null is encountered
  */
-void uart_print(const i8 *s);
+void uart_write(const i8 *s);
+
+/*
+ * forces writes all pending data
+ */
+void uart_flush(ConsoleBackend *backend);
 
 /*
  * Put first n characters of string s
  */
-void uart_printn(const i8 *s, usize n);
+void uart_writen(const i8 *s, usize n);
 
 /*
  * Get byte from uart
