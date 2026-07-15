@@ -113,7 +113,7 @@ errno_t paging_map(TableDescriptor *table, usize va, usize pa, usize size,
 		   PageShareability shareability, ExecPerms privilege_execution,
 		   ExecPerms underprivilege_execution)
 {
-	DEBUG("Map va = %p, pa = %p, size = %p", va, pa, size);
+	TRACE("Map va = %p, pa = %p, size = %p", va, pa, size);
 
 	if (!IS_PAGE_ALIGNED(va)) {
 		panic("va = %p is not page aligned (%p)", va, PAGE_SIZE);
@@ -268,7 +268,7 @@ static inline errno_t map_text(TableDescriptor *page, usize va, usize pa,
 static inline errno_t map_data(TableDescriptor *page, usize va, usize pa,
 			       usize size)
 {
-	DEBUG("mapping data");
+	TRACE("mapping data");
 	return paging_map(page, va, pa, size, EL1_READ_WRITE_EL0_NONE,
 			  ATTR_INDEX_NORMAL, SHAREABLE_INNER_SHAREABLE,
 			  NOT_EXECUTABLE, NOT_EXECUTABLE);
