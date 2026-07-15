@@ -1,4 +1,5 @@
 #include "boot/limine_responses.h"
+#include "aarch64/aarch64.h"
 #include "common_defs.h"
 #include "config.h"
 #include "debug/log.h"
@@ -82,4 +83,7 @@ USED SECTION(".limine_requests_end") static volatile uint64_t
 
 void limine_responses_save(void)
 {
+	if (false == LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision())) {
+		hlt(0);
+	}
 }

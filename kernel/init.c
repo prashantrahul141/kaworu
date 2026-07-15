@@ -2,10 +2,6 @@
 
 void kernel_main(void)
 {
-	if (false == LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision())) {
-		hlt(0);
-	}
-
 	limine_responses_save();
 	console_init();
 	printf_init();
