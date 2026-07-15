@@ -9,6 +9,7 @@
 #include "limine.h"
 #include "mm/kmem.h"
 #include "mm/vmm.h"
+#include "mm/kheap.h"
 #include "debug/printf.h"
 #include "boot/limine_responses.h"
 #include "uart/uart.h"

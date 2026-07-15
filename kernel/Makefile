@@ -47,6 +47,7 @@ C_SOURCES = $D/framebuffer/framebuffer.c \
 			$K/debug/printf.c \
 			$K/init.c \
 			$K/io/console.c \
+			$K/mm/kheap.c \
 			$K/mm/kmem.c \
 			$K/mm/paging.c \
 			$K/mm/vmm.c \
