@@ -75,7 +75,8 @@ constexpr ConsoleColor CONSOLE_COLOR_WHITE_BRIGHT = {
 	.bright = true
 };
 
-typedef void (*fn_write)(u8 *c, usize len);
+constexpr ConsoleColor CONSOLE_DEFAULT_COLOR_FG = CONSOLE_COLOR_WHITE_BRIGHT;
+constexpr ConsoleColor CONSOLE_DEFAULT_COLOR_BG = CONSOLE_COLOR_BLACK;
 
 typedef enum {
 	CONSOLE_BACKEND_FRAMEBUFFER,
@@ -83,27 +84,47 @@ typedef enum {
 } ConsoleDeviceBackendType;
 
 typedef struct {
-	bool initialized;
-	bool is_writable;
-	bool is_readable;
-	/* data stored by the backend */
-	void *backend_ctx;
-} Console;
+	ConsoleColor fg;
+	ConsoleColor bg;
+	const i8 *msg;
+	usize len;
+} ConsoleEvent;
+
+typedef struct ConsoleBackendOps ConsoleBackendOps;
+
+typedef struct ConsoleBackend ConsoleBackend;
+
+struct ConsoleBackend {
+	const i8 *name;
+	const ConsoleBackendOps *ops;
+	ConsoleBackend *next;
+};
+
+struct ConsoleBackendOps {
+	void (*write)(ConsoleBackend *backend, const ConsoleEvent *event);
+	u8 (*read)(ConsoleBackend *backend);
+	void (*flush)(ConsoleBackend *backend);
+};
 
 /*
  * initialize given console device
  */
-void console_init(ConsoleDeviceBackendType which_backend);
+errno_t console_init();
 
 /*
  * deinitialize a console device
  */
-errno_t console_deinit(ConsoleDeviceBackendType which_backend);
+void console_deinit();
 
 /*
- * deinitialize all console devices
+ * register a device to console
  */
-errno_t console_deinit_all();
+void console_register(ConsoleBackend *backend);
+
+/*
+ * unregister a device from console
+ */
+bool console_unregister(ConsoleBackend *backend);
 
 /*
  * set foreground color if the underlying backend supports it.
@@ -118,7 +139,16 @@ errno_t console_set_background(ConsoleColor c);
 /*
  * write to console
  */
-errno_t console_write(const i8 *data, usize size);
-errno_t console_write_char(i8 data);
+errno_t console_write(ConsoleEvent event);
+
+/*
+ * flush all backend
+ */
+errno_t console_flush();
+
+/*
+ * write a single char with default properties
+ */
+errno_t console_write_char(i8 c);
 
 #endif
