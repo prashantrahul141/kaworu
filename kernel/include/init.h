@@ -12,6 +12,7 @@
 #include "debug/printf.h"
 #include "boot/limine_responses.h"
 #include "uart/uart.h"
+#include "framebuffer/framebuffer.h"
 
 /*
  * Kernel's entry point in C.
