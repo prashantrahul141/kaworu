@@ -4,18 +4,14 @@
 #include "types.h"
 
 static u8 digits[] = "0123456789ABCDEF";
-constexpr usize PRINT_BUFFER_SIZE = 512;
-
-static usize printf_buffer_curr_index = 0;
-static i8 printf_buffer[PRINT_BUFFER_SIZE];
+constexpr usize PRINT_BUFFER_SIZE = 2048;
 
 /* static function declarations */
 static void _print_int(u8 buf[static 32], i32 *size, i64 x, u8 base, bool sign);
-static void print_int(i64 x, u8 base, bool sign);
-static void print_double(f64 f, i32 precision);
-static void print_string(const u8 *s);
-static void buffered_console_write_char(i8 c);
-static void flush_printf_buffer(void);
+static void print_int(i8 *buffer, usize *write_count, i64 x, u8 base,
+		      bool sign);
+static void print_double(i8 *buffer, usize *write_count, f64 f, i32 precision);
+static void print_string(i8 *buffer, usize *write_count, const u8 *s);
 
 void printf_init(void)
 {
@@ -27,7 +23,6 @@ void printf_deinit(void)
 
 void printf_flush(void)
 {
-	flush_printf_buffer();
 }
 
 // NOLINTBEGIN(clang-analyzer-valist.Uninitialized,
@@ -42,51 +37,80 @@ void printf(const i8 *fmt, ...)
 
 void vprintf(const i8 *fmt, va_list ap)
 {
+	i8 printf_buffer[PRINT_BUFFER_SIZE];
+	usize wrote = __vsnprintf(printf_buffer, PRINT_BUFFER_SIZE, fmt, ap);
+	ConsoleEvent e = { .msg = printf_buffer,
+			   .len = wrote,
+			   .bg = CONSOLE_DEFAULT_COLOR_BG,
+			   .fg = CONSOLE_DEFAULT_COLOR_FG };
+	console_write(e);
+}
+
+usize vsnprintf(i8 *buffer, usize buf_size, const i8 *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	usize wrote = __vsnprintf(buffer, buf_size, fmt, ap);
+	va_end(ap);
+	return wrote;
+}
+
+usize __vsnprintf(i8 *buffer, usize buf_size, const i8 *fmt, va_list ap)
+{
 	bool state_format_specifier = false;
+	usize write_count = 0;
 	for (usize i = 0; fmt[i] != 0; i++) {
+		if (write_count > buf_size) {
+			return 0;
+		}
+
 		u8 ch = fmt[i] & 0xFF;
 		if (!state_format_specifier) {
 			/* not in format specifier mode */
 			if ('%' == ch) {
 				state_format_specifier = true;
 			} else {
-				buffered_console_write_char(ch);
+				buffer[write_count++] = ch;
 				if (ch == '\n') {
-					buffered_console_write_char('\r');
-					flush_printf_buffer();
+					buffer[write_count++] = '\r';
 				}
 			}
 		} else {
 			/* in format specifier mode */
 			if ('d' == ch) {
-				print_int(va_arg(ap, i64), 10, true);
+				print_int(buffer, &write_count, va_arg(ap, i64),
+					  10, true);
 			} else if ('x' == ch) {
-				print_int(va_arg(ap, i64), 16, false);
+				print_int(buffer, &write_count, va_arg(ap, i64),
+					  16, false);
 			} else if ('f' == ch) {
-				print_double(va_arg(ap, f64), 12);
+				print_double(buffer, &write_count,
+					     va_arg(ap, f64), 12);
 			} else if ('p' == ch) {
-				buffered_console_write_char('0');
-				buffered_console_write_char('x');
-				print_int(va_arg(ap, i64), 16, false);
+				buffer[write_count++] = '0';
+				buffer[write_count++] = 'x';
+				print_int(buffer, &write_count, va_arg(ap, i64),
+					  16, false);
 			} else if ('s' == ch) {
 				u8 *s = va_arg(ap, u8 *);
-				print_string(s);
+				print_string(buffer, &write_count, s);
 			} else if ('c' == ch) {
-				buffered_console_write_char(
-					(u8)va_arg(ap, i32));
+				buffer[write_count++] = (u8)va_arg(ap, i32);
 			} else if ('b' == ch) {
 				bool v = (bool)va_arg(ap, i32);
-				print_string(
-					(const u8 *)(v ? "true" : "false"));
+				print_string(buffer, &write_count,
+					     (const u8 *)(v ? "true" :
+							      "false"));
 			} else if ('%' == ch) {
-				buffered_console_write_char('%');
+				buffer[write_count++] = '%';
 			} else {
-				buffered_console_write_char('%');
-				buffered_console_write_char(ch);
+				buffer[write_count++] = '%';
+				buffer[write_count++] = ch;
 			}
 			state_format_specifier = false;
 		}
 	}
+	return write_count;
 }
 
 // NOLINTEND(clang-analyzer-valist.Uninitialized,
@@ -114,16 +138,17 @@ static void _print_int(u8 buf[static 32], i32 *size, i64 x, u8 base, bool sign)
 	*size = i;
 }
 
-static void print_int(i64 x, u8 base, bool sign)
+static void print_int(i8 *buffer, usize *write_count, i64 x, u8 base, bool sign)
 {
 	u8 buf[32] = { 0 };
 	i32 i;
 	_print_int(buf, &i, x, base, sign);
-	while (--i >= 0)
-		buffered_console_write_char(buf[i]);
+	while (--i >= 0) {
+		buffer[(*write_count)++] = buf[i];
+	}
 }
 
-static void print_double(f64 f, i32 precision)
+static void print_double(i8 *buffer, usize *write_count, f64 f, i32 precision)
 {
 	bool is_negative = false;
 	if (f < 0) {
@@ -146,42 +171,29 @@ static void print_double(f64 f, i32 precision)
 		fraction -= digit;
 	}
 
-	if (is_negative)
-		buffered_console_write_char('-');
+	if (is_negative) {
+		buffer[(*write_count)++] = '-';
+	}
 
-	while (--integer_buf_size >= 0)
-		buffered_console_write_char(buf_integer[integer_buf_size]);
+	while (--integer_buf_size >= 0) {
+		buffer[*write_count++] = buf_integer[integer_buf_size];
+	}
 
-	buffered_console_write_char('.');
+	buffer[(*write_count)++] = '.';
 
 	i32 i = 0;
-	while (i < float_buf_size)
-		buffered_console_write_char(buf_float[i++]);
+	while (i < float_buf_size) {
+		buffer[(*write_count)++] = buf_float[i++];
+	}
 }
 
-static void print_string(const u8 *s)
+static void print_string(i8 *buffer, usize *write_count, const u8 *s)
 {
 	while (*s != 0) {
-		buffered_console_write_char(*s);
+		buffer[(*write_count)++] = *s;
 		if (*s == '\n') {
-			flush_printf_buffer();
-			buffered_console_write_char('\r');
+			buffer[*write_count++] = '\r';
 		}
 		s++;
 	}
-}
-
-static inline void flush_printf_buffer(void)
-{
-	console_write(printf_buffer, printf_buffer_curr_index);
-	printf_buffer_curr_index = 0;
-}
-
-static void buffered_console_write_char(i8 ch)
-{
-	if (printf_buffer_curr_index + 1 >= PRINT_BUFFER_SIZE) {
-		flush_printf_buffer();
-	}
-
-	printf_buffer[printf_buffer_curr_index++] = ch;
 }

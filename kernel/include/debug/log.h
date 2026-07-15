@@ -27,49 +27,57 @@ static inline void __log(const i8 *level_str, const ConsoleColor color,
 			 const i8 *file, const i8 *func, usize line,
 			 const i8 *fmt, ...)
 {
-	console_set_background(color);
-	console_set_foreground(CONSOLE_COLOR_BLACK);
-	printf("[ ");
-	printf(level_str);
-	printf(" ]");
-	console_set_foreground(color);
-	console_set_background(CONSOLE_COLOR_BLACK);
-	printf(" %s:%s:%d: ", file, func, line);
+	i8 buffer[2048];
+	usize wrote = vsnprintf(buffer, 2048, "[ %s ]", level_str);
+	ConsoleEvent ev = { .bg = color,
+			    .fg = CONSOLE_DEFAULT_COLOR_BG,
+			    .len = wrote,
+			    .msg = buffer };
+	console_write(ev);
+
+	wrote = vsnprintf(buffer, 2048, " %s:%s:%d: ", file, func, line);
+	ev = (ConsoleEvent){ .bg = CONSOLE_DEFAULT_COLOR_BG,
+			     .fg = color,
+			     .len = wrote,
+			     .msg = buffer };
+	console_write(ev);
+
 	va_list args;
 	va_start(args, fmt);
-	vprintf(fmt, args);
-	console_set_background(CONSOLE_COLOR_BLACK);
-	console_set_foreground(CONSOLE_COLOR_WHITE);
-	printf_flush();
+	wrote = __vsnprintf(buffer, 2048, fmt, args);
+	ev = (ConsoleEvent){ .bg = CONSOLE_DEFAULT_COLOR_BG,
+			     .fg = color,
+			     .len = wrote,
+			     .msg = buffer };
+	console_write(ev);
+	va_end(args);
 }
 
 #define LOG(level_str, color, fmt, ...)                                      \
 	__log(#level_str, color, __FILE__, __FUNCTION__, __LINE__, fmt "\n", \
 	      ##__VA_ARGS__)
 
-#define USER_LOG_OK(fmt, ...)                                       \
-	do {                                                        \
-		console_set_background(CONSOLE_COLOR_GREEN_BRIGHT); \
-		console_set_foreground(CONSOLE_COLOR_BLACK);        \
-		printf("[ OK ]");                                   \
-		console_set_foreground(CONSOLE_COLOR_GREEN_BRIGHT); \
-		console_set_background(CONSOLE_COLOR_BLACK);        \
-		printf(" " fmt "\n", ##__VA_ARGS__);                \
-		console_set_background(CONSOLE_COLOR_BLACK);        \
-		console_set_foreground(CONSOLE_COLOR_WHITE);        \
-	} while (0)
+static inline void __user_log(const i8 *level_str, const ConsoleColor color,
+			      const i8 *fmt, ...)
+{
+	i8 buffer[2048];
+	usize wrote = vsnprintf(buffer, 2048, "[ %s ]", level_str);
+	ConsoleEvent ev = { .bg = color,
+			    .fg = CONSOLE_DEFAULT_COLOR_BG,
+			    .len = wrote,
+			    .msg = buffer };
+	console_write(ev);
 
-#define USER_LOG_WARN(fmt, ...)                                      \
-	do {                                                         \
-		console_set_background(CONSOLE_COLOR_YELLOW_BRIGHT); \
-		console_set_foreground(CONSOLE_COLOR_BLACK);         \
-		printf("[ WARN ]");                                  \
-		console_set_foreground(CONSOLE_COLOR_YELLOW_BRIGHT); \
-		console_set_background(CONSOLE_COLOR_BLACK);         \
-		printf(" " fmt "\n", ##__VA_ARGS__);                 \
-		console_set_background(CONSOLE_COLOR_BLACK);         \
-		console_set_foreground(CONSOLE_COLOR_WHITE);         \
-	} while (0)
+	va_list args;
+	va_start(args, fmt);
+	wrote = __vsnprintf(buffer, 2048, fmt, args);
+	ev = (ConsoleEvent){ .bg = CONSOLE_DEFAULT_COLOR_BG,
+			     .fg = CONSOLE_DEFAULT_COLOR_FG,
+			     .len = wrote,
+			     .msg = buffer };
+	console_write(ev);
+	va_end(args);
+}
 
 #if LEVEL > LEVEL_TRACE
 	#define TRACE(fmt, ...)
@@ -86,14 +94,18 @@ static inline void __log(const i8 *level_str, const ConsoleColor color,
 #endif
 
 #if LEVEL > LEVEL_INFO
-	#define INFO(fmt, ...) USER_LOG_OK(fmt, ##__VA_ARGS__)
+	#define INFO(fmt, ...)                                             \
+		__user_log("OK", CONSOLE_COLOR_GREEN_BRIGHT, " " fmt "\n", \
+			   ##__VA_ARGS__)
 #else
 	#define INFO(fmt, ...) \
 		LOG(INFO, CONSOLE_COLOR_GREEN_BRIGHT, fmt, ##__VA_ARGS__)
 #endif
 
 #if LEVEL > LEVEL_WARN
-	#define WARN(fmt, ...) USER_LOG_WARN(fmt, ##__VA_ARGS__)
+	#define WARN(fmt, ...)                                                \
+		__user_log("WARN", CONSOLE_COLOR_YELLOW_BRIGHT, " " fmt "\n", \
+			   ##__VA_ARGS__)
 #else
 	#define WARN(fmt, ...) \
 		LOG(WARN, CONSOLE_COLOR_YELLOW_BRIGHT, fmt, ##__VA_ARGS__)
