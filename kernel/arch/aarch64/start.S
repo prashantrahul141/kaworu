@@ -15,7 +15,9 @@ boot_stack_top:
 .global start
 start:
     /* disable all interrupts */
-    disable_interrupts
+    /* mask (NOT D), A, I, F */
+    msr daifclr, #0b1000
+    msr daifset, #0b0111
 
     /* use current SP_ELx (1) for sp */
     mov x0, #1
@@ -39,7 +41,8 @@ start:
     isb
 
     /* reenable all interrupts */
-    enable_interrupts
+    /* unmask D, A, I, F */
+    msr daifclr, #0b1111
     isb
 
     /* c entry point */

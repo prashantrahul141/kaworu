@@ -348,26 +348,3 @@ lower_el_aarch32_serror_handler:
     bl unhandled_exception_handler
     restore_registers
     eret
-
-/*
- * Disables all interrupts except D
- * macro disable_interrupts(void);
- * D -> Debug
- * A -> SError
- * I -> IRQ
- * F -> FIQ
- */
-.macro disable_interrupts
-    /* mask (NOT D), A, I, F */
-    msr daifclr, #0b1000
-    msr daifset, #0b0111
-.endm
-
-/*
- * Enables all interrupts
- * void enable_interrupts(void);
- */
-.macro enable_interrupts
-    /* unmask D, A, I, F */
-    msr daifclr, #0b1111
-.endm
