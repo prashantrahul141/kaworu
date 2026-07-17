@@ -3,6 +3,7 @@
  */
 
 #include "drivers/uart/uart.h"
+#include "boot/fdt.h"
 #include "common_defs.h"
 #include "debug/panic.h"
 #include "mm/vmm.h"
@@ -19,6 +20,7 @@ static void calculate_divisor(u64 base_clock, u32 baud_rate, u32 *ibrd,
 typedef struct {
 	ConsoleBackend backend;
 	usize uart_base;
+	Reg reg;
 } UartConsoleBackend;
 
 static const ConsoleBackendOps uart_ops = {
@@ -29,7 +31,8 @@ static const ConsoleBackendOps uart_ops = {
 
 static UartConsoleBackend uart_backend = {
 	.backend = { .name = "uart", .ops = &uart_ops, .next = nullptr },
-	.uart_base = 0
+	.uart_base = 0,
+	.reg = { 0 }
 };
 
 #define reg(_reg)	       (volatile u32 *)((_reg) + uart_backend.uart_base)
@@ -38,11 +41,19 @@ static UartConsoleBackend uart_backend = {
 
 void uart_init(void)
 {
-	DEBUG("setting up uart");
-	uart_backend.uart_base = (usize)vm_mmio_map(UART_BASE_PHY, PAGE_SIZE);
+	INFO("Initializing uart");
+	bool found = fdt_get_reg_for_compat("arm,pl011", &uart_backend.reg);
+	if (!found) {
+		WARN("uart not found");
+		return;
+	}
+
+	uart_backend.uart_base =
+		(usize)vm_mmio_map(uart_backend.reg.address, PAGE_SIZE);
 	if (IS_ERR(((void *)uart_backend.uart_base))) {
 		panic("failed to init uart because mapping failed");
 	}
+
 	pl011_init();
 	console_register(&uart_backend.backend);
 }
