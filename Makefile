@@ -33,6 +33,8 @@ QEMU_FLAGS := -cpu cortex-a72 \
 			-cdrom $(ISO)
 			# TODO:  -smp $(CONFIG_CPU_COUNT) \
 
+GDB_FLAGS = -ex "target remote :1234" -ex "set scheduler-locking on" -ex "b start" -ex "c"
+
 all: build
 
 # configuration -------------------------------
@@ -126,11 +128,11 @@ clang-tidy: $(ELF)  ## Run clang-tidy on the entire source
 
 .PHONY: gdb
 gdb: ## Run gdb debugger
-	gdb $(ELF) -ex "target remote :1234" -ex "b start" -ex "c"
+	gdb $(ELF) $(GDB_FLAGS)
 
 .PHONY: pwndbg
 pwndbg: ## Run pwndbg debugger
-	pwndbg $(ELF) -ex "target remote :1234" -ex "b start" -ex "c"
+	pwndbg $(ELF) $(GDB_FLAGS)
 
 .PHONY: stripped
 stripped: $(ELF)
