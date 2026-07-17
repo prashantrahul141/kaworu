@@ -21,7 +21,7 @@ ISO = $(NAME).iso
 
 # qemu flags for virt
 # WARN: dont forget to update in release run scripts
-QEMU_MACHINE := virt
+QEMU_MACHINE := virt,acpi=off
 QEMU_FLAGS := -cpu cortex-a72 \
 			-m $(CONFIG_PHYSICAL_MEMORY_MB)M \
 			-device ramfb \
