@@ -10,6 +10,7 @@ void kernel_main(void)
 	kmem_init();
 	vm_init();
 	kheap_init();
+	fdt_init();
 	uart_init();
 
 	printf("\nHello from kaworu\n\n");

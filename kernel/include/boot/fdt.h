@@ -1,0 +1,29 @@
+#ifndef _FDT_H_
+#define _FDT_H_
+
+#include "types.h"
+
+typedef struct {
+	usize size;
+	usize address;
+} Reg;
+
+/*
+ * checks and saves flat device tree given by the bootloader limine
+ */
+void fdt_init(void);
+
+/* find reg with compat */
+bool fdt_get_reg_for_compat(const i8 *compat, Reg *reg);
+
+/*
+ * Query for a node using compatiblity, returns offset, negative if not found
+ */
+i32 fdt_query_compat(const i8 *compat);
+
+/*
+ * Get register from a node
+ */
+bool fdt_get_reg(i32 node, Reg *reg);
+
+#endif // _FDT_H_

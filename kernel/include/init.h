@@ -12,6 +12,7 @@
 #include "mm/kheap.h"
 #include "debug/printf.h"
 #include "boot/limine_responses.h"
+#include "boot/fdt.h"
 #include "uart/uart.h"
 #include "framebuffer/framebuffer.h"
 
