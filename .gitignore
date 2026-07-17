@@ -64,3 +64,5 @@ config.h
 compile_commands.json
 iso
 *.objdump
+
+!thirdparty/limine-binaries/limine-uefi-cd.bin
