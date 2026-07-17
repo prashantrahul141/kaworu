@@ -39,6 +39,16 @@ errno_t framebuffer_init()
 	return EOK;
 }
 
+errno_t framebuffer_deinit()
+{
+	DEBUG("removing flanterm");
+	if (nullptr == framebuffer_backend.flanterm_ctx) {
+		panic("failed to deinit framebuffer, not initialised");
+	}
+	console_unregister(&framebuffer_backend.backend);
+	return EOK;
+}
+
 void framebuffer_write_event(ConsoleBackend *backend, const ConsoleEvent *event)
 {
 	UNUSED_ARG(backend);

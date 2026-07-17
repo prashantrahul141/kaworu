@@ -9,6 +9,7 @@ typedef struct {
 } UartConsoleBackend;
 
 errno_t framebuffer_init();
+errno_t framebuffer_deinit();
 
 void framebuffer_write_event(ConsoleBackend *backend,
 			     const ConsoleEvent *event);
