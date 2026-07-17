@@ -72,11 +72,15 @@ void *memcpy(void *dest, const void *src, usize size)
 
 i32 memcmp(const void *s1, const void *s2, usize n)
 {
-	const i8 *p1 = (const i8 *)s1;
-	const i8 *p2 = (const i8 *)s2;
-	while (n-- > 0) {
-		return *p1++ > *p2++ ? 1 : -1;
+	const u8 *p1 = s1;
+	const u8 *p2 = s2;
+	for (; n--; ++p1, ++p2) {
+		int diff = *p1 - *p2;
+		if (diff) {
+			return diff;
+		}
 	}
+
 	return 0;
 }
 
@@ -86,6 +90,16 @@ usize strlen(const i8 *s)
 	while (0 != *p++)
 		;
 	return (usize)(p - s - 1);
+}
+
+i32 strcmp(const i8 *a, const i8 *b)
+{
+	while (*a && (*a == *b)) {
+		++a;
+		++b;
+	}
+
+	return (u8)*a - (u8)*b;
 }
 
 usize strnlen(const i8 *s, size_t n)

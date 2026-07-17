@@ -24,6 +24,11 @@ void *memcpy(void *dest, const void *src, usize size) NONNULL(1, 2);
 i32 memcmp(const void *s1, const void *s2, usize n);
 
 /*
+ * string compare
+ */
+i32 strcmp(const i8 *a, const i8 *b);
+
+/*
  * Size of string
  */
 usize strlen(const i8 *s);
