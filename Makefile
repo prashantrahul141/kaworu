@@ -13,9 +13,6 @@ endif
 
 NAME = kaworu
 
-# Point to the extract directory of limine-binary
-# LIMINE_PATH :=
-
 # Point to the uefi firmware for qemu (not the directory, the firmware file itself)
 # UEFI_FIRMWARE :=
 
@@ -87,10 +84,10 @@ iso/boot/$(NAME): $(ELF) | iso/.dirs
 iso/boot/limine/limine.conf: limine.conf | iso/.dirs
 	@printf "\tCOPY %s\n" $@
 	@cp $< $@
-iso/boot/limine/limine-uefi-cd.bin: $(LIMINE_PATH)/limine-uefi-cd.bin | iso/.dirs
+iso/boot/limine/limine-uefi-cd.bin: thirdparty/limine-binaries/limine-uefi-cd.bin | iso/.dirs
 	@printf "\tCOPY %s\n" $@
 	@cp $< $@
-iso/EFI/BOOT/BOOTAA64.EFI: $(LIMINE_PATH)/BOOTAA64.EFI | iso/.dirs
+iso/EFI/BOOT/BOOTAA64.EFI: thirdparty/limine-binaries/BOOTAA64.EFI | iso/.dirs
 	@printf "\tCOPY %s\n" $@
 	@cp $< $@
 
