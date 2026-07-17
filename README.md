@@ -1,11 +1,11 @@
-# kaworu
+# Kaworu
 
-A WIP unix-like aarch64 kernel
+A WIP Unix-like AArch64 kernel
 
 ## Building
 
 If you use nix, `nix develop` sets up everything you will need in order to
-build and run the kernel under qemu.
+build and run the kernel under Qemu.
 
 Building requires the following packages:
 
@@ -25,16 +25,6 @@ python313Packages.kconfiglib
 # bear # if you want to generate compile_commands.json
 ```
 
-You will need limine-binaries in order to create the iso image, which can you
-download from: https://github.com/Limine-Bootloader/Limine/releases
-
-Download the `limine-binary` one and extract it somewhere, then set `LIMINE_PATH`
-env to the extracted directory. In a way that `$(LIMINE_PATH)/limine-uefi-cd.bin`
-is accessible.
-
-This is done automatically if you're using nix.
-
-
 Then generate a config using:
 
 ```sh
@@ -52,12 +42,12 @@ make
 
 ## Running
 
-I have yet to test this on actual hardware, I have only tested this on qemu
+I have yet to test this on actual hardware, I have only tested this on Qemu
 under the `virt` platform.
 
-Since aarch64 only supports UEFI and not bios, you will need to provide an UEFI firmware for qemu.
+Since AArch64 only supports UEFI and not bios, you will need to provide UEFI firmware for Qemu.
 You can just download the `full-release` from the [releases page](https://github.com/prashantrahul141/kaworu/releases) as it contains
-both a built iso image and a firmware you need to emulate under qemu.
+both a built ISO Image and firmware you need to emulate under Qemu.
 
 You can also download the firmware from the releases
 page of:
@@ -67,15 +57,15 @@ Then set `UEFI_FIRMWARE` env pointing directly to the firmware.
 
 This is done automatically if you're using nix.
 
-run under qemu:
+run under Qemu:
 
 ```sh
 make run
 ```
 
+## To-Do
 
-## Todo
-
+```
 - [x] Startup
     - [x] Exception vectors
     - [x] Setup system registers
@@ -155,7 +145,7 @@ make run
 
 - [ ] FS
     - [ ] Decide on a simple filesystem to implement.
-
+```
 
 ## Thirdparty
 

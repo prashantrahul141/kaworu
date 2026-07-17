@@ -15,7 +15,6 @@
     {
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
-          limine-full
           glibc_multi
 
           llvmPackages.clang-unwrapped
@@ -36,7 +35,6 @@
 
         shellHook = ''
           export UEFI_FIRMWARE=${ovmf}/share/ovmf-code-aarch64.fd
-          export LIMINE_PATH=${pkgs.limine-full}/share/limine
           export CC=clang
           export LD=ld.lld
           export OBJDUMP=llvm-objdump
