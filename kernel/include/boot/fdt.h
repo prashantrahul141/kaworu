@@ -21,6 +21,14 @@ bool fdt_get_reg_for_compat(const i8 *compat, Reg *reg);
  */
 i32 fdt_query_compat(const i8 *compat);
 
+/* get compat for a node */
+const i8 *fdt_get_compat(i32 offset, i32 *len);
+
+/*
+ * traverse node
+ */
+i32 fdt_traverse_next_node(i32 offset);
+
 /*
  * Get register from a node
  */
