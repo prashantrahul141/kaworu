@@ -30,13 +30,17 @@ extern symbol __kernel_text_start;
 extern symbol __kernel_text_end;
 extern symbol __kernel_data_start;
 extern symbol __kernel_data_end;
+extern symbol __kernel_text_drivers_start;
+extern symbol __kernel_text_drivers_end;
 
-#define __KERNEL_START	    ((usize)__kernel_start)
-#define __KERNEL_END	    ((usize)__kernel_end)
-#define __KERNEL_TEXT_START ((usize)__kernel_text_start)
-#define __KERNEL_TEXT_END   ((usize)__kernel_text_end)
-#define __KERNEL_DATA_START ((usize)__kernel_data_start)
-#define __KERNEL_DATA_END   ((usize)__kernel_data_end)
+#define __KERNEL_START		    ((usize)__kernel_start)
+#define __KERNEL_END		    ((usize)__kernel_end)
+#define __KERNEL_TEXT_START	    ((usize)__kernel_text_start)
+#define __KERNEL_TEXT_END	    ((usize)__kernel_text_end)
+#define __KERNEL_DATA_START	    ((usize)__kernel_data_start)
+#define __KERNEL_DATA_END	    ((usize)__kernel_data_end)
+#define __KERNEL_TEXT_DRIVERS_START ((usize)__kernel_text_drivers_start)
+#define __KERNEL_TEXT_DRIVERS_END   ((usize)__kernel_text_drivers_end)
 
 #define MB_TO_BYTES(MB) ((MB) * (usize)1000 * (usize)1000)
 
@@ -53,7 +57,5 @@ constexpr usize KERNEL_VM_RANGE_SIZE = (1UL << 30); // ~1GB
 
 constexpr usize KERNEL_MMIO_RANGE_START = 0xffffffff90000000UL;
 constexpr usize KERNEL_MMIO_RANGE_SIZE = (256UL << 20); // ~256MB
-
-constexpr usize UART_BASE_PHY = 0x09000000ULL;
 
 #endif // _MEMLAYOUT_H_
