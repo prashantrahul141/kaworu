@@ -13,6 +13,9 @@ config BOOT_STACK_SIZE
     help
         - Stack size that will be allocated before memory management subsystem is ready (should be 16 byte aligned)
 
+endmenu
+
+menu "Building"
 choice OPTIMIZATIONS
     prompt "Optimizations level"
     default OPTIMIZATIONS_NONE
@@ -29,6 +32,13 @@ choice OPTIMIZATIONS
     config OPTIMIZATIONS_HIGH
         bool "High"
 endchoice
+endmenu
+
+# drivers
+menu "Drivers"
+    config MAX_ACTIVE_DEVICES_COUNT
+        int "Max number of devices that can be active"
+        default 256
 endmenu
 
 # running

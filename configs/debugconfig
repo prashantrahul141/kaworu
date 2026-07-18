@@ -4,11 +4,22 @@
 #
 CONFIG_PER_CPU_STACK_SIZE=16384
 CONFIG_BOOT_STACK_SIZE=16384
+# end of General Setup
+
+#
+# Building
+#
 CONFIG_OPTIMIZATIONS_NONE=y
 # CONFIG_OPTIMIZATIONS_LOW is not set
 # CONFIG_OPTIMIZATIONS_MEDIUM is not set
 # CONFIG_OPTIMIZATIONS_HIGH is not set
-# end of General Setup
+# end of Building
+
+#
+# Drivers
+#
+CONFIG_MAX_ACTIVE_DEVICES_COUNT=256
+# end of Drivers
 
 #
 # Running via qemu
