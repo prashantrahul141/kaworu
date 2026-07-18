@@ -32,6 +32,15 @@ SECTIONS
         *(.text*)
         . = ALIGN(0x1000);
     }
+
+     . = ALIGN(CONSTANT(MAXPAGESIZE));
+    PROVIDE(__kernel_text_drivers_start = .);
+    .driver : {
+        *(.driver*)
+        PROVIDE(__kernel_text_drivers_end = .);
+        . = ALIGN(0x1000);
+    }
+
     PROVIDE(__kernel_text_end = .);
 
     . = ALIGN(CONSTANT(MAXPAGESIZE));
