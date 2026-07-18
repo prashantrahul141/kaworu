@@ -55,6 +55,7 @@ void dmanager_probe_all(void)
 
 		/* create and prepopulate device */
 		Device *device = kalloc(sizeof(Device));
+		device->name = driver->name;
 		device->fdt_node_offset = offset;
 		device->driver = driver;
 
