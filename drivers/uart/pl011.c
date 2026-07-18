@@ -86,7 +86,6 @@ static const ConsoleOps pl011_ops = {
  */
 errno_t pl011_probe(Device *device)
 {
-	UNUSED_ARG(device);
 	DEBUG("probing pl011");
 	Reg reg;
 	if (!fdt_get_reg(device->fdt_node_offset, &reg)) {
@@ -139,7 +138,6 @@ errno_t pl011_probe(Device *device)
 
 errno_t pl011_remove(Device *device)
 {
-	UNUSED_ARG(device);
 	DEBUG("removing pl011");
 	wait_tx_complete(device);
 	vm_mmio_unmap(device->driver_data, PAGE_SIZE);
