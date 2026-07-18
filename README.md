@@ -82,8 +82,7 @@ make run
     - [x] Set up Flanterm
 
 - [x] Console
-    - [x] initialization and use framebuffer backend
-    - [x] initialization and use uart backend
+    - [x] Generic console
 
 - [x] Printf implementation
     - [x] `printf`, `vprintf`
@@ -111,8 +110,10 @@ make run
     - [x] `vm_alloc`/`vm_free` and `vm_map`/`vm_unmap`
     - [ ] Guard pages for kernel stacks
 
-- [ ] Kernel heap
-    - [ ] `kalloc`/`kfree`
+- [x] Kernel heap
+    - [x] `kalloc`/`kfree`
+
+- [x] Device driver manager
 
 - [ ] Interrupts
     - [ ] GIC distributor init and cpu interface init
