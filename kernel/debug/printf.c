@@ -78,7 +78,7 @@ usize __vsnprintf(i8 *buffer, usize buf_size, const i8 *fmt, va_list ap)
 		} else {
 			/* in format specifier mode */
 			if ('d' == ch) {
-				print_int(buffer, &write_count, va_arg(ap, i64),
+				print_int(buffer, &write_count, va_arg(ap, i32),
 					  10, true);
 			} else if ('x' == ch) {
 				print_int(buffer, &write_count, va_arg(ap, i64),
