@@ -39,8 +39,9 @@ ASM_SOURCES = $K/arch/aarch64/exception.S \
 			  $K/arch/aarch64/start.S
 ASM_OBJS = $(ASM_SOURCES:=.o)
 
-C_SOURCES = $D/framebuffer/framebuffer.c \
-			$D/uart/uart.c \
+C_SOURCES = $D/manager/manager.c \
+			$D/framebuffer/framebuffer.c \
+			$D/uart/pl011.c \
 			$K/arch/aarch64/exception.c \
 			$K/boot/fdt.c \
 			$K/boot/limine_responses.c \
@@ -75,12 +76,13 @@ C_EXTERNAL_OBJS = $(EXTERNAL_C_SOURCES:=.e.o)
 OBJS = $(ASM_OBJS) $(C_OBJS) $(C_EXTERNAL_OBJS)
 
 KI = $K/include
-DI = $D/
+DI = $D/include
 LI = $L/include
 LIM_INC := $(TH)/limine-protocol/include/
 FLAN_INC := $(TH)/Flanterm/src/
 LIBFDT_INC := $(TH)/libfdt/
 INCLUDES_DIR = 	-I../  \
+                -I$(D)/ \
                 -I$(DI)/ \
 				-I. \
 				-I$(KI)/ \

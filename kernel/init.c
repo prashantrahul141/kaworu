@@ -11,7 +11,9 @@ void kernel_main(void)
 	vm_init();
 	kheap_init();
 	fdt_init();
-	uart_init();
+	dmanager_init();
+	dmanager_probe_all();
+	console_register(dmanager_get_by_class(DEVICE_UART));
 
 	printf("\nHello from kaworu\n\n");
 
