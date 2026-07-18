@@ -13,7 +13,7 @@ void kernel_main(void)
 	fdt_init();
 	dmanager_init();
 	dmanager_probe_all();
-	console_register(dmanager_get_by_class(DEVICE_UART));
+	console_register(dmanager_get_by_class(DEVICE_UART), true);
 
 	printf("\nHello from kaworu\n\n");
 

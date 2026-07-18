@@ -34,7 +34,7 @@ errno_t framebuffer_init()
 		ERROR("failed to init framebuffer");
 		return -EINVAL;
 	}
-	console_register_backend(&framebuffer_backend);
+	console_register_backend(&framebuffer_backend, false);
 	return EOK;
 }
 
@@ -45,6 +45,7 @@ errno_t framebuffer_deinit()
 		panic("failed to deinit framebuffer, not initialised");
 	}
 	console_unregister(&framebuffer_device);
+	flanterm_deinit(framebuffer_device.driver_data, nullptr);
 	return EOK;
 }
 

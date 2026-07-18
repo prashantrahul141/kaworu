@@ -26,25 +26,15 @@ void console_deinit();
 /*
  * register a device to console
  */
-void console_register(Device *backend);
+void console_register(Device *device, bool set_default);
 
 /* register a consolebackend directly */
-void console_register_backend(ConsoleBackend *backend);
+void console_register_backend(ConsoleBackend *backend, bool set_default);
 
 /*
  * unregister a device from console
  */
 bool console_unregister(const Device *backend);
-
-/*
- * set foreground color if the underlying backend supports it.
- */
-errno_t console_set_foreground(const IOColor c);
-
-/*
- * set background color if the underlying backend supports it.
- */
-errno_t console_set_background(const IOColor c);
 
 /*
  * write to console
@@ -60,5 +50,10 @@ errno_t console_flush();
  * write a single char with default properties
  */
 errno_t console_write_char(const i8 c);
+
+/*
+ * read from the default console device
+ */
+bool console_read(u8 *out);
 
 #endif

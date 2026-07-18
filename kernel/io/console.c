@@ -1,15 +1,20 @@
 #include "io/console.h"
 #include "debug/log.h"
 #include "error.h"
+#include "io/io.h"
 #include "mm/kheap.h"
 #include "sync/spinlock.h"
 
 typedef struct {
 	SpinLock lock;
 	ConsoleBackend *backends;
+	ConsoleBackend *primary;
 } Console;
 
-static Console console = {};
+static Console console = {
+	.backends = nullptr,
+	.primary = nullptr,
+};
 
 errno_t console_init()
 {
@@ -21,20 +26,24 @@ void console_deinit()
 {
 }
 
-void console_register_backend(ConsoleBackend *backend)
+void console_register_backend(ConsoleBackend *backend, bool set_default)
 {
-	DEBUG("registering device = %s", backend->device->name);
+	DEBUG("registering device = %s setting default = %b",
+	      backend->device->name, set_default);
 	spinlock_acquire(&console.lock);
 	backend->next = console.backends;
 	console.backends = backend;
+	if (set_default) {
+		console.primary = backend;
+	}
 	spinlock_release(&console.lock);
 }
 
-void console_register(Device *device)
+void console_register(Device *device, bool set_default)
 {
 	ConsoleBackend *backend = kalloc(sizeof(ConsoleBackend));
 	backend->device = device;
-	console_register_backend(backend);
+	console_register_backend(backend, set_default);
 }
 
 bool console_unregister(const Device *device)
@@ -44,11 +53,18 @@ bool console_unregister(const Device *device)
 	ConsoleBackend *curr = console.backends;
 	ConsoleBackend *prev = nullptr;
 	while (nullptr != curr) {
+		/* found backend */
 		if (curr->device == device) {
+			/* if this was set as default, remove it */
 			if (prev == nullptr) {
 				console.backends = curr->next;
 			} else {
 				prev->next = curr->next;
+			}
+
+			if (console.primary != nullptr &&
+			    console.primary->device == device) {
+				console.primary = nullptr;
 			}
 
 			curr->next = nullptr;
@@ -91,11 +107,21 @@ errno_t console_flush()
 }
 
 errno_t console_write_char(i8 c)
-
 {
 	IOEvent e = { .msg = &c,
 		      .len = 1,
 		      .bg = IO_DEFAULT_COLOR_BG,
 		      .fg = IO_DEFAULT_COLOR_FG };
 	return console_write(e);
+}
+
+bool console_read(u8 *out)
+{
+	if (nullptr == console.backends) {
+		return false;
+	}
+
+	*out = console.primary->device->console_ops->read(
+		console.primary->device);
+	return true;
 }
