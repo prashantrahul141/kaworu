@@ -38,6 +38,7 @@ GDB_FLAGS = -ex "target remote :1234" -ex "set scheduler-locking on" -ex "b star
 all: build
 
 # configuration -------------------------------
+export MENUCONFIG_STYLE = monochrome
 .PHONY: menuconfig
 menuconfig: _menuconfig syncconfig ## Configure the kernel using ncurses tui
 _menuconfig:
