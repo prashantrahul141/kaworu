@@ -11,9 +11,8 @@ typedef struct {
 errno_t framebuffer_init();
 errno_t framebuffer_deinit();
 
-void framebuffer_write_event(ConsoleBackend *backend,
-			     const ConsoleEvent *event);
+void framebuffer_write_event(Device *backend, const IOEvent *event);
 
-void framebuffer_flush(ConsoleBackend *backend);
+void framebuffer_flush(Device *backend);
 
 #endif // _FRAMEBUFFER_H_
