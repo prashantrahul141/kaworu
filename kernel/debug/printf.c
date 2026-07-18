@@ -39,10 +39,10 @@ void vprintf(const i8 *fmt, va_list ap)
 {
 	i8 printf_buffer[PRINT_BUFFER_SIZE];
 	usize wrote = __vsnprintf(printf_buffer, PRINT_BUFFER_SIZE, fmt, ap);
-	ConsoleEvent e = { .msg = printf_buffer,
-			   .len = wrote,
-			   .bg = CONSOLE_DEFAULT_COLOR_BG,
-			   .fg = CONSOLE_DEFAULT_COLOR_FG };
+	IOEvent e = { .msg = printf_buffer,
+		      .len = wrote,
+		      .bg = IO_DEFAULT_COLOR_BG,
+		      .fg = IO_DEFAULT_COLOR_FG };
 	console_write(e);
 }
 
