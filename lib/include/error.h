@@ -8,6 +8,7 @@
 	X(EOK) /* ok! */                 \
 	X(ENOMEM) /* no memory */        \
 	X(EINVAL) /* invalid argument */ \
+	X(ENODEV) /* no such device */   \
 	X(ENOENT) /* no such entity */   \
 	X(EBUSY) /* in use */            \
 	X(EPERM) /* no perms */          \
