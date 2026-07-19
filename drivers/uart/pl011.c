@@ -89,7 +89,7 @@ errno_t pl011_probe(Device *device)
 	DEBUG("probing pl011");
 	Reg reg;
 	if (!fdt_get_reg(device->fdt_node_offset, &reg, 1)) {
-		return ENOENT;
+		return -ENODEV;
 	}
 
 	void *b = vm_mmio_map(reg.address, PAGE_SIZE);
