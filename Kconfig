@@ -30,7 +30,10 @@ choice OPTIMIZATIONS
         bool "Medium"
 
     config OPTIMIZATIONS_HIGH
-        bool "High"
+        bool "High (recommended)"
+
+    config OPTIMIZATIONS_MAX
+        bool "Max"
 endchoice
 endmenu
 

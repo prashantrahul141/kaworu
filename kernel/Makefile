@@ -25,6 +25,8 @@ else ifeq ($(CONFIG_OPTIMIZATIONS_MEDIUM),y)
 	COMMON_FLAGS += -O2 -flto=thin
 else ifeq ($(CONFIG_OPTIMIZATIONS_HIGH),y)
 	COMMON_FLAGS += -O2 -flto=full
+else ifeq ($(CONFIG_OPTIMIZATIONS_MAX),y)
+	COMMON_FLAGS += -O3 -flto=full
 else ifeq ($(CONFIG_OPTIMIZATIONS_NONE),y)
 	COMMON_FLAGS += -O0
 endif
