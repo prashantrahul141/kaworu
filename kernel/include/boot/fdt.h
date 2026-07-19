@@ -14,7 +14,7 @@ typedef struct {
 void fdt_init(void);
 
 /* find reg with compat */
-bool fdt_get_reg_for_compat(const i8 *compat, Reg *reg);
+bool fdt_get_reg_for_compat(const i8 *compat, Reg *reg, u32 reg_count);
 
 /*
  * Query for a node using compatiblity, returns offset, negative if not found
@@ -32,6 +32,6 @@ i32 fdt_traverse_next_node(i32 offset);
 /*
  * Get register from a node
  */
-bool fdt_get_reg(i32 node, Reg *reg);
+bool fdt_get_reg(i32 node, Reg *reg, u32 reg_count);
 
 #endif // _FDT_H_

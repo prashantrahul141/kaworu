@@ -88,7 +88,7 @@ errno_t pl011_probe(Device *device)
 {
 	DEBUG("probing pl011");
 	Reg reg;
-	if (!fdt_get_reg(device->fdt_node_offset, &reg)) {
+	if (!fdt_get_reg(device->fdt_node_offset, &reg, 1)) {
 		return ENOENT;
 	}
 
