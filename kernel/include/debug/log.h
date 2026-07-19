@@ -53,9 +53,9 @@ static inline void __log(const i8 *level_str, const IOColor color,
 	va_end(args);
 }
 
-#define LOG(level_str, color, fmt, ...)                                      \
-	__log(#level_str, color, __FILE__, __FUNCTION__, __LINE__, fmt "\n", \
-	      ##__VA_ARGS__)
+#define LOG(level_str, color, fmt, ...)                                 \
+	__log(#level_str, color, __FILE_NAME__, __FUNCTION__, __LINE__, \
+	      fmt "\n", ##__VA_ARGS__)
 
 static inline void __user_log(const i8 *level_str, const IOColor color,
 			      const i8 *fmt, ...)
