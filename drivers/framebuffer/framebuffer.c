@@ -7,7 +7,7 @@
 #include "flanterm_backends/fb.h"
 #include "io/console.h"
 #include "limine.h"
-#include "manager/manager.h"
+#include "common/manager.h"
 
 static const ConsoleOps framebuffer_ops = {
 	.read = nullptr,

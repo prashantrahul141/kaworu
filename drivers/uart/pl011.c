@@ -2,8 +2,10 @@
 #include "boot/fdt.h"
 #include "debug/panic.h"
 #include "error.h"
+#include "common/driver_data.h"
+#include "mm/kheap.h"
 #include "mm/vmm.h"
-#include "manager/manager.h"
+#include "common/manager.h"
 #include "types.h"
 
 constexpr usize BAUD_RATE = 115200;
@@ -30,22 +32,25 @@ constexpr usize UARTDMACR = 0x048; // control dma
 
 static void wait_tx_complete(const Device *device)
 {
-	while ((read_reg((usize)device->driver_data, UARTFR) & UARTFR_BUSY) !=
-	       0)
+	while ((read_reg(ACCESS_DRIVER_DATA(UartDriverData, device)->base_addr,
+			 UARTFR) &
+		UARTFR_BUSY) != 0)
 		;
 }
 
 static void wait_rx_ready(const Device *device)
 {
-	while ((read_reg((usize)device->driver_data, UARTFR) & UARTFR_RXFE) !=
-	       0)
+	while ((read_reg(ACCESS_DRIVER_DATA(UartDriverData, device)->base_addr,
+			 UARTFR) &
+		UARTFR_RXFE) != 0)
 		;
 }
 
 static void uart_putchar(Device *device, i8 c)
 {
 	wait_tx_complete(device);
-	write_reg((usize)device->driver_data, UARTDR, c);
+	write_reg(ACCESS_DRIVER_DATA(UartDriverData, device)->base_addr, UARTDR,
+		  c);
 }
 
 static void pl011_write(Device *device, const IOEvent *event)
@@ -59,7 +64,8 @@ static void pl011_write(Device *device, const IOEvent *event)
 static u8 pl011_read(Device *device)
 {
 	wait_rx_ready(device);
-	return (u8)read_reg((usize)device->driver_data, UARTDR);
+	return (u8)read_reg(
+		ACCESS_DRIVER_DATA(UartDriverData, device)->base_addr, UARTDR);
 }
 
 static void pl011_flush(Device *device)
@@ -92,41 +98,52 @@ errno_t pl011_probe(Device *device)
 		return -ENODEV;
 	}
 
-	void *b = vm_mmio_map(reg.address, PAGE_SIZE);
-	device->driver_data = b;
-	if (IS_ERR((device->driver_data))) {
-		panic("failed to init uart because mapping failed");
+	UartDriverData *driver_data = kalloc(sizeof(UartDriverData));
+	if (IS_ERR(driver_data)) {
+		WARN("failed to allocate mem for uart");
+		return -ENOMEM;
 	}
+
+	driver_data->base_addr = (usize)vm_mmio_map(reg.address, PAGE_SIZE);
+	device->driver_data = driver_data;
+	if (IS_ERR((device->driver_data))) {
+		WARN("mapping failed");
+		kfree(driver_data);
+		return -ENOMEM;
+	}
+
+	usize base_addr = driver_data->base_addr;
+
 	/* disable uart */
-	u32 cr = read_reg((usize)device->driver_data, UARTCR);
-	write_reg((usize)device->driver_data, UARTCR,
-		  (cr & (u32)~UARTCR_UARTEN));
+	u32 cr = read_reg(base_addr, UARTCR);
+	write_reg(base_addr, UARTCR, (cr & (u32)~UARTCR_UARTEN));
 
 	/* wait for current tranmission to complete */
 	wait_tx_complete(device);
 
 	/* flush fifo */
-	u32 lcr = read_reg(device, UARTLCR_H) & (u32)~UARTLCR_H_FEN;
-	write_reg(device, UARTLCR_H, lcr);
+	u32 lcr = read_reg(base_addr, UARTLCR_H) & (u32)~UARTLCR_H_FEN;
+	write_reg(base_addr, UARTLCR_H, lcr);
 
 	/* configure uart */
 
 	/* setting baud rate */
 	u32 ibrd, fbrd;
 	calculate_divisor(BASE_CLOCK, BAUD_RATE, &ibrd, &fbrd);
-	write_reg(device, UARTIBRD, ibrd);
-	write_reg(device, UARTFR, fbrd);
+	write_reg(base_addr, UARTIBRD, ibrd);
+	write_reg(base_addr, UARTFR, fbrd);
 
 	/* mask all interrupts */
 	/* 0000 0111 1111 1111 */
-	write_reg(device, UARTIMSC, 0x7ff);
+	write_reg(base_addr, UARTIMSC, 0x7ff);
 
 	/* disable dma */
-	write_reg(device, UARTDMACR, 0x0);
+	write_reg(base_addr, UARTDMACR, 0x0);
 
 	/* set both tx, rx enable and enable uart. */
-	cr = read_reg(device, UARTCR);
-	write_reg(device, UARTCR, cr | UARTCR_UARTEN | UARTCR_TEX | UARTCR_REX);
+	cr = read_reg(base_addr, UARTCR);
+	write_reg(base_addr, UARTCR,
+		  cr | UARTCR_UARTEN | UARTCR_TEX | UARTCR_REX);
 
 	/* populate device operations */
 	device->console_ops = &pl011_ops;
@@ -140,7 +157,10 @@ errno_t pl011_remove(Device *device)
 {
 	DEBUG("removing pl011");
 	wait_tx_complete(device);
-	vm_mmio_unmap(device->driver_data, PAGE_SIZE);
+	vm_mmio_unmap(
+		(void *)ACCESS_DRIVER_DATA(UartDriverData, device)->base_addr,
+		PAGE_SIZE);
+	kfree(device->driver_data);
 	return EOK;
 }
 

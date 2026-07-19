@@ -46,6 +46,8 @@ struct Device {
 #define REGISTER_DEVICE_DRIVER(driver) \
 	USED SECTION(".driver") const Driver *driver##_ptr = &(driver)
 
+#define ACCESS_DRIVER_DATA(type, device) ((type *)((device)->driver_data))
+
 /*
  * Initialize driver manager
  */

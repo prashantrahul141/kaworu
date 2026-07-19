@@ -11,7 +11,7 @@
 #include "mm/vmm.h"
 #include "mm/kheap.h"
 #include "debug/printf.h"
-#include "manager/manager.h"
+#include "common/manager.h"
 #include "boot/limine_responses.h"
 #include "boot/fdt.h"
 #include "framebuffer/framebuffer.h"

@@ -2,7 +2,7 @@
 #define _CONSOLE_H_
 
 #include "error.h"
-#include "manager/manager.h"
+#include "common/manager.h"
 #include "types.h"
 #include "io.h"
 

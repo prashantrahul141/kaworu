@@ -1,4 +1,4 @@
-#include "manager/manager.h"
+#include "common/manager.h"
 #include "boot/fdt.h"
 #include "debug/log.h"
 #include "error.h"

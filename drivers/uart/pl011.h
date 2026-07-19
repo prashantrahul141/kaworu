@@ -2,7 +2,7 @@
 #define __UART_PL011_H_
 
 #include "error.h"
-#include "manager/manager.h"
+#include "common/manager.h"
 
 errno_t pl011_probe(Device *device);
 
