@@ -62,7 +62,8 @@ void dmanager_probe_all(void)
 		/* probe driver */
 		errno_t ret = device->driver->probe(device);
 		if (EOK != ret) {
-			WARN("failed probing driver = %s", driver->name);
+			WARN("failed probing driver = %s, err = %s",
+			     driver->name, str_err(ret));
 			kfree(device);
 			continue;
 		}
