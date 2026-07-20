@@ -5,8 +5,8 @@ void kernel_main(void)
 	limine_responses_save();
 	console_init();
 	printf_init();
-	framebuffer_init();
 	printf("booting...\n");
+	framebuffer_init();
 	kmem_init();
 	vm_init();
 	kheap_init();

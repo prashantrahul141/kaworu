@@ -1,14 +1,26 @@
 #include "io/console.h"
+#include "allocator/arena.h"
+#include "debug/assert.h"
 #include "debug/log.h"
 #include "error.h"
 #include "io/io.h"
 #include "mm/kheap.h"
 #include "sync/spinlock.h"
+#include "string.h"
+
+constexpr usize _IO_EVENT_BUFFER_COUNT = 5;
+constexpr usize _IO_EVENT_MSG_SIZE_ESTIMATE = 100;
+
+constexpr usize IO_EVENT_BUFFER_SIZE = sizeof(IOEvent) * _IO_EVENT_BUFFER_COUNT;
+constexpr usize IO_EVENT_MSG_BUFFER_SIZE =
+	_IO_EVENT_BUFFER_COUNT * _IO_EVENT_MSG_SIZE_ESTIMATE;
 
 typedef struct {
 	SpinLock lock;
 	ConsoleBackend *backends;
 	ConsoleBackend *primary;
+	Arena io_events;
+	Arena io_messages;
 } Console;
 
 static Console console = {
@@ -16,9 +28,16 @@ static Console console = {
 	.primary = nullptr,
 };
 
+static u8 io_event_buffer_storage[IO_EVENT_BUFFER_SIZE];
+static u8 io_event_msg_buffer[IO_EVENT_MSG_BUFFER_SIZE];
+
 errno_t console_init()
 {
 	spinlock_init(&console.lock, "console");
+	arena_init(&console.io_events, io_event_buffer_storage,
+		   sizeof(io_event_buffer_storage));
+	arena_init(&console.io_messages, io_event_msg_buffer,
+		   sizeof(io_event_msg_buffer));
 	return EOK;
 }
 
@@ -80,7 +99,7 @@ bool console_unregister(const Device *device)
 	return false;
 }
 
-static inline void write_to_all_backends(IOEvent *ev)
+static inline void write_to_all_backends(const IOEvent *ev)
 {
 	ConsoleBackend *backend = console.backends;
 	while (nullptr != backend) {
@@ -89,20 +108,60 @@ static inline void write_to_all_backends(IOEvent *ev)
 	}
 }
 
+static inline void finalize_write(void)
+{
+	IOEvent *events = (IOEvent *)arena_base(&console.io_events);
+	usize count = arena_count(&console.io_events) / sizeof(IOEvent);
+	for (usize i = 0; i < count; i++) {
+		write_to_all_backends(&events[i]);
+	}
+}
+
+static bool can_fit(const IOEvent *ev)
+{
+	return arena_can_fit(&console.io_messages, ev->len) &&
+	       arena_can_fit(&console.io_events, sizeof(IOEvent));
+}
+
+static void reset_buffers()
+{
+	arena_reset(&console.io_messages);
+	arena_reset(&console.io_events);
+}
+
+static void write_event(IOEvent ev)
+{
+	void *msg_alloc = arena_alloc(&console.io_messages, ev.len);
+	ASSERT(!IS_ERR(msg_alloc), "failed to allocate for io message");
+	memcpy(msg_alloc, ev.msg, ev.len);
+	ev.msg = msg_alloc;
+	void *event_alloc = arena_alloc(&console.io_events, sizeof(IOEvent));
+	ASSERT(!IS_ERR(event_alloc), "failed to allocate for event");
+	memcpy(event_alloc, &ev, sizeof(IOEvent));
+}
+
 errno_t console_write(IOEvent e)
 {
-	write_to_all_backends(&e);
-	console_flush();
+	/* if it cant hold anymore, like myself */
+	if (!can_fit(&e)) {
+		/* write, flush all messages & reset buffers */
+		console_flush();
+	}
+
+	write_event(e);
 	return EOK;
 }
 
 errno_t console_flush()
 {
+	finalize_write();
 	ConsoleBackend *backend = console.backends;
 	while (nullptr != backend) {
 		backend->device->console_ops->flush(backend->device);
 		backend = backend->next;
 	}
+
+	reset_buffers();
 	return EOK;
 }
 
