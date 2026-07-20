@@ -57,6 +57,7 @@ C_SOURCES = $D/framebuffer/framebuffer.c \
 			$K/mm/vmm.c \
 			$K/mm/vmm_region.c \
 			$K/sync/spinlock.c \
+			$L/allocator/arena.c \
 			$L/allocator/bitmap.c \
 			$L/allocator/freelist.c \
 			$L/ds/ringbuffer.c \
